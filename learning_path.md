@@ -1,15 +1,4 @@
-# TryHackMe Labs – Progressive Learning Path
 
-This document tracks the structured TryHackMe path I am following to build strong
-hands-on cybersecurity fundamentals and practical offensive security skills.
-
-The focus is on:
-- Understanding concepts deeply
-- Practicing real tools and techniques
-- Building consistency through daily progress
-- Documenting learnings in a reproducible manner
-
----
 
 ## Level 1 – Introduction & Foundations
 
