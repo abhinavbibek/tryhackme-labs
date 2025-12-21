@@ -1,37 +1,44 @@
 # Steganography – `steghide`
 
-Useful commands for identifying and extracting hidden data from files:
+The useful commands to identify and extract hidden data in files are:
 
 ```bash
 steghide info file
 ```
-Displays information about a file and checks whether it contains embedded data.
+Displays the data in a file and verifies whether there is embedded data in the file.
 
 ```bash
 steghide extract -sf file
 ```
-Extracts embedded data from the specified file.
+Reads data that is contained in the given file.
 
 ---
 
-## Vulnerability & Exploit Research
+## Exploit Research & Vulnerability Research
 
 ### National Vulnerability Database (NVD)
 
-NVD keeps track of CVEs (Common Vulnerabilities and Exposures) — whether or not there is an exploit publicly available — so it's a really good place to look if you're researching vulnerabilities in a specific piece of software.
+NVD maintains a collection of CVEs (Common Vulnerabilities and Exposures) which may or may not have an exploit publicly available.  
+It is a good location to search when researching vulnerabilities in a particular piece of software.
 
 **CVE format:**
 ```text
 CVE-YEAR-IDNUMBER
 ```
 
+---
+
 ### Exploit Database (ExploitDB)
 
-ExploitDB tends to be very useful for hackers, as it often actually contains exploits that can be downloaded and used straight out of the box. It is often one of the first stops when encountering software in a CTF or pentest.
+ExploitDB can be very useful to hackers, as it often contains exploits that can be downloaded and executed directly without modification.  
+When encountering software during a pentest or CTF, it is commonly one of the first resources visited.
+
+---
 
 ### searchsploit (Kali Linux)
 
-If you're inclined towards the CLI on Linux, Kali comes pre-installed with a tool called `searchsploit` which allows you to search ExploitDB from your own machine.  
+If you prefer working with the CLI on Linux, Kali Linux is preconfigured with a tool called `searchsploit`, which allows searching ExploitDB locally.
+
 This works offline using a downloaded copy of the database.
 
 ```bash
@@ -40,7 +47,7 @@ searchsploit apache
 
 ---
 
-## File & Text Processing Commands
+## File and Text Processing Commands
 
 ```bash
 find -name passwords.txt
@@ -56,10 +63,10 @@ man ls
 ## Linux Operators
 
 ```text
-&   → Run command in background
-&&  → Chain commands (run next only if previous succeeds)
->   → Redirect output (overwrite)
->>  → Redirect output (append)
+&    → Run command in the background
+&&   → Run next command only if previous succeeds
+>    → Redirect output (overwrite)
+>>   → Redirect output (append)
 ```
 
 ---
@@ -75,7 +82,7 @@ ssh tryhackme@10.201.83.71
 
 ## Linux Flags & Switches
 
-Flags and switches modify how commands behave.
+Commands are altered by flags and switches.
 
 | Flag | Meaning | Example |
 |----|--------|--------|
@@ -108,12 +115,12 @@ Flags and switches modify how commands behave.
 ```bash
 su user2
 ```
-Switch user, keep current environment.
+Change user while retaining current environment.
 
 ```bash
 su -l user2
 ```
-Switch user and load full environment (recommended).
+Change user and load complete environment (recommended).
 
 ---
 
@@ -127,23 +134,29 @@ ls -l /etc
 ```
 
 Important files:
-- /etc/passwd — user accounts
-- /etc/shadow — password hashes
-- /etc/sudoers — sudo permissions
+- /etc/passwd — user accounts  
+- /etc/shadow — password hashes  
+- /etc/sudoers — sudo permissions  
+
+---
 
 ### /var
-Variable service data (logs, caches, databases).
+Dynamic service data such as logs, caches, and databases.
 
 ```bash
 sudo ls -l /var
 ```
 
+---
+
 ### /root
-Home directory for root user.
+Home directory for the root user.
 
 ```bash
 sudo ls -l /root
 ```
+
+---
 
 ### /tmp
 Temporary files (cleared on reboot).
@@ -163,7 +176,7 @@ wget https://example.com/myfile.txt
 
 ### scp
 ```bash
-scp important.txt ubuntu@192.168.1.30:/home/ubuntu/
+scp allimportant.txt ubuntu@192.168.1.30:/home/ubuntu/
 scp ubuntu@192.168.1.30:/home/ubuntu/file.txt local.txt
 ```
 
@@ -183,7 +196,7 @@ curl -o saved.txt http://<IP>:8000/filename
 
 ## Linux Processes
 
-Processes are running programs managed by the kernel.
+Processes are running programs controlled by the kernel.
 
 ### Viewing Processes
 ```bash
@@ -198,9 +211,9 @@ kill <PID>
 ```
 
 **Signals:**
-- SIGTERM — graceful stop
-- SIGKILL — force stop
-- SIGSTOP — pause
+- SIGTERM — graceful stop  
+- SIGKILL — force stop  
+- SIGSTOP — pause  
 
 ---
 
@@ -234,7 +247,7 @@ fg        → resume foreground
 ## Cron & Crontabs
 
 ### What is Cron?
-Cron is a time-based job scheduler used for automation.
+Cron is a time-based job scheduler used to automate tasks.
 
 ### Crontab Commands
 
@@ -273,7 +286,7 @@ Cron is a time-based job scheduler used for automation.
 ## APT Packages & Repositories
 
 ### What Are APT Repositories?
-APT repositories store software packages verified by GPG keys.
+APT repositories store software packages that are verified using GPG keys.
 
 ### Repository Locations
 ```text
@@ -284,7 +297,7 @@ APT repositories store software packages verified by GPG keys.
 /etc/apt/apt.conf.d/
 ```
 
-### Adding a Repository (Example: Sublime Text)
+### Installing a Repository (Example: Sublime Text)
 
 ```bash
 wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
