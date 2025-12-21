@@ -99,3 +99,89 @@ The focus is on:
 - [ ] Ignite  
   https://tryhackme.com/room/ignite
 - [ ] Overpass  
+  https://tryhackme.com/room/overpass
+- [ ] Year of the Rabbit  
+  https://tryhackme.com/room/yearoftherabbit
+- [ ] DevelPy  
+  https://tryhackme.com/room/bsidesgtdevelpy
+- [ ] Jack of All Trades  
+  https://tryhackme.com/room/jackofalltrades
+- [ ] Bolt  
+  https://tryhackme.com/room/bolt
+
+---
+
+## Level 5 – Reverse Engineering
+
+- [ ] Intro to x86-64  
+  https://tryhackme.com/room/introtox8664
+- [ ] CC Ghidra  
+  https://tryhackme.com/room/ccghidra
+- [ ] CC Radare2  
+  https://tryhackme.com/room/ccradare2
+- [ ] CC Steganography  
+  https://tryhackme.com/room/ccstego
+- [ ] Reverse Engineering  
+  https://tryhackme.com/room/reverseengineering
+- [ ] Reversing ELF  
+  https://tryhackme.com/room/reverselfiles
+- [ ] Dumping Router Firmware  
+  https://tryhackme.com/room/rfirmware
+
+---
+
+## Level 6 – Privilege Escalation
+
+- [ ] Sudo Security Bypass  
+  https://tryhackme.com/room/sudovulnsbypass
+- [ ] Sudo Buffer Overflow  
+  https://tryhackme.com/room/sudovulnsbof
+- [ ] Windows PrivEsc Arena  
+  https://tryhackme.com/room/windowsprivescarena
+- [ ] Linux PrivEsc Arena  
+  https://tryhackme.com/room/linuxprivescarena
+- [ ] Windows PrivEsc  
+  https://tryhackme.com/room/windows10privesc
+- [ ] Blaster  
+  https://tryhackme.com/room/blaster
+- [ ] Ignite  
+  https://tryhackme.com/room/ignite
+- [ ] Kenobi  
+  https://tryhackme.com/room/kenobi
+- [ ] Capture the Flag  
+  https://tryhackme.com/room/c4ptur3th3fl4g
+- [ ] Pickle Rick  
+  https://tryhackme.com/room/picklerick
+
+---
+
+## Level 7 – Advanced CTF Practice
+
+- [ ] Post Exploitation Basics  
+  https://tryhackme.com/room/postexploit
+- [ ] Smag Grotto  
+  https://tryhackme.com/room/smaggrotto
+- [ ] Inclusion  
+  https://tryhackme.com/room/inclusion
+- [ ] Dogcat  
+  https://tryhackme.com/room/dogcat
+- [ ] LFI Basics  
+  https://tryhackme.com/room/lfibasics
+- [ ] Buffer Overflow Prep  
+  https://tryhackme.com/room/bufferoverflowprep
+- [ ] Overpass  
+  https://tryhackme.com/room/overpass
+- [ ] Break Out the Cage  
+  https://tryhackme.com/room/breakoutthecage1
+- [ ] Lian Yu  
+  https://tryhackme.com/room/lianyu
+
+---
+
+## Progress Tracking
+
+Each completed room will have:
+- A dedicated markdown note
+- Commands and techniques used
+- Key learnings and observations
+- A clear Git commit reflecting progress
