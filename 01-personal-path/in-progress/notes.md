@@ -310,3 +310,57 @@ sudo apt install sublime-text
 ```bash
 apt remove <package-name>
 ```
+
+# Linux `man` Command – Notes
+
+## 1. What is the `man` Command?
+
+The `man` (manual) command is used to display **official documentation** for Linux commands, system calls, configuration files, and utilities.
+
+### Syntax
+```bash
+man [section] command
+```
+
+### Examples
+```bash
+man ls
+man nano
+man nc
+```
+
+---
+
+## 2. Useful `man` Command Options
+
+| Option | Description |
+|-----|-------------|
+| -k keyword | Search all man pages for a keyword |
+| -f command | Show a short description of the command |
+| -a command | Display all matching manual pages |
+| -w command | Show the location of the man page file |
+
+### Examples
+```bash
+man -k network
+man -f ls
+man -a passwd
+man -w nano
+```
+
+---
+
+## 3. Structure of a Man Page
+
+Common sections found inside a man page:
+
+| Section | Purpose |
+|------|--------|
+| NAME | Command name and short description |
+| SYNOPSIS | Command syntax |
+| DESCRIPTION | Detailed explanation |
+| OPTIONS | Available flags/switches |
+| EXAMPLES | Usage examples |
+| SEE ALSO | Related commands |
+
+---
