@@ -411,3 +411,47 @@ nc -zv 127.0.0.1 1-1000
 ```
 
 ---
+## 6. `ls` Man Page 
+
+### Command
+```bash
+man ls
+```
+
+### Common Options
+
+| Option | Description |
+|-----|-------------|
+| -l | Long listing format |
+| -a | Show hidden files |
+| -h | Human-readable file sizes |
+| -R | Recursive directory listing |
+
+### Example
+```bash
+ls -lah
+```
+
+---
+
+## 7. `grep` Man Page
+
+### Command
+```bash
+man grep
+```
+
+### Common Options
+
+| Option | Description |
+|-----|-------------|
+| -i | Ignore case |
+| -r | Recursive search |
+| -n | Show line numbers |
+| -v | Invert match |
+
+### Example
+```bash
+grep -rin "password" /etc
+```
+---
