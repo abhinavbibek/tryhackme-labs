@@ -362,7 +362,7 @@ Common sections found inside a man page:
 | SEE ALSO | Related commands |
 
 ---
-## 4. `nano` Man Page Notes
+## 4. `nano` Man Page
 
 ### Command
 ```bash
@@ -387,7 +387,7 @@ nano -R config.conf
 
 ---
 
-## 5. `netcat (nc)` Man Page Notes
+## 5. `netcat (nc)` Man Page
 
 ### Command
 ```bash
