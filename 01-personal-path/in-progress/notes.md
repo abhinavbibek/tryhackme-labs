@@ -386,3 +386,28 @@ nano -R config.conf
 ```
 
 ---
+
+## 5. `netcat (nc)` Man Page Notes
+
+### Command
+```bash
+man nc
+```
+
+### Common Options
+
+| Option | Meaning |
+|-----|--------|
+| -l | Listen for incoming connections |
+| -p | Specify local port |
+| -v | Verbose output |
+| -n | Disable DNS resolution |
+| -z | Zero-I/O mode (used for scanning) |
+
+### Examples
+```bash
+nc -lvnp 4444
+nc -zv 127.0.0.1 1-1000
+```
+
+---
