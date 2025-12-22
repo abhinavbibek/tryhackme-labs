@@ -311,8 +311,6 @@ sudo apt install sublime-text
 apt remove <package-name>
 ```
 
-# Linux `man` Command – Notes
-
 ## 1. What is the `man` Command?
 
 The `man` (manual) command is used to display **official documentation** for Linux commands, system calls, configuration files, and utilities.
@@ -362,5 +360,29 @@ Common sections found inside a man page:
 | OPTIONS | Available flags/switches |
 | EXAMPLES | Usage examples |
 | SEE ALSO | Related commands |
+
+---
+## 4. `nano` Man Page Notes
+
+### Command
+```bash
+man nano
+```
+
+### Common Options
+
+| Option | Meaning |
+|-----|--------|
+| -l | Display line numbers |
+| -c | Show cursor position |
+| -i | Auto-indent new lines |
+| -B | Create a backup file |
+| -R | Open file in read-only mode |
+
+### Examples
+```bash
+nano -l file.txt
+nano -R config.conf
+```
 
 ---
