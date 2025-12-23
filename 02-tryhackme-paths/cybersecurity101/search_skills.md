@@ -110,3 +110,91 @@ test@example.com
 **Important points:**
 - Used for awareness and OSINT
 - Not for hacking, but for understanding breach impact
+
+---
+## CVE (Common Vulnerabilities and Exposures)
+
+CVE can be thought of as a **dictionary of known vulnerabilities**.  
+It gives every publicly known vulnerability a **unique ID**, so everyone refers to the same issue.
+
+### Example CVE ID format
+```text
+CVE-2024-29988
+```
+
+### Why CVE is Important
+- Standard naming for vulnerabilities
+- Used by researchers, vendors, and security teams
+- Avoids confusion when discussing security issues
+
+---
+
+## CVE Key Points
+
+| Item | Description |
+|----|------------|
+| CVE ID | Unique vulnerability identifier |
+| Format | CVE-YEAR-NUMBER |
+| Maintained by | MITRE Corporation |
+
+### Example
+- **CVE-2014-0160** → Heartbleed vulnerability
+
+### Notes
+- CVE itself does **not** provide exploits
+- It only **describes and identifies** vulnerabilities
+
+---
+
+## CVE & NVD
+
+To search and read detailed CVE information, we use:
+- CVE Program website
+- National Vulnerability Database (NVD)
+
+### What NVD Adds
+
+| Feature | Purpose |
+|------|---------|
+| CVSS score | Severity rating |
+| Impact | Affected systems |
+| References | Vendor and research links |
+
+### Notes
+- NVD provides more technical details than CVE alone
+- Very useful for **risk assessment**
+
+---
+
+## Exploit Database
+
+The Exploit Database is a collection of **public exploit codes**.  
+It is commonly used **after identifying a vulnerability**, usually via a CVE.
+
+### Important Rule
+- Exploitation should **only be done with permission**
+- Typically part of a **legal penetration test or red team engagement**
+
+---
+
+## Why Exploit Database Is Used
+
+| Reason | Explanation |
+|------|-------------|
+| Find exploit code | Saves time |
+| Verified exploits | Some exploits are tested |
+| Learning | Helps understand how vulnerabilities work |
+
+### Notes
+- Not all exploits work as-is
+- Some exploits require modification
+- Always check **exploit date** and **target version**
+
+---
+
+## Typical Workflow (Simplified)
+
+```text
+Find service/version → Search CVE → Check NVD → Look for exploit → Test (with permission)
+```
+
