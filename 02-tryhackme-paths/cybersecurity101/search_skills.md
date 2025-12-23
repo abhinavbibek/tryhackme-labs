@@ -22,9 +22,6 @@ This returns servers that have `"apache 2.4.1"` in their HTTP headers.
 - Service banners
 - Country and organization
 
-**Notes:**
-- Very useful for reconnaissance and OSINT
-- Historical trends are available with a paid account
 
 ---
 
@@ -52,9 +49,6 @@ apache 2.4.1
 - Domain and subdomain enumeration
 - Asset discovery for organizations
 
-**Notes:**
-- Very useful during the reconnaissance phase
-- Cleaner certificate-related data compared to Shodan
 
 ---
 
@@ -105,9 +99,6 @@ test@example.com
 - Many users reuse passwords across multiple sites
 - Even hashed passwords can sometimes be cracked
 
-**Important points:**
-- Used for awareness and OSINT
-- Not for hacking, but for understanding breach impact
 
 ---
 ## CVE (Common Vulnerabilities and Exposures)
