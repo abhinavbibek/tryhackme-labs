@@ -12,9 +12,7 @@ It is useful when you want to know:
 Finding how many servers are still running **Apache 2.4.1**.
 
 **Search query:**
-```text
 apache 2.4.1
-```
 
 This returns servers that have `"apache 2.4.1"` in their HTTP headers.
 
