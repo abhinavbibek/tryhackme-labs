@@ -285,3 +285,407 @@ Right-click taskbar → Task Manager
 ### Views
 - **Simple View** – Basic information
 - **More Details** – Full system and process information
+
+## System Configuration (`msconfig`)
+
+The System Configuration utility (`msconfig`) is mainly used for **advanced troubleshooting**, especially for issues related to **startup and booting**.
+
+### Important Note
+- Requires **local administrator privileges** to open
+
+### One Way to Open
+```text
+Start Menu → Search "msconfig"
+```
+
+---
+
+## MSConfig Tabs Overview
+
+MSConfig has five main tabs:
+
+| Tab | Purpose |
+|----|--------|
+| General | Control startup mode |
+| Boot | Configure OS boot options |
+| Services | View and manage system services |
+| Startup | Startup applications (client OS mainly) |
+| Tools | Access system utilities |
+
+---
+
+## General Tab
+
+Used to regulate what Windows loads during startup.
+
+### Startup Options
+- **Normal** – Loads all device drivers and services
+- **Diagnostic** – Loads only basic devices and services
+- **Selective** – Allows manual selection of what to load
+
+> Commonly used during **boot troubleshooting**.
+
+---
+
+## Boot Tab
+
+Used to configure:
+- Boot parameters
+- Safe boot options
+- OS startup behavior
+
+Helpful for diagnosing **boot-related issues**.
+
+---
+
+## Services Tab
+
+Displays all system services:
+- Running
+- Stopped
+
+### Notes
+- Includes **Windows** and **third-party** services
+- Helpful in identifying **suspicious or unwanted services**
+- Background applications usually run as services
+
+---
+
+## Startup Tab (Windows Server)
+
+In Windows Server:
+- Startup tab shows little or no useful information
+- Startup apps are handled differently than in Windows 10/11
+
+### Startup Items Location
+```text
+Win + R → shell:startup
+```
+
+This folder contains:
+- Shortcuts
+- Executables that run automatically on login
+
+---
+
+## Tools Tab
+
+Provides shortcuts to many Windows utilities.
+
+### Features
+- Short description of each tool
+- Command used to launch it
+
+Tools can be launched via:
+- Run dialog
+- Command Prompt
+- Launch button in MSConfig
+
+---
+
+## Advanced System Settings
+
+### Access Via
+```text
+Search → Advanced system settings
+```
+
+Used to manage:
+- Performance
+- Virtual memory
+- Startup & recovery
+
+---
+
+## Virtual Memory (Page File)
+
+Windows uses a **page file** as additional memory when RAM is insufficient.
+
+### Location
+```text
+Advanced → Performance → Settings → Advanced
+```
+
+### Information Available
+- Drive location
+- Initial size
+- Maximum size
+- Auto-managed or manual configuration
+
+---
+
+## Startup and Recovery
+
+Controls system behavior during Windows crashes.
+
+### Crash Dump Options
+
+| Dump Type | Description |
+|--------|-------------|
+| Automatic | Default option |
+| Kernel | Kernel memory only |
+| Small (256 KB) | Minimal information |
+| Complete | Full memory dump |
+| None | No dump created |
+
+Used for debugging **Blue Screen of Death (BSOD)** issues.
+
+---
+
+## User Account Control (UAC)
+
+UAC prevents **unauthorized system changes**.
+
+### UAC Levels
+
+| Level | Description |
+|----|-------------|
+| Always notify | Highest security |
+| Notify for apps | Default |
+| Notify without dimming | Less secure |
+| Never notify | Not recommended |
+
+### Notes
+- Built-in **Administrator** bypasses UAC by default
+- Shield icon indicates elevated privileges are required
+
+---
+
+## Computer Management (`compmgmt.msc`)
+
+Computer Management has three main sections:
+
+| Section | Purpose |
+|------|--------|
+| System Tools | Monitoring and management |
+| Storage | Disk management |
+| Applications & Services | Services and WMI |
+
+---
+
+## System Tools
+
+### Task Scheduler
+Used to run tasks:
+- On login
+- On logoff
+- On a schedule
+
+Examples:
+```text
+Daily task at 10:00 AM
+One-time scheduled task
+```
+
+Create a task:
+```text
+Actions → Create Basic Task
+```
+
+---
+
+### Event Viewer
+
+Displays system logs.
+
+#### Panes
+- Left: Log providers
+- Middle: Event details
+- Right: Actions
+
+Standard logs located under:
+```text
+Windows Logs
+```
+
+Used for:
+- Troubleshooting
+- Security investigations
+
+---
+
+### Shared Folders
+
+Shows:
+- Shared folders
+- Active sessions
+- Open files
+
+Default shares:
+```text
+C$
+ADMIN$
+```
+
+Administrators have access to these shares.
+
+---
+
+### Performance Monitor (`perfmon`)
+
+Used for:
+- Real-time monitoring
+- Performance analysis using logs
+
+Helpful in diagnosing:
+- CPU issues
+- Memory bottlenecks
+
+---
+
+### Device Manager
+
+Used to:
+- View hardware
+- Disable devices
+- Update drivers
+
+---
+
+## Storage
+
+### Disk Management
+
+Used for:
+- Creating partitions
+- Extending or shrinking volumes
+- Assigning drive letters
+
+> Additional tools may be available in Windows Server.
+
+---
+
+## Services and Applications
+
+### Services
+
+Background applications that run automatically or manually.
+
+| Startup Type | Meaning |
+|------------|---------|
+| Automatic | Starts at boot |
+| Manual | Starts when needed |
+| Disabled | Never starts |
+
+---
+
+### WMI Control
+
+Windows Management Instrumentation (WMI):
+- Used for scripting
+- System administration and monitoring
+
+---
+
+## System Information (`msinfo32`)
+
+Displays detailed system information.
+
+### Sections
+- Hardware Resources
+- Components
+- Software Environment
+
+Useful for:
+- Hardware details
+- Installed software
+- Environment variables
+
+Includes a **search bar** at the bottom.
+
+---
+
+## Environment Variables
+
+Store OS-related values.
+
+### Example
+```text
+%WINDIR%
+```
+
+Used by programs to determine system paths.
+
+### View Via
+```text
+Advanced system settings → Environment Variables
+```
+
+---
+
+## Resource Monitor (`resmon`)
+
+Advanced troubleshooting tool.
+
+### Sections
+- CPU
+- Memory
+- Disk
+- Network
+
+Each section provides:
+- Detailed process usage
+- Real-time graphs
+
+Used to identify:
+- Performance bottlenecks
+- Hung processes
+
+---
+
+## Command Prompt (`cmd`)
+
+Text-based interface to Windows.
+
+### Basic Commands
+```text
+hostname   → Displays computer name
+whoami     → Shows logged-in user
+ipconfig   → Network information
+cls        → Clear screen
+```
+
+### Help Command
+```text
+command /?
+```
+
+Example:
+```text
+ipconfig /?
+```
+
+---
+
+## Net Commands
+
+- `netstat` – Displays network connections
+- `net` – Manages network resources
+
+### Help
+```text
+net help
+net help user
+```
+
+### Common Subcommands
+- user
+- localgroup
+- share
+- session
+
+---
+
+## Windows Registry
+
+Central database that stores:
+- User profiles
+- Installed software
+- Hardware information
+- System settings
+
+### Access Via
+```text
+regedit
+```
+
