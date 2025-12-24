@@ -140,3 +140,148 @@ Common permissions include:
 To view permissions:
 ```text
 Right-click file/folder → Properties → Security tab
+```
+
+## Alternate Data Streams (ADS)
+
+Alternate Data Streams (ADS) is an **NTFS feature** that allows multiple data streams to be associated with a single file.  
+Windows Explorer does **not** show ADS by default.
+
+### Security Note
+- Malware can hide data inside ADS
+
+### Legitimate Use
+- Files downloaded from the internet are often marked using ADS
+
+---
+
+## Windows Folder Structure
+
+The main Windows operating system files are stored in:
+```text
+C:\Windows
+```
+
+### Key Folder
+```text
+C:\Windows\System32
+```
+
+### Important Notes
+- `System32` contains critical OS files
+- Deleting files here can break Windows
+- Many essential system tools are stored in this directory
+
+### System Environment Variable
+```text
+%windir%
+```
+
+---
+
+## User Accounts
+
+There are two main types of user accounts:
+
+| Type | Capabilities |
+|----|-------------|
+| Administrator | Full system control |
+| Standard User | Limited to personal files |
+
+### Administrators Can
+- Add or remove users
+- Install software
+- Change system-wide settings
+
+### Standard Users
+- Cannot perform system-level changes
+- Are restricted to personal files and settings
+
+---
+
+## User Profiles
+
+User profiles are stored in:
+```text
+C:\Users\
+```
+
+### Example
+```text
+C:\Users\Max
+```
+
+A user profile is created when the user logs in for the **first time**.
+
+### Common Folders in a Profile
+- Desktop
+- Documents
+- Downloads
+- Music
+- Pictures
+
+---
+
+## Local Users & Groups
+
+Access using:
+```text
+Run → lusrmgr.msc
+```
+
+You can view:
+- Users
+- Groups
+
+### Notes
+- Groups have permissions
+- Users inherit permissions from groups
+- A user can belong to multiple groups
+
+---
+
+## User Account Control (UAC)
+
+User Account Control (UAC) helps protect the system from **unauthorized changes**.
+
+### How It Works
+- Administrator users run with limited privileges by default
+- Elevated actions trigger a permission prompt
+
+### Visual Indicator
+- Shield icon on applications that require elevation
+
+### Important Note
+- The built-in **Administrator** account is not affected by UAC by default
+
+---
+
+## Settings vs Control Panel
+
+| Settings | Control Panel |
+|--------|---------------|
+| Modern interface | Classic interface |
+| Easier options | Advanced settings |
+| Default in Windows 10 | Still required for some tasks |
+
+Both can be accessed from the **Start Menu**.  
+In some cases, Settings redirects to Control Panel.
+
+---
+
+## Task Manager
+
+Task Manager provides information about:
+- Running processes
+- CPU usage
+- RAM usage
+- Performance statistics
+
+### Access Method
+```text
+Right-click taskbar → Task Manager
+```
+
+### Views
+- **Simple View** – Basic information
+- **More Details** – Full system and process information
