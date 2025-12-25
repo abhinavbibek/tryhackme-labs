@@ -1008,3 +1008,125 @@ Although both are used to organise objects, they serve **different purposes**.
 - Use an **OU** to apply password policies to the IT department
 - Use a **group** to grant access to a shared folder or printer
 
+---
+
+## Active Directory Maintenance and Delegation
+
+As a domain administrator, one of the first responsibilities is to review the existing **Active Directory (AD)** structure and ensure it matches the organisation’s current layout. Over time, departments may close, users may leave, and new roles may be added, so AD must be kept **clean and accurate**.
+
+---
+
+## Removing Unnecessary OUs and Users
+
+Sometimes departments are closed due to business decisions such as budget cuts. If an OU no longer exists in the organisation chart, it should be removed from Active Directory.
+
+By default, **Organizational Units (OUs)** are protected against accidental deletion. This prevents administrators from unintentionally deleting entire departments along with their users and groups.
+
+### Steps to Delete an OU
+1. Enable **Advanced Features** from the *View* menu  
+2. Open the **OU properties**  
+3. Disable **Protect object from accidental deletion**  
+4. Delete the OU (this also deletes all objects inside it)
+
+After removing unused OUs:
+- Review all user accounts
+- Delete users who no longer exist in the organisation
+- Create missing users as needed
+
+The goal is to ensure Active Directory matches the **official organisational chart**.
+
+---
+
+## Delegation in Active Directory
+
+Delegation allows specific users to perform **limited administrative tasks** without granting full **Domain Admin** privileges.
+
+This follows the **principle of least privilege**, improving overall security.
+
+### Common Delegation Scenario
+Allow IT support staff to:
+- Reset user passwords
+- Unlock user accounts
+
+This avoids involving Domain Administrators in routine helpdesk tasks.
+
+### Scope of Delegation
+- Delegation is applied at the **OU level**
+- Delegated users can manage only the objects inside that OU
+
+### Example Use Case
+- An IT support lead is allowed to reset passwords for users in:
+  - Sales OU
+  - Marketing OU
+  - Management OU
+- The delegated permissions do **not** apply outside these OUs
+
+This approach makes administration **scalable and secure**.
+
+---
+
+## Password Reset After Delegation
+
+Once delegation is configured, the delegated user can reset passwords for users within the assigned OU.
+
+### Best Practices After Password Reset
+- Force the user to **change password at next logon**
+- Avoid continued use of passwords known by IT staff
+
+This ensures **confidentiality and security**.
+
+---
+
+## Computer Accounts and the Computers Container
+
+By default, all domain-joined machines (except Domain Controllers) are placed in the **Computers** container.
+
+This includes:
+- Workstations
+- Laptops
+- Servers
+
+Keeping all machines in a single container is **not recommended**, as different device types require different security policies.
+
+---
+
+## Recommended Device OU Structure
+
+A best practice is to separate machines based on their **role**.
+
+### Typical Device Categories
+
+#### Workstations
+- Used by employees for daily tasks
+- Browsing, documents, and applications
+- Should not have privileged accounts logged in
+
+#### Servers
+- Provide services such as:
+  - File sharing
+  - Databases
+  - Applications
+- Require stricter security controls
+
+#### Domain Controllers
+- Manage authentication and Active Directory
+- Most sensitive systems in the domain
+- Stored in a dedicated OU by default
+
+---
+
+## Improving AD Structure for Devices
+
+To improve management and policy control:
+
+1. Create a **Workstations OU**
+2. Create a **Servers OU**
+3. Leave **Domain Controllers** in their default OU
+
+### After Creating the OUs
+- Move employee PCs and laptops into the **Workstations OU**
+- Move server machines into the **Servers OU**
+
+This enables:
+- User-focused policies for workstations
+- Stronger hardening and security policies for servers
