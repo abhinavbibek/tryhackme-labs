@@ -689,3 +689,145 @@ Central database that stores:
 regedit
 ```
 
+## Windows Update
+
+Windows Update is a Microsoft service used to provide **security patches, bug fixes, and feature upgrades** to Windows and other Microsoft software such as **Microsoft Defender**.
+
+Patches are normally issued on the **second Tuesday of each month**, referred to as **Patch Tuesday**.  
+If a vulnerability is critical, Microsoft may release an update immediately instead of waiting.
+
+### Where to Find Windows Update
+- **Settings**
+- **Run dialog or Command Prompt** (command name works regardless of location)
+
+> Importantly, when the command name is specified, the location of the command is not used.
+
+### Update Behavior
+- Some updates require a **system restart**
+- Updates can be **delayed** in modern Windows versions
+- Delayed updates will eventually be installed to maintain system security
+
+---
+
+## Windows Security
+
+Windows Security is a built-in interface used to manage **system and user data protection**.
+
+### Main Protection Areas
+- Virus & threat protection
+- Firewall & network protection
+- App & browser control
+- Device security
+
+### Status Indicators
+- **Green** – No action needed
+- **Yellow** – Recommendation available
+- **Red** – Immediate action required
+
+---
+
+## Virus & Threat Protection
+
+Responsible for **malware prevention and detection**.
+
+### Scan Options
+- **Quick scan** – Scans common threat locations
+- **Full scan** – Scans all files and executables
+- **Custom scan** – Scans user-selected files or folders
+
+### Threat History
+- **Last scan** – Shows recent scan activity
+- **Quarantined threats** – Blocked from execution
+- **Allowed threats** – Approved by user (not recommended unless necessary)
+
+### Key Settings
+- **Real-time protection** – Continuous malware protection
+- **Cloud-based protection** – Faster detection using cloud intelligence
+- **Automatic sample submission** – Sends suspicious files to Microsoft
+- **Controlled folder access** – Prevents unauthorized changes to important folders
+- **Exclusions** – Items ignored during scans (use sparingly)
+- **Notifications** – Security alerts and messages
+
+---
+
+## Firewall & Network Protection
+
+A firewall controls **incoming and outgoing network traffic** based on security rules.
+
+### Firewall Profiles
+- **Domain** – Used when connected to a corporate domain
+- **Private** – Used for trusted home or private networks
+- **Public** – Used for public networks (cafes, airports)
+
+Each profile allows:
+- Enabling or disabling the firewall
+- Blocking incoming connections
+
+> It is strongly recommended to keep the firewall **enabled** unless absolutely necessary.
+
+---
+
+## App & Browser Control
+
+Manages **Microsoft Defender SmartScreen**.
+
+SmartScreen protects against:
+- Malicious websites
+- Phishing attacks
+- Unverified applications and downloads
+
+### Settings
+- **Warn** – Displays a warning before execution
+- **Block** – Prevents execution completely
+- **Off** – Disables protection (not recommended)
+
+---
+
+## Device Security
+
+### Exploit Protection
+- Protects against common exploitation techniques
+- Default settings are sufficient for most users
+
+### Core Isolation (Memory Integrity)
+- Prevents malicious code execution in secure processes
+- Helps protect against kernel-level attacks
+
+---
+
+## Trusted Platform Module (TPM)
+
+TPM is a **hardware-based security component** that performs cryptographic operations securely.
+
+### Functions
+- Protects encryption keys
+- Ensures system integrity
+- Enhances security features like BitLocker
+
+---
+
+## BitLocker
+
+BitLocker is a **disk encryption feature** that protects data from unauthorized access.
+
+### Key Points
+- Encrypts entire drives
+- Protects data in case of loss or theft
+- Works best when integrated with TPM
+
+---
+
+## Volume Shadow Copy Service (VSS)
+
+VSS creates **snapshots of files or volumes** at specific points in time.
+
+### Uses
+- System Restore
+- Backup consistency
+- File recovery
+
+### Security Note
+- Malware (especially ransomware) may delete shadow copies to prevent recovery
+- Reliable protection requires **offline or external backups**
+
+
