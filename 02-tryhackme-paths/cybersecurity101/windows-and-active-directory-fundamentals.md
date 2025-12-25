@@ -830,4 +830,181 @@ VSS creates **snapshots of files or volumes** at specific points in time.
 - Malware (especially ransomware) may delete shadow copies to prevent recovery
 - Reliable protection requires **offline or external backups**
 
+---
+## Windows Domain – Basics
+
+In a very small network, managing computers individually is possible. Each computer can be configured manually, users can be created locally, and issues can be fixed in person. However, as an organisation grows, this approach becomes impractical.
+
+When a network scales to **hundreds of computers and users across multiple locations**, manual configuration and on-site support are no longer efficient. This is where a **Windows Domain** becomes useful.
+
+A **Windows domain** is a collection of users and computers managed **centrally**. Instead of managing each system separately, administration is done from a single location using **Active Directory (AD)**.
+
+---
+
+## Active Directory and Domain Controller
+
+**Active Directory (AD)** is a central database that stores information about all objects in a Windows domain.
+
+Objects stored include:
+- Users
+- Computers
+- Groups
+- Printers
+- Other network resources
+
+The server that runs Active Directory services is called a **Domain Controller (DC)**.
+
+### Role of a Domain Controller
+- Handles authentication
+- Handles authorization
+- Enforces domain-wide policies
+
+All logins and security checks go through the **Domain Controller**.
+
+---
+
+## Advantages of a Windows Domain
+
+### Centralised Identity Management
+- Users are created and managed in Active Directory
+- No need to create accounts on individual machines
+
+### Centralised Security Policies
+- Security settings can be applied across the entire network from one place
+- Policies are enforced consistently
+
+### Consistent User Experience
+- Users can log in to multiple computers using the same credentials
+
+### Real-World Example
+In schools or workplaces:
+- One username and password works on many computers
+- Restrictions (such as blocked Control Panel access) are enforced using **domain policies**
+
+---
+
+## Active Directory Objects
+
+Active Directory stores different types of objects. The most important ones are:
+- Users
+- Machines (Computers)
+- Groups
+
+---
+
+## Users
+
+Users are **security principals**, meaning they can authenticate to the domain and access resources.
+
+### Types of Users
+- **Human users** – Represent employees or individuals
+- **Service users** – Used by services (web servers, databases) with limited permissions
+
+Users can be assigned permissions to:
+- Files
+- Printers
+- Network resources
+
+---
+
+## Machines (Computers)
+
+Each computer that joins the domain receives a **machine account** in Active Directory.
+
+### Machine Account Properties
+- Are security principals
+- Have limited domain permissions
+- Are local administrators on their own computer
+- Have passwords that are automatically rotated
+
+### Machine Account Naming Format
+```text
+ComputerName$
+```
+
+Example:
+```text
+PC01$
+```
+
+---
+
+## Security Groups
+
+Security groups are used to **assign permissions** to resources.
+
+### Key Points
+- Groups can contain users, computers, or other groups
+- Permissions are assigned to groups, not individual users
+- Users can belong to multiple groups
+
+### Important Default Domain Groups
+
+| Group Name | Description |
+|---------|-------------|
+| Domain Admins | Full administrative control over the entire domain |
+| Server Operators | Manage domain controllers (limited admin rights) |
+| Backup Operators | Access files for backup purposes |
+| Account Operators | Create and modify user accounts |
+| Domain Users | All regular users in the domain |
+| Domain Computers | All computers joined to the domain |
+| Domain Controllers | All domain controller machines |
+
+---
+
+## Active Directory Users and Computers (ADUC)
+
+**ADUC** is the primary management tool for Active Directory.
+
+Using ADUC, administrators can:
+- Create and delete users
+- Reset passwords
+- Manage groups
+- Organise directory objects
+
+Objects in ADUC are organised into **Organizational Units (OUs)**.
+
+---
+
+## Organizational Units (OUs)
+
+OUs are **container objects** used to organise users and computers.
+
+### Purpose of OUs
+- Apply policies to users or computers
+- Reflect organisational structure (IT, Sales, HR, etc.)
+
+### Important Points
+- A user or computer can belong to **only one OU**
+- OUs are mainly used for **policy management**
+
+### Default Containers in Active Directory
+
+| Container | Purpose |
+|--------|---------|
+| Builtin | Default system groups |
+| Computers | Default location for new computers |
+| Domain Controllers | Contains domain controllers |
+| Users | Default domain-wide users and groups |
+| Managed Service Accounts | Service-related accounts |
+
+---
+
+## Security Groups vs Organizational Units
+
+Although both are used to organise objects, they serve **different purposes**.
+
+### Organizational Units (OUs)
+- Used for applying **policies**
+- Control system behaviour and restrictions
+- Objects can belong to **only one OU**
+
+### Security Groups
+- Used for **access control**
+- Grant permissions to resources
+- Users can belong to **multiple groups**
+
+### Example
+- Use an **OU** to apply password policies to the IT department
+- Use a **group** to grant access to a shared folder or printer
 
