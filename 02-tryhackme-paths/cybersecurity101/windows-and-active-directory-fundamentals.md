@@ -1130,3 +1130,223 @@ To improve management and policy control:
 This enables:
 - User-focused policies for workstations
 - Stronger hardening and security policies for servers
+
+---
+## Group Policy Objects (GPO) – Meaning and Idea
+
+It is not sufficient to only organise users and computers into **Organizational Units (OUs)**.  
+The real purpose is to apply **different policies to different groups of users or machines**. This allows administrators to enforce department-specific settings, security rules, and restrictions.
+
+Windows implements these policies using **Group Policy Objects (GPOs)**.
+
+A **GPO** is a collection of policies and configurations that control the behaviour of users and computers in a domain.
+
+GPOs can apply to:
+- **Users** (User Configuration)
+- **Computers** (Computer Configuration)
+
+This separation allows administrators to manage **identity-based** and **machine-based** policies independently.
+
+---
+
+## Overview: Group Policy Management
+
+The **Group Policy Management** tool is used to manage GPOs.  
+It displays the complete Active Directory hierarchy, including:
+- Domains
+- Organizational Units (OUs)
+- Existing GPOs
+
+### General Procedure for Using GPOs
+1. Create a GPO in the **Group Policy Objects** container  
+2. Configure the required settings within the GPO  
+3. Link the GPO to the appropriate **OU or domain**
+
+A GPO only affects the location where it is linked, but it also applies to **all child OUs** beneath that location.  
+This inheritance behaviour is critical when designing policy structures.
+
+---
+
+## Default GPOs and Scope
+
+Every domain contains default GPOs such as:
+- **Default Domain Policy** – applies domain-wide
+- **Default Domain Controllers Policy** – applies only to domain controllers
+
+### GPO Scope Defines
+- Where the GPO is linked
+- Which users or computers it applies to
+
+### Security Filtering
+Security Filtering can restrict a GPO so that it applies only to specific users or computers, even within the same OU.
+
+By default, GPOs apply to **all authenticated users and computers**.
+
+---
+
+## GPO Settings Structure
+
+Each GPO contains two major sections:
+
+- **Computer Configuration** – applies only to machines
+- **User Configuration** – applies only to users
+
+This design ensures:
+- If a GPO is linked to an OU containing only users, computer settings are ignored
+- If linked to an OU containing only computers, user settings are ignored
+
+### Example
+Password policies are typically **computer-based policies**, not user-based, because they apply at the system level.
+
+---
+
+## Awareness and Editing of GPO Policies
+
+When editing a GPO, administrators navigate structured policy paths to configure:
+- Security settings
+- System behaviour
+- User restrictions
+
+Policy explanations usually include:
+- What the policy does
+- When it should be enabled
+- Possible side effects
+
+> It is strongly recommended to read policy descriptions carefully, especially for **domain-wide policies**.
+
+---
+
+## GPO Distribution and Updates
+
+GPOs are stored in a shared domain folder called **SYSVOL**.
+
+### SYSVOL Characteristics
+- Present on all domain controllers
+- Stores all policy data
+
+Computers and users periodically refresh policies from SYSVOL (approximately every **90–120 minutes** by default).
+
+### Immediate Policy Refresh
+If changes must apply immediately, a **manual policy refresh** can be triggered on a system.
+
+---
+
+## Example Scenario: Restricting Control Panel Access
+
+A common requirement is preventing non-IT users from accessing system configuration tools such as the **Control Panel**.
+
+This is achieved using a **user-based GPO** that:
+- Denies access to Control Panel and system settings
+- Is linked only to OUs containing non-IT users
+
+Because the GPO is not linked to IT OUs, IT users remain unaffected.  
+This maintains **least privilege** and avoids unnecessary complexity.
+
+---
+
+## Real-Life Application: Automatic Screen Lock
+
+Another important security requirement is forcing systems to lock after inactivity.
+
+This is implemented using a **computer-based GPO** that:
+- Sets an inactivity timeout
+- Automatically locks the screen after the specified time
+
+This GPO can be linked at the **domain level**, ensuring all computers inherit it.  
+User OUs do not affect this policy because it applies only to computers.
+
+---
+
+## Windows Domain Authentication
+
+Domain Controllers store all domain credentials and authenticate users when they access resources.
+
+Windows domains support two authentication protocols:
+- **Kerberos** (default and modern)
+- **NetNTLM** (legacy compatibility)
+
+---
+
+## Kerberos Authentication (Modern Standard)
+
+Kerberos uses a **ticket-based authentication system**, avoiding repeated transmission of credentials.
+
+### High-Level Flow
+1. User authenticates and receives a **Ticket Granting Ticket (TGT)**
+2. TGT is used to request service-specific tickets
+3. Services grant access based on valid service tickets
+
+### Security Benefits
+- Reduces password exposure
+- Supports mutual (two-way) authentication
+- Limits ticket scope and lifetime
+
+---
+
+## NetNTLM Authentication (Legacy)
+
+NetNTLM uses a **challenge-response** mechanism:
+1. Server sends a challenge
+2. Client responds using a hash
+3. Domain Controller verifies the response
+
+Although passwords are not sent directly, NetNTLM is weaker than Kerberos and vulnerable to:
+- Relay attacks
+- Replay attacks
+
+It exists mainly for **backward compatibility**.
+
+---
+
+## Scaling Active Directory: Domains, Trees, and Forests
+
+### Single Domain
+Suitable for small organisations, but becomes difficult to manage as complexity grows.
+
+---
+
+### Trees
+A **tree** is a collection of domains sharing a common namespace.
+
+Benefits:
+- Departmental or regional separation
+- Independent administration
+- Automatic trust within the namespace
+
+Each domain has its own Domain Admins, while **Enterprise Admins** manage the entire tree.
+
+---
+
+### Forests
+A **forest** consists of multiple domain trees, possibly with different namespaces.
+
+Common in:
+- Mergers
+- Acquisitions
+
+Trees are administratively independent but can establish trusts for collaboration.
+
+---
+
+## Trust Relationships
+
+Trusts allow users from one domain to access resources in another domain.
+
+### Key Points
+- Trusts do not automatically grant access
+- Permissions must still be explicitly assigned
+- **One-way trust** → access in one direction
+- **Two-way trust** → mutual access
+
+Trusts enable collaboration while preserving security boundaries.
+
+---
+
+## Key Takeaways
+
+- GPOs are the primary mechanism for enforcing security and configuration in Windows domains
+- Effective OU design is critical for successful policy deployment
+- Kerberos is the preferred authentication protocol
+- Multi-domain structures improve scalability and administrative control
+- Trusts allow controlled cross-domain access without compromising security
+
