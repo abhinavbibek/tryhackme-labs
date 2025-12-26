@@ -36,9 +36,7 @@ Right-click on the desktop to:
 - Open Display settings
 - Personalize wallpaper, theme, colors
 
-Notes:
-- Display settings allow resolution and multi-monitor setup
-- Some settings are disabled in Remote Desktop sessions
+
 
 ---
 
