@@ -915,10 +915,6 @@ Each computer that joins the domain receives a **machine account** in Active Dir
 ComputerName$
 ```
 
-Example:
-```text
-PC01$
-```
 
 ---
 
