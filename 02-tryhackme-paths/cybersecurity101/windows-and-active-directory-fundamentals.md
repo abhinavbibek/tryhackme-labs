@@ -1184,8 +1184,6 @@ This design ensures:
 - If a GPO is linked to an OU containing only users, computer settings are ignored
 - If linked to an OU containing only computers, user settings are ignored
 
-### Example
-Password policies are typically **computer-based policies**, not user-based, because they apply at the system level.
 
 ---
 
