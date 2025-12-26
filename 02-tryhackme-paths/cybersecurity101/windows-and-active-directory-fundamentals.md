@@ -469,11 +469,6 @@ Used to run tasks:
 - On logoff
 - On a schedule
 
-Examples:
-```text
-Daily task at 10:00 AM
-One-time scheduled task
-```
 
 Create a task:
 ```text
