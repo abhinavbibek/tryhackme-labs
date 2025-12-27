@@ -109,4 +109,85 @@ nslookup domain
 Resolves a domain name to an IP address.
 
 
+### Network Statistics
+```text
+netstat
+```
+Shows current network connections and listening ports.
 
+#### Useful `netstat` Options
+```text
+-a  → All connections and listening ports
+-b  → Program using the port
+-o  → Process ID (PID)
+-n  → Numeric addresses
+```
+
+Combined usage:
+```text
+netstat -abon
+```
+Very useful for identifying services and suspicious connections.
+
+---
+
+## Working with Directories
+
+```text
+cd              → Show current directory
+cd folder_name  → Move into a folder
+cd ..           → Move one level up
+dir             → List files and folders
+dir /a          → Show hidden files
+dir /s          → Show all subdirectories
+tree            → Display folder structure visually
+mkdir folder    → Create a directory
+rmdir folder    → Delete an empty directory
+```
+
+---
+
+## Working with Files
+
+```text
+type file.txt           → Display small text file
+more file.txt           → Display long file page by page
+copy source destination → Copy files
+move source destination → Move files
+del file                → Delete a file
+erase file              → Delete a file
+```
+
+### Wildcards
+Wildcards can match multiple files.
+```text
+copy *.md C:\Docs
+```
+
+---
+
+## Process Management
+
+### View Processes
+```text
+tasklist
+```
+Displays:
+- Image name
+- PID
+- Memory usage
+
+### Filter Processes
+```text
+tasklist /FI "imagename eq process.exe"
+```
+
+### Kill a Process
+```text
+taskkill /PID number
+```
+CLI equivalent of ending a task in Task Manager.
+
+---
+now   → Scan and repair system files
+```
