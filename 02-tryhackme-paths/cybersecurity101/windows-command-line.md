@@ -191,3 +191,12 @@ CLI equivalent of ending a task in Task Manager.
 ---
 now   → Scan and repair system files
 ```
+
+
+## Other Useful Commands (Awareness)
+
+```text
+chkdsk          → Check disk for errors
+driverquery    → List installed drivers
+sfc /scan
+```
