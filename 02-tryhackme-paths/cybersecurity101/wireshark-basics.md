@@ -1,5 +1,4 @@
 # Wireshark: The Basics  
-## Tool Overview & Use Cases
 
 Wireshark is one of the most powerful tools used for **analyzing network traffic**. It is mainly used to **capture packets** and **inspect them in detail**, making it extremely valuable for troubleshooting and security investigations.
 
@@ -8,9 +7,6 @@ Wireshark is one of the most powerful tools used for **analyzing network traffic
 - Detecting security problems like unusual traffic, unknown hosts, or abnormal port usage  
 - Learning how protocols work by analyzing headers, response codes, and payloads  
 
-> **Important:** Wireshark is **not** an IDS (Intrusion Detection System).  
-> It does **not** block traffic or raise alerts automatically. It only captures and displays packets.  
-> Detection depends entirely on the analyst’s knowledge and investigation skills.
 
 ---
 
