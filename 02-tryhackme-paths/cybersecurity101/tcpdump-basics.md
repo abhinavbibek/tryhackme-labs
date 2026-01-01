@@ -3,7 +3,6 @@
 Tcpdump is a **command-line packet capture tool** used to monitor and analyze network traffic.  
 It is written in **C/C++** and uses the **libpcap** library, which is also used by tools like Wireshark.
 
-### Key Points
 - Very fast and stable (developed in the late 1980s / early 1990s)
 - Mainly used on **Unix/Linux** systems
 - On Windows, similar functionality exists via **WinPcap / Npcap**
