@@ -40,3 +40,47 @@ Checks if hosts are alive but does not scan ports.
 ```bash
 nmap -sn 192.168.66.0/24
 ```
+
+### Local Network Scanning
+
+When scanning a directly connected network (Ethernet/WiFi):
+
+- Nmap sends **ARP requests**
+- Hosts replying to ARP are marked as **up**
+- MAC addresses and vendor names are shown
+
+This method is **very fast and accurate**.
+
+### Remote Network Scanning
+
+When scanning networks behind routers:
+
+- ARP cannot be used
+- Nmap uses:
+  - ICMP echo
+  - ICMP timestamp
+  - TCP SYN
+  - TCP ACK probes
+- Firewalls may block some probes
+
+```bash
+nmap -sn 192.168.11.0/24
+```
+
+Even if ICMP is blocked, Nmap may still discover hosts using TCP/UDP probes.
+
+---
+
+## List Scan (`-sL`)
+
+Lists targets **without scanning them**.
+
+```bash
+nmap -sL 192.168.0.0/24
+```
+
+Useful for confirming scope before running real scans.
+
+---
+
+
