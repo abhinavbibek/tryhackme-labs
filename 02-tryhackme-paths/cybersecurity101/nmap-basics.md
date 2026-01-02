@@ -248,5 +248,42 @@ Creates:
 ---
 
 
+## Key Takeaways
 
+- Nmap is a powerful and flexible scanner
+- Host discovery and port scanning are separate
+- SYN scan is preferred with sudo
+- UDP scanning is important but slower
+- Timing and verbosity affect behavior
+- Always confirm targets before scanning
+- Use `sudo` to unlock full capabilities
+
+---
+
+## Quick Reference
+
+### Host Discovery
+- `-sn` → Ping scan
+- `-sL` → List scan
+
+### Port Scanning
+- `-sT` → TCP connect
+- `-sS` → TCP SYN
+- `-sU` → UDP scan
+- `-F` → Fast scan
+- `-p-` → All ports
+
+### Detection
+- `-O` → OS detection
+- `-sV` → Service versions
+- `-A` → Aggressive scan
+
+### Control
+- `-Pn` → Skip host discovery
+- `-T0` to `-T5` → Timing
+
+### Output
+- `-v` → Verbose
+- `-d` → Debug
+- `-oA` → Save all formats
 
