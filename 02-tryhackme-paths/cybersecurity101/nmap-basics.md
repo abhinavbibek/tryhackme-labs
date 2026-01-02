@@ -82,5 +82,171 @@ nmap -sL 192.168.0.0/24
 Useful for confirming scope before running real scans.
 
 ---
+## Port Scanning – Finding Open Services
+
+Once live hosts are identified, the next step is discovering open ports.
+
+### TCP Connect Scan (`-sT`)
+
+- Completes full TCP three-way handshake
+- Less stealthy
+- Default when run **without sudo**
+
+```bash
+nmap -sT 192.168.1.10
+```
+
+### TCP SYN Scan (`-sS`)
+
+- Sends only SYN packet
+- Does not complete handshake
+- More stealthy
+- Requires root privileges
+
+```bash
+sudo nmap -sS 192.168.1.10
+```
+
+### UDP Scan (`-sU`)
+
+- Used for UDP services (DNS, NTP, SNMP)
+- Slower and noisier
+- Closed ports usually reply with ICMP “port unreachable”
+
+```bash
+sudo nmap -sU 192.168.1.10
+```
+
+---
+
+## Limiting Port Scope
+
+By default, Nmap scans the **top 1000** common ports.
+
+Useful options:
+
+- `-F` → Fast scan (top 100 ports)
+- `-p 1-1024` → Specific range
+- `-p-` → All 65,535 ports
+
+```bash
+nmap -sS -p- 192.168.1.10
+```
+
+---
+
+## Service and OS Detection
+
+### OS Detection (`-O`)
+
+Uses TCP/IP fingerprinting to guess the OS.
+
+```bash
+sudo nmap -O 192.168.1.10
+```
+
+### Service Version Detection (`-sV`)
+
+Detects service names and versions.
+
+```bash
+nmap -sS -sV 192.168.1.10
+```
+
+### Aggressive Scan (`-A`)
+
+Enables:
+- OS detection
+- Version detection
+- Traceroute
+- Default scripts
+
+```bash
+sudo nmap -A 192.168.1.10
+```
+
+---
+
+## Forcing Scans (`-Pn`)
+
+If a host does not respond to ping, Nmap may mark it as down.  
+`-Pn` forces scanning anyway.
+
+```bash
+nmap -sS -Pn 192.168.1.10
+```
+
+Useful when ICMP is blocked.
+
+---
+
+## Timing and Performance Control
+
+Timing templates:
+
+- `-T0` → Paranoid (very slow)
+- `-T1` → Sneaky
+- `-T2` → Polite
+- `-T3` → Normal (default)
+- `-T4` → Aggressive
+- `-T5` → Insane (very fast, noisy)
+
+```bash
+nmap -sS -T4 192.168.1.10
+```
+
+Advanced options:
+- `--min-parallelism`, `--max-parallelism`
+- `--min-rate`, `--max-rate`
+- `--host-timeout`
+
+---
+
+## Verbosity and Debugging
+
+### Verbose Output (`-v`)
+
+Shows scan progress.
+
+```bash
+nmap -sS -v 192.168.1.0/24
+```
+
+- Increase with `-vv`, `-v4`
+- Press `v` during scan to increase verbosity live
+
+### Debug Mode (`-d`)
+
+Shows internal scan logic.
+
+```bash
+nmap -d9 192.168.1.10
+```
+
+Mostly used for learning or troubleshooting.
+
+---
+
+## Saving Scan Results
+
+Output formats:
+
+- `-oN file.nmap` → Normal
+- `-oX file.xml` → XML
+- `-oG file.gnmap` → Grepable
+- `-oA basename` → All formats
+
+```bash
+nmap -sS 192.168.1.1 -oA scan_result
+```
+
+Creates:
+- `scan_result.nmap`
+- `scan_result.xml`
+- `scan_result.gnmap`
+
+---
+
+
 
 
