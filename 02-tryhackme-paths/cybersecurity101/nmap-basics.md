@@ -18,7 +18,6 @@ Doing this manually using tools like `ping`, `telnet`, or `arp-scan` is slow, li
 ---
 
 ## Target Specification in Nmap
-
 Nmap allows multiple ways to define targets:
 
 - **IP range:** `192.168.0.1-10`
