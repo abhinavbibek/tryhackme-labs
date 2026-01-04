@@ -67,7 +67,7 @@ When scanning networks behind routers:
 nmap -sn 192.168.11.0/24
 ```
 
-Even if ICMP is blocked, Nmap may still discover hosts using TCP/UDP probes.
+Even if ICMP is blocked, Nmap may still discover hosts using TCP/UDP pro
 
 ---
 
