@@ -40,8 +40,4 @@ In this repository, the labs and the notes include topics like:
 
 The content will grow as I move on to the higher levels.
 
----
 
-## Repository Structure
-
-The repository has been structured into learning paths and subjects. The notes in each of the folders are associated with a particular room or module.
