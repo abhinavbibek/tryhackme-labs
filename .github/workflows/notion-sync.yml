@@ -3,7 +3,7 @@ name: Sync Notion Page to Git
 on:
   schedule:
     - cron: '*/30 * * * *' 
-  workflow_dispatch:       
+  workflow_dispatch:      
 
 permissions:
   contents: write        
@@ -17,10 +17,33 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install Notion MD Exporter Tool
+        run: npm install -g notion-to-md @notionhq/client
+
       - name: Fetch and Convert Notion Page
-        uses: batuhan/notion-sync-action@main 
-        with:
-          notion_token: ${{ secrets.NOTION_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          path_filter: 'SOC-L1/.notion.txt'
-          mode: 'full'
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        run: |
+          node -e "
+          import('notion-to-md').then(({ NotionToMarkdown }) => {
+            import('@notionhq/client').then(({ Client }) => {
+              const client = new Client({ auth: process.env.NOTION_TOKEN });
+              const n2m = new NotionToMarkdown({ notionClient: client });
+              const pageId = '3a406713339480468dcffa3fadbf47ff';  
+              n2m.pageToMarkdown(pageId).then(mdblocks => {
+                const mdString = n2m.toMarkdownString(mdblocks);
+                const fs = require('fs');
+                fs.writeFileSync('SOC-L1/SOC-Level-1.md', mdString.parent);
+                console.log('Notion notes converted successfully!');
+              });
+            });
+          });
+          "
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@://github.com"
+          git add SOC-L1/SOC-Level-1.md
+          git diff-index --quiet HEAD || git commit -m "notion-sync: auto update SOC Level 1 notes"
+          git push origin main
