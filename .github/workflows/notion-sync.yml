@@ -22,5 +22,5 @@ jobs:
         with:
           notion_token: ${{ secrets.NOTION_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          path_filter: 'SOC-L1'
+          path_filter: 'SOC-L1/.notion.txt'
           mode: 'full'
