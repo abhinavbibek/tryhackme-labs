@@ -2,11 +2,11 @@ name: Sync Notion Page to Git
 
 on:
   schedule:
-    - cron: '*/30 * * * *' # Automatically checks for updates every 30 minutes
-  workflow_dispatch:       # Allows you to trigger the sync manually with a button click
+    - cron: '*/30 * * * *' 
+  workflow_dispatch:       
 
 permissions:
-  contents: write         # Grants GitHub permission to commit the new Markdown file
+  contents: write        
 
 jobs:
   sync:
@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Fetch and Convert Notion Page
-        uses: batuhan/notion-sync-action@main  # Fixed the version tag error here
+        uses: batuhan/notion-sync-action@main 
         with:
           notion_token: ${{ secrets.NOTION_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
