@@ -22,3 +22,4 @@ jobs:
         with:
           notion_token: ${{ secrets.NOTION_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          root_dir: 'SOC-L1'
