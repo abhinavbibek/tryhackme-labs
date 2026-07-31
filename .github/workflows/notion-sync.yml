@@ -1,0 +1,23 @@
+name: Sync Notion Page to Git
+
+on:
+  schedule:
+    - cron: '*/30 * * * *' 
+  workflow_dispatch:
+permissions:
+  contents: write         
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch and Convert Notion Page
+        uses: batuhan/notion-sync-action@v1
+        with:
+          notion_token: ${{ secrets.NOTION_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
