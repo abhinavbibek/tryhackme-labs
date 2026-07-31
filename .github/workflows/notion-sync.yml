@@ -6,7 +6,7 @@ on:
   workflow_dispatch:      
 
 permissions:
-  contents: write        
+  contents: write       
 
 jobs:
   sync:
@@ -17,8 +17,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Notion MD Exporter Tool
-        run: npm install -g notion-to-md @notionhq/client
+      - name: Install Notion MD Exporter Tool (Local Installation)
+        run: npm install notion-to-md @notionhq/client 
 
       - name: Fetch and Convert Notion Page
         env:
@@ -29,10 +29,13 @@ jobs:
             import('@notionhq/client').then(({ Client }) => {
               const client = new Client({ auth: process.env.NOTION_TOKEN });
               const n2m = new NotionToMarkdown({ notionClient: client });
-              const pageId = '3a406713339480468dcffa3fadbf47ff';  
+              
+              const pageId = '3a406713339480468dcffa3fadbf47ff'; 
+              
               n2m.pageToMarkdown(pageId).then(mdblocks => {
                 const mdString = n2m.toMarkdownString(mdblocks);
                 const fs = require('fs');
+                
                 fs.writeFileSync('SOC-L1/SOC-Level-1.md', mdString.parent);
                 console.log('Notion notes converted successfully!');
               });
