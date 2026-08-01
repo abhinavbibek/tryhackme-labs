@@ -20,7 +20,7 @@ It collects detailed data from the endpoints, which includes process modificatio
 The following screenshot shows graphical representation of a process tree. We can see which processes were spawned on the endpoint. Each node represents a process. The lines connecting them represents their relationship. If we click on the `+` icon given with each process, we will be able to see all the network connections, registry changes, file changes etc. associated with that process. 
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/82ee4b30-9937-452d-9452-574b186a4f52/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XG474UUI%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010333Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQCP6OVkCGr2xJCo9%2F0p%2BkvWBMJkOhTzgY4o0D6CnW9YuwIgdyqezNldSNQrWpK%2Bkwoh0%2FH4p1NFzl6WRu9HjW2onOIqiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDD7EzbZ0hkzDSEmlHSrcA55eiYdyaoS9Mlqz6yrymuavcasCIUbPxF7Wxo45Mt0gJKna60%2FwrDt%2FEJpzbR7J8FD%2BhkVKDcO1Y4keYSkzSLl0e8gUKInFNCsB9Drx2UaRQF8oi%2FDNgJUVT9PqPyaKoWEP37REucswPGipVEGuh8JJmAjmAgpd6VTx92K64WhaFBNHIRNQ2Cn7GTTuRH05UNTktJQJUogoyNqBe5yYnhcGA4q9t3lYtIDCeTKBLGs%2BgBekLkdRk0FvOKAR3f2auebn9SwXfNtO2YrN2rZgnofPIr0u4hiJW%2BoVPaB3Rc483Ll3lPZVWhgvGjloJ6BTcJdPJn0bEmfGA2lryjWun6JcEpgjlUEOSaa8MH%2BMw8XN7eyoi5DQEtg2%2B4G92EM472thcqqeVqhc4r8LjEisWWu7K70IXbMxIEDlsJxmG%2BHvH1PPwm5I0X4mka3R6sX3yntitj%2BRXIJ5MUhMxEXYa2vEIfucHc7xRfPlAv0GzBYs31O%2F1LskIIN753BjyPx1KdmV1QOyEvRHa3Sd2axXA3R2Nlr8lXA2rkpZhy5hI0UH6MeoklC5Gy2kCjFDKXds0cbH0zVeUimcUpRo276NVmu85LwHSGVbGJaPmlaH7rVZ1Bmw2EYZmDvTHJ8gMLP4tNMGOqUBLxEvsRzd3JwlvOCP%2F9EHV%2FrT1OI%2BjwwA5FWI1tH3JoJ3eRn%2BEJqtbtxxBDnzpCKIMA0f7pvi%2Bti76xYl9JWodhHgID78SZBf%2F0Swgq6HYbOLNti66%2BRV9zi5fXSuHXU%2FYzAdBGQIAdXJx8bnUWt5Ztbwjb%2Bg%2Fej607c%2Bt6y4Q%2BvTVYwdrnBUTBTrTbKckSY7GFFTQVahCdhsnWMgJe6UoIwZDSTs&X-Amz-Signature=d7a56d22aed48fc0dc9b2a09757034ee8fd3d3990dc9b78e8fb6f8f8e95e389a&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/21cb743e91ab0c05791f249e6dda0c3c.png)
 
 
 ### **Detection**
@@ -32,7 +32,7 @@ It incorporates signature-based detections as well as behavior-based detections,
 The following screenshot shows a dashboard of all the detections happening on the different endpoints. Each detection is represented by a row with different fields including the severity of the detection, time, triggering file, hostname, username, and more. The Tactic via Technique field maps the detection with MITRE. Any detection when clicked will show us rich details which helps a SOC analyst during the analysis.
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/86042624-f843-4d29-9a6d-3aea62f8ea49/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XG474UUI%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010333Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQCP6OVkCGr2xJCo9%2F0p%2BkvWBMJkOhTzgY4o0D6CnW9YuwIgdyqezNldSNQrWpK%2Bkwoh0%2FH4p1NFzl6WRu9HjW2onOIqiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDD7EzbZ0hkzDSEmlHSrcA55eiYdyaoS9Mlqz6yrymuavcasCIUbPxF7Wxo45Mt0gJKna60%2FwrDt%2FEJpzbR7J8FD%2BhkVKDcO1Y4keYSkzSLl0e8gUKInFNCsB9Drx2UaRQF8oi%2FDNgJUVT9PqPyaKoWEP37REucswPGipVEGuh8JJmAjmAgpd6VTx92K64WhaFBNHIRNQ2Cn7GTTuRH05UNTktJQJUogoyNqBe5yYnhcGA4q9t3lYtIDCeTKBLGs%2BgBekLkdRk0FvOKAR3f2auebn9SwXfNtO2YrN2rZgnofPIr0u4hiJW%2BoVPaB3Rc483Ll3lPZVWhgvGjloJ6BTcJdPJn0bEmfGA2lryjWun6JcEpgjlUEOSaa8MH%2BMw8XN7eyoi5DQEtg2%2B4G92EM472thcqqeVqhc4r8LjEisWWu7K70IXbMxIEDlsJxmG%2BHvH1PPwm5I0X4mka3R6sX3yntitj%2BRXIJ5MUhMxEXYa2vEIfucHc7xRfPlAv0GzBYs31O%2F1LskIIN753BjyPx1KdmV1QOyEvRHa3Sd2axXA3R2Nlr8lXA2rkpZhy5hI0UH6MeoklC5Gy2kCjFDKXds0cbH0zVeUimcUpRo276NVmu85LwHSGVbGJaPmlaH7rVZ1Bmw2EYZmDvTHJ8gMLP4tNMGOqUBLxEvsRzd3JwlvOCP%2F9EHV%2FrT1OI%2BjwwA5FWI1tH3JoJ3eRn%2BEJqtbtxxBDnzpCKIMA0f7pvi%2Bti76xYl9JWodhHgID78SZBf%2F0Swgq6HYbOLNti66%2BRV9zi5fXSuHXU%2FYzAdBGQIAdXJx8bnUWt5Ztbwjb%2Bg%2Fej607c%2Bt6y4Q%2BvTVYwdrnBUTBTrTbKckSY7GFFTQVahCdhsnWMgJe6UoIwZDSTs&X-Amz-Signature=6e76b4dcae5981589b07a86978400b77f51948f512a5ce9b9f8fa9ef0f4caeb0&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/d1ece9e091566ab7b82b10b539d9309b.png)
 
 
 ### **Response**
@@ -44,7 +44,7 @@ EDR also empowers analysts to take action on detected threats. These actions ca
 The following screenshot shows the actions available that can be taken on the host after connecting to it.
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/b56ec432-9fbe-43e4-8b88-3d643fe1675c/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XG474UUI%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010333Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQCP6OVkCGr2xJCo9%2F0p%2BkvWBMJkOhTzgY4o0D6CnW9YuwIgdyqezNldSNQrWpK%2Bkwoh0%2FH4p1NFzl6WRu9HjW2onOIqiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDD7EzbZ0hkzDSEmlHSrcA55eiYdyaoS9Mlqz6yrymuavcasCIUbPxF7Wxo45Mt0gJKna60%2FwrDt%2FEJpzbR7J8FD%2BhkVKDcO1Y4keYSkzSLl0e8gUKInFNCsB9Drx2UaRQF8oi%2FDNgJUVT9PqPyaKoWEP37REucswPGipVEGuh8JJmAjmAgpd6VTx92K64WhaFBNHIRNQ2Cn7GTTuRH05UNTktJQJUogoyNqBe5yYnhcGA4q9t3lYtIDCeTKBLGs%2BgBekLkdRk0FvOKAR3f2auebn9SwXfNtO2YrN2rZgnofPIr0u4hiJW%2BoVPaB3Rc483Ll3lPZVWhgvGjloJ6BTcJdPJn0bEmfGA2lryjWun6JcEpgjlUEOSaa8MH%2BMw8XN7eyoi5DQEtg2%2B4G92EM472thcqqeVqhc4r8LjEisWWu7K70IXbMxIEDlsJxmG%2BHvH1PPwm5I0X4mka3R6sX3yntitj%2BRXIJ5MUhMxEXYa2vEIfucHc7xRfPlAv0GzBYs31O%2F1LskIIN753BjyPx1KdmV1QOyEvRHa3Sd2axXA3R2Nlr8lXA2rkpZhy5hI0UH6MeoklC5Gy2kCjFDKXds0cbH0zVeUimcUpRo276NVmu85LwHSGVbGJaPmlaH7rVZ1Bmw2EYZmDvTHJ8gMLP4tNMGOqUBLxEvsRzd3JwlvOCP%2F9EHV%2FrT1OI%2BjwwA5FWI1tH3JoJ3eRn%2BEJqtbtxxBDnzpCKIMA0f7pvi%2Bti76xYl9JWodhHgID78SZBf%2F0Swgq6HYbOLNti66%2BRV9zi5fXSuHXU%2FYzAdBGQIAdXJx8bnUWt5Ztbwjb%2Bg%2Fej607c%2Bt6y4Q%2BvTVYwdrnBUTBTrTbKckSY7GFFTQVahCdhsnWMgJe6UoIwZDSTs&X-Amz-Signature=81526f97a463c448cb87f52d25a81f72e1a2459754f1075f2ef3e0f90fda2bbf&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/34590cf88b70117d4893bf4e3e1e8a6a.png)
 
 
 Inside an EDR, response actions focus on four immediate steps:
@@ -69,7 +69,7 @@ All the detailed data sent by the EDR agents is correlated and analyzed throug
 The following screenshot shows the dashboard of an EDR console. All the data from the endpoint agents is coming into this console, and the detections are happening here. This dashboard gives a holistic view of the current status of detections in all the endpoints.
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/b7b574de-c2f8-4490-af87-9555ac12bf14/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XG474UUI%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010333Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQCP6OVkCGr2xJCo9%2F0p%2BkvWBMJkOhTzgY4o0D6CnW9YuwIgdyqezNldSNQrWpK%2Bkwoh0%2FH4p1NFzl6WRu9HjW2onOIqiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDD7EzbZ0hkzDSEmlHSrcA55eiYdyaoS9Mlqz6yrymuavcasCIUbPxF7Wxo45Mt0gJKna60%2FwrDt%2FEJpzbR7J8FD%2BhkVKDcO1Y4keYSkzSLl0e8gUKInFNCsB9Drx2UaRQF8oi%2FDNgJUVT9PqPyaKoWEP37REucswPGipVEGuh8JJmAjmAgpd6VTx92K64WhaFBNHIRNQ2Cn7GTTuRH05UNTktJQJUogoyNqBe5yYnhcGA4q9t3lYtIDCeTKBLGs%2BgBekLkdRk0FvOKAR3f2auebn9SwXfNtO2YrN2rZgnofPIr0u4hiJW%2BoVPaB3Rc483Ll3lPZVWhgvGjloJ6BTcJdPJn0bEmfGA2lryjWun6JcEpgjlUEOSaa8MH%2BMw8XN7eyoi5DQEtg2%2B4G92EM472thcqqeVqhc4r8LjEisWWu7K70IXbMxIEDlsJxmG%2BHvH1PPwm5I0X4mka3R6sX3yntitj%2BRXIJ5MUhMxEXYa2vEIfucHc7xRfPlAv0GzBYs31O%2F1LskIIN753BjyPx1KdmV1QOyEvRHa3Sd2axXA3R2Nlr8lXA2rkpZhy5hI0UH6MeoklC5Gy2kCjFDKXds0cbH0zVeUimcUpRo276NVmu85LwHSGVbGJaPmlaH7rVZ1Bmw2EYZmDvTHJ8gMLP4tNMGOqUBLxEvsRzd3JwlvOCP%2F9EHV%2FrT1OI%2BjwwA5FWI1tH3JoJ3eRn%2BEJqtbtxxBDnzpCKIMA0f7pvi%2Bti76xYl9JWodhHgID78SZBf%2F0Swgq6HYbOLNti66%2BRV9zi5fXSuHXU%2FYzAdBGQIAdXJx8bnUWt5Ztbwjb%2Bg%2Fej607c%2Bt6y4Q%2BvTVYwdrnBUTBTrTbKckSY7GFFTQVahCdhsnWMgJe6UoIwZDSTs&X-Amz-Signature=d12acf8b3cd060f69e2d34615f8528aa25b758e65bf850eda4c3f989b7d092a7&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/429581e55e8ebaef904e8c5f02223b9a.png)
 
 
 ## **What is Telemetry?**
@@ -120,13 +120,13 @@ Now, the data, which is normalized and stored by the indexer, can be searched by
 Splunk Search Head is the place within the **Search & Reporting App** where users can search the indexed logs, as shown below. The searches are done using the **SPL** (Search Processing Language), a powerful query language for searching indexed data. When the user performs a search, the request is sent to the indexer, and the relevant events are returned as field-value pairs.
 
 
-![0f7738f88ca807d1edf2ac7d84f6951c.png](https://cdn-images.tryhackme.com/user-uploads/5e8dd9a4a45e18443162feab/room-content/0f7738f88ca807d1edf2ac7d84f6951c.png)
+![Image](images/f01f09e7bdcd5c4f7383a768d7cb3aab.png)
 
 
 The Search Head also allows you to transform results into presentable tables and visualizations such as pie, bar, and column charts, as shown below:
 
 
-![ce38f9780efac6e22af23c2574367255.png](https://cdn-images.tryhackme.com/user-uploads/5e8dd9a4a45e18443162feab/room-content/ce38f9780efac6e22af23c2574367255.png)
+![Image](images/19f7bf39773e7b8aa7387119f4368261.png)
 
 
 ## Practical Demo with a json VPN Log file
@@ -199,7 +199,7 @@ Elastic Stack (ELK) was originally developed to store, search, and visualize lar
 ### Core components
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/8559f4fa-64e8-4936-ab7f-9ed9d4549ca7/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XG474UUI%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010333Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQCP6OVkCGr2xJCo9%2F0p%2BkvWBMJkOhTzgY4o0D6CnW9YuwIgdyqezNldSNQrWpK%2Bkwoh0%2FH4p1NFzl6WRu9HjW2onOIqiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDD7EzbZ0hkzDSEmlHSrcA55eiYdyaoS9Mlqz6yrymuavcasCIUbPxF7Wxo45Mt0gJKna60%2FwrDt%2FEJpzbR7J8FD%2BhkVKDcO1Y4keYSkzSLl0e8gUKInFNCsB9Drx2UaRQF8oi%2FDNgJUVT9PqPyaKoWEP37REucswPGipVEGuh8JJmAjmAgpd6VTx92K64WhaFBNHIRNQ2Cn7GTTuRH05UNTktJQJUogoyNqBe5yYnhcGA4q9t3lYtIDCeTKBLGs%2BgBekLkdRk0FvOKAR3f2auebn9SwXfNtO2YrN2rZgnofPIr0u4hiJW%2BoVPaB3Rc483Ll3lPZVWhgvGjloJ6BTcJdPJn0bEmfGA2lryjWun6JcEpgjlUEOSaa8MH%2BMw8XN7eyoi5DQEtg2%2B4G92EM472thcqqeVqhc4r8LjEisWWu7K70IXbMxIEDlsJxmG%2BHvH1PPwm5I0X4mka3R6sX3yntitj%2BRXIJ5MUhMxEXYa2vEIfucHc7xRfPlAv0GzBYs31O%2F1LskIIN753BjyPx1KdmV1QOyEvRHa3Sd2axXA3R2Nlr8lXA2rkpZhy5hI0UH6MeoklC5Gy2kCjFDKXds0cbH0zVeUimcUpRo276NVmu85LwHSGVbGJaPmlaH7rVZ1Bmw2EYZmDvTHJ8gMLP4tNMGOqUBLxEvsRzd3JwlvOCP%2F9EHV%2FrT1OI%2BjwwA5FWI1tH3JoJ3eRn%2BEJqtbtxxBDnzpCKIMA0f7pvi%2Bti76xYl9JWodhHgID78SZBf%2F0Swgq6HYbOLNti66%2BRV9zi5fXSuHXU%2FYzAdBGQIAdXJx8bnUWt5Ztbwjb%2Bg%2Fej607c%2Bt6y4Q%2BvTVYwdrnBUTBTrTbKckSY7GFFTQVahCdhsnWMgJe6UoIwZDSTs&X-Amz-Signature=6261643b6713737d0ea0617d6971efa2d6f3d905b847b722ed02cd6678b074bf&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/b7e566926dc0a1a27e0e3653258deb20.png)
 
 
 ## **How they work together:**
@@ -215,7 +215,7 @@ Now that we have learned about all the components of the Elastic Stack, let's se
 - **Elasticsearch** acts as a database used to search and analyze data but only json formatted data.
 - **Kibana** is responsible for displaying and visualizing the data stored in . The data stored in  can easily be shaped into different visualizations, time charts, infographics, etc., using .
 
-![ec4f681a412aa825b284523dcd5b8650.png](https://cdn-images.tryhackme.com/user-uploads/5e8dd9a4a45e18443162feab/room-content/ec4f681a412aa825b284523dcd5b8650.png)
+![Image](images/ce45d34779be3012ab1850920a397f33.png)
 
 
 KQL **(Kibana Query Language)** is a search query language used to search the ingested logs/documents in Elasticsearch. 
@@ -280,7 +280,7 @@ KQL **(Kibana Query Language)** is a search query language used to search the 
 Security Orchestration, Automation, and Response (SOAR) is a tool that unifies all the security tools used in a SOC. With SOAR, SOC analysts do not need to switch between SIEM, EDR, Firewall, and other security tools for their investigations. They can operate all these tools within a single SOAR interface. Along with unifying the security tools, it also provides ticketing and case management features to the analysts, through which they can document, track, and resolve their incidents in a structured way.
 
 
-![6645aa8c024f7893371eb7ac-1759484710562.png](https://cdn-images.tryhackme.com/user-uploads/6645aa8c024f7893371eb7ac/room-content/6645aa8c024f7893371eb7ac-1759484710562.png)
+![Image](images/4033168f6c9a24d5e814e93210898437.png)
 
 
 It connects different tools from various vendors within the unified SOAR interface. It defines workflows for investigating various types of alerts, known as **Playbooks**. These playbooks are predefined steps that tell the SOAR how to investigate an alert.
@@ -289,7 +289,7 @@ It connects different tools from various vendors within the unified SOAR inter
 # **Pyramid of Pain** 
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/64d81113-2773-4e4c-8810-3494797a4974/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XG474UUI%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010333Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQCP6OVkCGr2xJCo9%2F0p%2BkvWBMJkOhTzgY4o0D6CnW9YuwIgdyqezNldSNQrWpK%2Bkwoh0%2FH4p1NFzl6WRu9HjW2onOIqiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDD7EzbZ0hkzDSEmlHSrcA55eiYdyaoS9Mlqz6yrymuavcasCIUbPxF7Wxo45Mt0gJKna60%2FwrDt%2FEJpzbR7J8FD%2BhkVKDcO1Y4keYSkzSLl0e8gUKInFNCsB9Drx2UaRQF8oi%2FDNgJUVT9PqPyaKoWEP37REucswPGipVEGuh8JJmAjmAgpd6VTx92K64WhaFBNHIRNQ2Cn7GTTuRH05UNTktJQJUogoyNqBe5yYnhcGA4q9t3lYtIDCeTKBLGs%2BgBekLkdRk0FvOKAR3f2auebn9SwXfNtO2YrN2rZgnofPIr0u4hiJW%2BoVPaB3Rc483Ll3lPZVWhgvGjloJ6BTcJdPJn0bEmfGA2lryjWun6JcEpgjlUEOSaa8MH%2BMw8XN7eyoi5DQEtg2%2B4G92EM472thcqqeVqhc4r8LjEisWWu7K70IXbMxIEDlsJxmG%2BHvH1PPwm5I0X4mka3R6sX3yntitj%2BRXIJ5MUhMxEXYa2vEIfucHc7xRfPlAv0GzBYs31O%2F1LskIIN753BjyPx1KdmV1QOyEvRHa3Sd2axXA3R2Nlr8lXA2rkpZhy5hI0UH6MeoklC5Gy2kCjFDKXds0cbH0zVeUimcUpRo276NVmu85LwHSGVbGJaPmlaH7rVZ1Bmw2EYZmDvTHJ8gMLP4tNMGOqUBLxEvsRzd3JwlvOCP%2F9EHV%2FrT1OI%2BjwwA5FWI1tH3JoJ3eRn%2BEJqtbtxxBDnzpCKIMA0f7pvi%2Bti76xYl9JWodhHgID78SZBf%2F0Swgq6HYbOLNti66%2BRV9zi5fXSuHXU%2FYzAdBGQIAdXJx8bnUWt5Ztbwjb%2Bg%2Fej607c%2Bt6y4Q%2BvTVYwdrnBUTBTrTbKckSY7GFFTQVahCdhsnWMgJe6UoIwZDSTs&X-Amz-Signature=d3def68fc40bc7337ba6bcf295e95eb0be3452f0d69c27ab62674ef1fa661ce9&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/9cb426d3aa9a0266cf01736afb466905.png)
 
 
 The **Pyramid of Pain** is **a conceptual model that ranks indicators of compromise (IOCs) from easy to hard for attackers to change: Hash Values, IP Addresses, and Domain Names**
@@ -521,7 +521,7 @@ The attacker performs the final objective, such as stealing credentials, encrypt
 The **Unified Kill Chain (UKC)** extends the traditional 7-stage Cyber Kill Chain into **18 phases**, providing a much more detailed view of how modern attackers operate. It also aligns closely with the **MITRE ATT&CK** framework, making it particularly useful for SOC analysts, threat hunters, and incident responders.
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/6c287bdb-1141-4c22-b015-2f6e58aeabc6/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466V42V7SW7%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010334Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD2BGJ506OuQsrgLjsNPc0UH6ujolRAPoVPNugFHQuMEgIgFA%2FK%2BUids3%2FVRvfudFlVWnOkcHQ%2Fc6jYFo673WQUuwwqiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDMPGlv9qvVs0XEb7UyrcAygTV93aah7%2FzeAbspEUCBIAC4f01lOSc%2FUBE9cFHPBqG2wVpbS2KqL1SOYBy6VSuv0fI4tlhCP6YlAductoFYexvMXIxqSqu4yWZOc21jTwhlIrHMxojYAQZ5Toul%2BueUXJEUP2pPtzFRhixKJuYZGQIRTv1vKMmt3xTsPHkeGZSzjCMKv5sBBGE9kiSJKWn0MtTiAc3vXpgiv1qXoltPyhG7PphhLZgZcpqr6Xiu47PzR9H3l1w9Pd%2BylmKu1soaWPUvG7xExTOm22GrhDQpdjnWSLEvmc5bF5qHj3guDy1ZqdOnugfZSzcokMz4OE%2F%2FvisbEVd80KLORb8uOQclTnzxvxGRe0O1g3PFAuIxxND5J5o0M9opxpzu4wGHXu5qKyZh9jKh21NbAQhB3%2B7TTMIJDo4NBK0MVXBtNeW%2BdEBe4x7b3zTj9gb%2FDg9uMxxzfaUp%2FjQrRx2NT%2BUVd1%2Fosi2Mhud0Hu6c7D%2BxySitKUt7hi%2Bnrx6xoaNLZBWXmazyqKlE0dskxOOntqEKUSSn%2F%2FfwYy6wZ9DTtEKegb40FAn3W12wE1LtalkT9L%2FP1xvsn6m7WgrS%2BlN9frSJioS%2FZqKOgoDI9LKnHa1QP4nEcHKmeKA1huiq%2B6jN1PMNf2tNMGOqUB8oHohRB2YlRVuedz3MTO6V8roWwpzMUA1Zz1rp2y5kjtqXF%2FfkO09IXiDOCeTqzketZ%2Fp6HxKwEUgMwQ4N4pr2TeKMqKIU6pZY0qDSsIDhVqKg64tMZP2DGgwrj7%2F6oucImMTY8rPdcPYBjaXVrdf14mnyTzvaubG%2BkL5SnXVxEbWp%2FT2PgxF8VspBHB%2Bnkx6RehPVWw9DVBqc574Xl57kwiiQfO&X-Amz-Signature=2191f6ae3d7c269f8de1ef0f2469b50a5e13f02363bf6c076a3b7f026d9ba4d8&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/3d2c4f353e0a2dcd28c5f58330ef1866.png)
 
 
 # **MITRE ATT&CK Framework**
@@ -565,7 +565,7 @@ In simple terms:
 ---
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/20cc9126-d1c7-42db-8439-587d2511a564/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466V42V7SW7%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010334Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD2BGJ506OuQsrgLjsNPc0UH6ujolRAPoVPNugFHQuMEgIgFA%2FK%2BUids3%2FVRvfudFlVWnOkcHQ%2Fc6jYFo673WQUuwwqiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDMPGlv9qvVs0XEb7UyrcAygTV93aah7%2FzeAbspEUCBIAC4f01lOSc%2FUBE9cFHPBqG2wVpbS2KqL1SOYBy6VSuv0fI4tlhCP6YlAductoFYexvMXIxqSqu4yWZOc21jTwhlIrHMxojYAQZ5Toul%2BueUXJEUP2pPtzFRhixKJuYZGQIRTv1vKMmt3xTsPHkeGZSzjCMKv5sBBGE9kiSJKWn0MtTiAc3vXpgiv1qXoltPyhG7PphhLZgZcpqr6Xiu47PzR9H3l1w9Pd%2BylmKu1soaWPUvG7xExTOm22GrhDQpdjnWSLEvmc5bF5qHj3guDy1ZqdOnugfZSzcokMz4OE%2F%2FvisbEVd80KLORb8uOQclTnzxvxGRe0O1g3PFAuIxxND5J5o0M9opxpzu4wGHXu5qKyZh9jKh21NbAQhB3%2B7TTMIJDo4NBK0MVXBtNeW%2BdEBe4x7b3zTj9gb%2FDg9uMxxzfaUp%2FjQrRx2NT%2BUVd1%2Fosi2Mhud0Hu6c7D%2BxySitKUt7hi%2Bnrx6xoaNLZBWXmazyqKlE0dskxOOntqEKUSSn%2F%2FfwYy6wZ9DTtEKegb40FAn3W12wE1LtalkT9L%2FP1xvsn6m7WgrS%2BlN9frSJioS%2FZqKOgoDI9LKnHa1QP4nEcHKmeKA1huiq%2B6jN1PMNf2tNMGOqUB8oHohRB2YlRVuedz3MTO6V8roWwpzMUA1Zz1rp2y5kjtqXF%2FfkO09IXiDOCeTqzketZ%2Fp6HxKwEUgMwQ4N4pr2TeKMqKIU6pZY0qDSsIDhVqKg64tMZP2DGgwrj7%2F6oucImMTY8rPdcPYBjaXVrdf14mnyTzvaubG%2BkL5SnXVxEbWp%2FT2PgxF8VspBHB%2Bnkx6RehPVWw9DVBqc574Xl57kwiiQfO&X-Amz-Signature=a3029b28b873c1dbe9e6b2ff6ed6cd3bf3e89ade10ca4699f48b4baf55b482a5&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/7468e4f4219d23be225a4055446a4e94.png)
 
 
 # What Does Each CAR Analytic Contain?
@@ -629,7 +629,7 @@ Provides sample test cases to verify that the detection rule works correctly.
 **D3FEND** (Detection, Denial, and Disruption Framework Empowering Network Defense) is a structured framework that maps out defensive techniques and establishes a common language for describing how security controls work. D3FEND comes with its own [matrix(opens in new tab)](https://d3fend.mitre.org/), which is broken down into seven tactics, each with its associated techniques and IDs.
 
 
-![616945d482ef350052080da1-1760147981536.svg](https://cdn-images.tryhackme.com/user-uploads/616945d482ef350052080da1/room-content/616945d482ef350052080da1-1760147981536.svg)
+![Image](images/6ec24e082bf5c75edf833189987981bb.png)
 
 
 For example, the [Credential Rotation D3-CRO](https://d3fend.mitre.org/technique/d3f:CredentialRotation/) technique emphasizes the regular rotation of passwords to prevent attackers from reusing stolen credentials. D3FEND explains how this defense works, what to consider when implementing it, and how it relates to specific digital artifacts and ATT&CK techniques, helping you see both perspectives: the attacker’s move and the defender’s countermeasure.
@@ -935,7 +935,7 @@ v=DKIM1; k=rsa; p=<public_key>
 ## DKIM Verification Failure (PermError)
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/0e24b75b-2f1b-4e09-9ce6-54f65d49b980/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466YH2U7UHO%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010334Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQCqDdO9GoKypK8bwuzyzijsdE9JnH%2FPFTXROKtUAxx1dAIgApovpFjH5W44lfKj%2FaupzNw9KySvDUoqEBMoSyLZvgoqiAQIuv%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDKDyuR8raG7DlUbQlircA6BEC0Gd8aTOQZ60%2BXwQ%2FciKyq1PdjfXXekknn9Tw0jM0KJLCEVlnLW5FJ8rwkXFf9ZolsQfp6Wn6MoC22UR%2F2Leylw6lpeHmGej3%2Fl9OL0iQHNjwaOazyLSn8%2FguiymvO0wV9P%2FuFeVQ1OLlL8pqDGVFxGN3NYcq56JE6jHaZqzsDQTXKr0cDHFWIwgtP06fxJY%2Ba6ZTvmWeKsduYmcddwyPqK%2B4VWAUz7dHbltFeiEtrgfVrYn0S7dmk1C2QHJvxQ9FZboPvasTLSYUrfjpIRWg1DbmJOPSieC0dcOWEUeR5ESu72dxiVBHwHCXuX%2F8g7c6dE%2By4hQNBVKzM2QIe3gC11Gh6xxHhfogqF5fZH%2BrWUResa24gP2rvz0XqhZCvpVEaQUNmOykSbvy09%2FJSGE42W9gID9GKYk%2FXvXFOsKZ9fg6zwq55Wt0enVNu%2BhJou1p8dOEcLtHIl8jEzFomq%2FZpUY04FxHMgvZP4Ej45GkCUXewvMMIG5kp4FvlStiH8G%2BlZYBpKdyP4bicNzseSizs9kiwhVOHC9ds9VMQvUfIUzSPI9ahHQWFGVXPXEh10XvBcWbbUmB7z1%2BSNJkiYcMfyatkchFuj8Ya9LNrjxQaR0SYKXheoq9FWKML%2F4tNMGOqUBc6iS6X3c3BsoE3NMR%2BqG1%2Bt3yw%2BtoJf0eOh3Jd%2FLhmYQ6SqANUasXQ97%2BoxRvzur3Rn7BCvtvkXmM%2F6g2aPJjtCEV4RwWqTTSdqCUux%2Bf%2BfEvSj4uWSrDJkmVHQbXQKgVtTD1hVPYBW2gFYyYbitgEXW5oCTF4tFr2HAlbr8Bm%2BnXGoVqkIzST1CwUdzANyTj787KWZccqmUFcyEKZ5eurw4%2BrnH&X-Amz-Signature=b4f89c197452aca9a64964695b5ada30496ef3d5d10ae91d3f253aa82ac6dc79&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/2f262d661027b0f4a7a7f74d87233a6f.png)
 
 
 A **PermError (Permanent Error)** means DKIM verification failed due to issues such as:
@@ -1370,7 +1370,7 @@ Look for unusual DNS activity such as:
 The best way to showcase the traffic we can observe in the network is by using the architecture implemented in nearly every device with a network interface: the TCP/IP stack. The image below shows the different layers of the TCP/IP model. Each layer describes the required information (headers) to pass the data to the next layer. The information included in each header, together with the application data, is precisely what we want to observe. Logs often include bits and pieces of these headers, but never the full packet details. This is why we need to do network traffic analysis.
 
 
-![66c44fd9733427ea1181ad58-1760351911672.png](https://cdn-images.tryhackme.com/user-uploads/66c44fd9733427ea1181ad58/room-content/66c44fd9733427ea1181ad58-1760351911672.png)
+![Image](images/3ec26b0019b195ba64f83c232e660db5.png)
 
 
 ## **Application layer**
@@ -1916,7 +1916,7 @@ Web Server
 ### Flow
 
 
-![66c44fd9733427ea1181ad58-1760459431334.svg](https://cdn-images.tryhackme.com/user-uploads/66c44fd9733427ea1181ad58/room-content/66c44fd9733427ea1181ad58-1760459431334.svg)
+![Image](images/f1410df345b2f64ab3b75018a63b48e6.png)
 
 1. The **Client** requests a website.
 2. The request reaches the **NGFW/Web Proxy**.
@@ -1964,7 +1964,7 @@ External DNS Server
 ### Flow
 
 
-![66c44fd9733427ea1181ad58-1760460288845.svg](https://cdn-images.tryhackme.com/user-uploads/66c44fd9733427ea1181ad58/room-content/66c44fd9733427ea1181ad58-1760460288845.svg)
+![Image](images/5c701abf3d214a73dc1497aa8da40de4.png)
 
 1. The **Host** sends a DNS query to the **Internal DNS Server** (Port 53).
 2. The Internal DNS Server checks whether the answer already exists in its **cache**.
@@ -1982,7 +1982,7 @@ The **Internal DNS Server acts on behalf of the Host**, so hosts do not directly
 ### 3. SMB with Kerberos Flow
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/9298f55f-3a60-482d-9c20-af784e9cc2e3/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466YB7M2XZO%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010336Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJGMEQCICw0boy7rPBB3SxbzuRs73ViMpUa9nHDJWgZ0ehPcsO0AiB8eC4Vk%2BSFfxjiAPODD8I65Vw1FadC49w4Ew6OrTvsSiqIBAi5%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDYzNzQyMzE4MzgwNSIMdt%2FTCcnX6zHZkq6yKtwDt0levWJzHSNoEm9IUjNMP6KP%2B6pE7web9SWH86AQRD%2Ba5Jq1T4mPxSV7hTqN9fveQEaEpjbtELUwtIKdOEXo05KjwqtiHx0dTizszodqH4QP91eVTQ9pEa8Cb09zBYIGTI7ZR8tgWOrQNYExwE7MlWku3l6zaFKFoUl5Rbt%2F5%2FvZprqTag5%2FBA5Au4v0ep4TZXQmmvsoKQb2FvMWU5Q92xZmIB9AEQJ%2Brc5v%2BITNTBTE4GyRvd6SQ58rjSP47e2lpLRBSEJtVCqqZGMxMBf5mStHBRrLm%2BiuB31VVu%2FNfIprnG2iBCqZnYmGCy%2BOOo26NX7Kmc6b0dU9AsFuBfRT6QNGKO%2FyOPQ%2Fn2MTIfndcYs79xpWcGUqFRJdrk25JQWBfFPKbiKz5FYA%2F4yf8x7zxVCY%2B8xpHEhIzBYWE%2FPneoDao0BhO%2FnmplxeXEXfiNx1S%2BKi60svGE%2BFYfbj%2BFUHysz0maWLLMizo8C%2FJeWmHgZmsFkFBVw1YDFYnqwc03Ae0O91XOFLo%2B2MpGiZE2noW2FsOjCQ3kZ05GV4b%2FYyFYF0TJnfb7huIlqIfC431%2BUoQOXKECceVkILEexZXvTb2zDqe6hceI%2BpGxiVM7TVWF3F4tLFqTGMj%2BOiSD8wwvi00wY6pgHuhfGdBUfyhYU6P6ciEKRhDF3k6c49Y6pRP5cmOgszPhN0VIiFKWMkYIhemfPrP7nKvw%2F6uU8kJoufFssRDcxRXNhJVqYWcHSekxMOi%2BzASFSuPaH5bUW5TreGt6w1s6XYIJhwZGlwCGegZu45CMFHOtIsbL46egFgUfRYI9r%2FTVG7QEg6EAvOoPjiH5IbjFIAwCMfo8Ae6TqtQdkiJF%2FyipgMmHax&X-Amz-Signature=307a99ec44630ef28b354bc37e062b884c3e077efe2fac437796651c28a1c0b8&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/f1180ccac65913de243cbe98ab917a8d.png)
 
 
 When a user accesses a shared folder (e.g., `\\FILESERVER\MARKETING`), authentication happens before the SMB connection is established.
@@ -2603,7 +2603,7 @@ IPv4 Endpoints
 **Path:** `Edit → Preferences → Name Resolution`
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/489a4384-470e-47c4-b83d-267e992ebb39/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XXXGRJ6H%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010337Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQCvMEuHEk%2Bx82tp%2FVlXdVADCZnaWvfQsDCojQK8dnoLgQIgRJMEXHy0WCZHx28VHCGayuPQCFVYjNYqJpyKfL5fNEEqiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDHov14a9I39cssSp3SrcA3Bnny124KqW7Pwf%2FfytT1MLN7LWbTipYnkLz4naKAxxbqu8yoGpV6Hf4bzw6arObYOU7idGUI9TM7AsPtMPGHOMuoB0mq5kpdDZSRPiJZg1oXtvJaCRZ%2FRqxVbWb%2FUVgr36R2HzNeaOoGiqQQtJmclGywvO91%2BHe%2BMKmkstuU92N6HYVSOvE3oCREOwAQ4wXLM%2FaYsd0W4KAnlgRwpn7CsgzmpoRxLMEqqhcQ5ce1rK6QIZ8enhlo5bTt0x51lcsx%2BDTrDKw5n0Qk%2FjqptA%2B1iUIZr448WFA8MTYO%2BugTVPF0IA883UithTm6tKnZk8K%2BO07Q%2FBM2uOAtlSUP%2F0prydSIFVXtzxlN4XLISy9gu9sSgWSQTdItqqgd6CAnS1r42PHwPp2tjjahLPHYtc6OBHG1uYF%2BnRDLC9sYWdFB0KI2AboHod7Txeumw7GXp0hFTYIx%2FL6pvQ%2FIPTBrvk93%2BQOc4ItNLBbo4w%2FldPzAsiTq4qZB69GYmOHWzfCy8Ax2qi9YosiAAduyxAEzBuL7qtwtPgBdiq1eu00XDDkSRstYzFyr1uXfmlN2oltk40WjaOS%2BOdnhbcRtdFMrMSed5OnxbCm0q%2B151dtI4eBYR0n3aRVfjHv309uG06MNT2tNMGOqUBwXSZOhZamJ894l9AX442bg7E8GErXQy1YB8m2kw95tix8aPptJ5ItA0KEcrBP3uNuMpowGceDyshLatDOOcZcGToVUDizWzqn5UL8gwfXoVdfjW5KOuk69P4VsrQoODP%2BR86k3VmAVwHVv9QG9ZBNoRy6TGvNwdPFMmeDhA3onpxhWCvCEEZjOqMdUXtsfSxQ%2B%2FrHJq%2BYAv8NUrB7ORRZYVoPQtA&X-Amz-Signature=5dfdf6ee5d7a3a3b0e82f3f4f3c028380a789cb51b472dfba0b13990e1f44d1d&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/f8860f26c4a9b0bd82eb9f5ccb8b956c.png)
 
 
 ### What it Does
@@ -2658,7 +2658,7 @@ Makes packet analysis much easier by displaying **meaningful names** instead of 
 **Check :** Statistics → Endpoints
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/c4db71bd-8cf2-46d2-a991-1d955dea44e2/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XXXGRJ6H%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010337Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQCvMEuHEk%2Bx82tp%2FVlXdVADCZnaWvfQsDCojQK8dnoLgQIgRJMEXHy0WCZHx28VHCGayuPQCFVYjNYqJpyKfL5fNEEqiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDHov14a9I39cssSp3SrcA3Bnny124KqW7Pwf%2FfytT1MLN7LWbTipYnkLz4naKAxxbqu8yoGpV6Hf4bzw6arObYOU7idGUI9TM7AsPtMPGHOMuoB0mq5kpdDZSRPiJZg1oXtvJaCRZ%2FRqxVbWb%2FUVgr36R2HzNeaOoGiqQQtJmclGywvO91%2BHe%2BMKmkstuU92N6HYVSOvE3oCREOwAQ4wXLM%2FaYsd0W4KAnlgRwpn7CsgzmpoRxLMEqqhcQ5ce1rK6QIZ8enhlo5bTt0x51lcsx%2BDTrDKw5n0Qk%2FjqptA%2B1iUIZr448WFA8MTYO%2BugTVPF0IA883UithTm6tKnZk8K%2BO07Q%2FBM2uOAtlSUP%2F0prydSIFVXtzxlN4XLISy9gu9sSgWSQTdItqqgd6CAnS1r42PHwPp2tjjahLPHYtc6OBHG1uYF%2BnRDLC9sYWdFB0KI2AboHod7Txeumw7GXp0hFTYIx%2FL6pvQ%2FIPTBrvk93%2BQOc4ItNLBbo4w%2FldPzAsiTq4qZB69GYmOHWzfCy8Ax2qi9YosiAAduyxAEzBuL7qtwtPgBdiq1eu00XDDkSRstYzFyr1uXfmlN2oltk40WjaOS%2BOdnhbcRtdFMrMSed5OnxbCm0q%2B151dtI4eBYR0n3aRVfjHv309uG06MNT2tNMGOqUBwXSZOhZamJ894l9AX442bg7E8GErXQy1YB8m2kw95tix8aPptJ5ItA0KEcrBP3uNuMpowGceDyshLatDOOcZcGToVUDizWzqn5UL8gwfXoVdfjW5KOuk69P4VsrQoODP%2BR86k3VmAVwHVv9QG9ZBNoRy6TGvNwdPFMmeDhA3onpxhWCvCEEZjOqMdUXtsfSxQ%2B%2FrHJq%2BYAv8NUrB7ORRZYVoPQtA&X-Amz-Signature=d26d8ee8061565e4f04f99e43fdef2bf57c3972b3e4eed815a0f4be3643fba95&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/79027b611aa7fb11b4a0a043c86d8395.png)
 
 
 ### What it Does
@@ -3515,7 +3515,7 @@ ACK -------------------->
 ### What happens?
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/6b93d21e-ebe3-41ea-8474-e0459ebe53bf/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466YBYSGF4Y%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010338Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJGMEQCIBJGlr0HVPgOB4W2qPjfQMetVX6CQFTMb4ST2OBiOyDaAiBQVMRDvyspH2I4yx%2BeTfP5M0nbS3AVZO4JK%2F48L9T3biqIBAi5%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDYzNzQyMzE4MzgwNSIMLTuUtiss7z5enuw%2FKtwDq4qUs2Wm%2B7wNHoDbF6mcN7U%2FRbac5f3Zt1mPoFVVG8UYifD1xTkrbhER7tf%2F6%2BPWZ2DA0NP7nv0oOrXUfT8ElYG5YfH26xnGNihSeBRc1%2Bd70%2FWEajSqJh%2B%2BstFbRySnZG5rYHlcWm37ZSeEwfhogu2ZMqwpJUvavesJe8FhX7v8XKnjT4zXlW2lKTeA863QqOqDN2YmIzGJQ0AuyOLMfdUHrXL1fuPWDiCkcNIS%2FH4dvluJyUEKXXcdghyE3J4N1eCH%2B7dK85aGS9TTPtzGiZopgZstHlfGU4QKNSqYEH3r9F3YQA8PKEyy4o9gLEo3stmXZlJI6lGTUip3YJCvMId%2FgOWi50Si5EHSXOclLNHVPI95tIBt3o8oKahv8WiIY%2FvD08sCrVxbWQD4FPDM0UdEC4g7nOu6x%2FlyzKUXbe8J4FUfRt1baRmRj%2B5NgCNyQmdJEWVDYBGw%2FRksV6e1SP1NRwKnEUea1fl4x6XyAsbgEO7rQjriiOYBvgOR4s5Vhr21N3srQ39zVH%2BS2vvYEy1NOwdHVxOFIxHtIoP9vqH7vUw6lf4ZKKfjgj5ZSSdZ3Pqnsnr3u4HNsHJ19wcXY2cWINnQVYMEK8ZpV%2FU3g96qXFhtGBVeCpyT4wkwwfi00wY6pgHzaDFsyRRndsEHK4FfctWNVzdyd1iDKdH%2BqY6%2Fitksqw3NhtRwXDUyMpJAdG6SBcmhR6IybKy8aUyKekQ1jTxNjPi1sFIWzKieqB4pH3Qi4c%2Fi7EUwG4K3SflW0%2FDBMuXFZ4C2mbJqTvZeeYuhCnBYAGCehA99vo6HDAfiwiyCPiuDkJcqSYH1yu69%2F6ik0r%2Fpkh2KetprpNN43LJJYdANEgbmUOmU&X-Amz-Signature=054e279f257f7531827821f15d1d26be41a7e1eac8b43268014e904de100f96e&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/7466026effc80b2a046aa910790bdf20.png)
 
 1. Scanner sends **SYN**.
 2. Target replies **SYN, ACK**.
@@ -3542,7 +3542,7 @@ SYN -------------------->
 ### What happens?
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/65463138-3a6e-41ca-942f-ed250ac68d37/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466YBYSGF4Y%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010339Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJGMEQCIBJGlr0HVPgOB4W2qPjfQMetVX6CQFTMb4ST2OBiOyDaAiBQVMRDvyspH2I4yx%2BeTfP5M0nbS3AVZO4JK%2F48L9T3biqIBAi5%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDYzNzQyMzE4MzgwNSIMLTuUtiss7z5enuw%2FKtwDq4qUs2Wm%2B7wNHoDbF6mcN7U%2FRbac5f3Zt1mPoFVVG8UYifD1xTkrbhER7tf%2F6%2BPWZ2DA0NP7nv0oOrXUfT8ElYG5YfH26xnGNihSeBRc1%2Bd70%2FWEajSqJh%2B%2BstFbRySnZG5rYHlcWm37ZSeEwfhogu2ZMqwpJUvavesJe8FhX7v8XKnjT4zXlW2lKTeA863QqOqDN2YmIzGJQ0AuyOLMfdUHrXL1fuPWDiCkcNIS%2FH4dvluJyUEKXXcdghyE3J4N1eCH%2B7dK85aGS9TTPtzGiZopgZstHlfGU4QKNSqYEH3r9F3YQA8PKEyy4o9gLEo3stmXZlJI6lGTUip3YJCvMId%2FgOWi50Si5EHSXOclLNHVPI95tIBt3o8oKahv8WiIY%2FvD08sCrVxbWQD4FPDM0UdEC4g7nOu6x%2FlyzKUXbe8J4FUfRt1baRmRj%2B5NgCNyQmdJEWVDYBGw%2FRksV6e1SP1NRwKnEUea1fl4x6XyAsbgEO7rQjriiOYBvgOR4s5Vhr21N3srQ39zVH%2BS2vvYEy1NOwdHVxOFIxHtIoP9vqH7vUw6lf4ZKKfjgj5ZSSdZ3Pqnsnr3u4HNsHJ19wcXY2cWINnQVYMEK8ZpV%2FU3g96qXFhtGBVeCpyT4wkwwfi00wY6pgHzaDFsyRRndsEHK4FfctWNVzdyd1iDKdH%2BqY6%2Fitksqw3NhtRwXDUyMpJAdG6SBcmhR6IybKy8aUyKekQ1jTxNjPi1sFIWzKieqB4pH3Qi4c%2Fi7EUwG4K3SflW0%2FDBMuXFZ4C2mbJqTvZeeYuhCnBYAGCehA99vo6HDAfiwiyCPiuDkJcqSYH1yu69%2F6ik0r%2Fpkh2KetprpNN43LJJYdANEgbmUOmU&X-Amz-Signature=79b65c1cba78c350724e398ed08a80091a84af80f72efe4891ea6991be7425c8&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/7c82c10601fb04b2843563588c64f574.png)
 
 1. Scanner sends **SYN**.
 2. Target immediately replies **RST, ACK**.
@@ -3610,7 +3610,7 @@ RST -------------------->
 ### What happens?
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/05104201-10ba-4f2d-b66d-0daa9fc3a662/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466YBYSGF4Y%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010339Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJGMEQCIBJGlr0HVPgOB4W2qPjfQMetVX6CQFTMb4ST2OBiOyDaAiBQVMRDvyspH2I4yx%2BeTfP5M0nbS3AVZO4JK%2F48L9T3biqIBAi5%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDYzNzQyMzE4MzgwNSIMLTuUtiss7z5enuw%2FKtwDq4qUs2Wm%2B7wNHoDbF6mcN7U%2FRbac5f3Zt1mPoFVVG8UYifD1xTkrbhER7tf%2F6%2BPWZ2DA0NP7nv0oOrXUfT8ElYG5YfH26xnGNihSeBRc1%2Bd70%2FWEajSqJh%2B%2BstFbRySnZG5rYHlcWm37ZSeEwfhogu2ZMqwpJUvavesJe8FhX7v8XKnjT4zXlW2lKTeA863QqOqDN2YmIzGJQ0AuyOLMfdUHrXL1fuPWDiCkcNIS%2FH4dvluJyUEKXXcdghyE3J4N1eCH%2B7dK85aGS9TTPtzGiZopgZstHlfGU4QKNSqYEH3r9F3YQA8PKEyy4o9gLEo3stmXZlJI6lGTUip3YJCvMId%2FgOWi50Si5EHSXOclLNHVPI95tIBt3o8oKahv8WiIY%2FvD08sCrVxbWQD4FPDM0UdEC4g7nOu6x%2FlyzKUXbe8J4FUfRt1baRmRj%2B5NgCNyQmdJEWVDYBGw%2FRksV6e1SP1NRwKnEUea1fl4x6XyAsbgEO7rQjriiOYBvgOR4s5Vhr21N3srQ39zVH%2BS2vvYEy1NOwdHVxOFIxHtIoP9vqH7vUw6lf4ZKKfjgj5ZSSdZ3Pqnsnr3u4HNsHJ19wcXY2cWINnQVYMEK8ZpV%2FU3g96qXFhtGBVeCpyT4wkwwfi00wY6pgHzaDFsyRRndsEHK4FfctWNVzdyd1iDKdH%2BqY6%2Fitksqw3NhtRwXDUyMpJAdG6SBcmhR6IybKy8aUyKekQ1jTxNjPi1sFIWzKieqB4pH3Qi4c%2Fi7EUwG4K3SflW0%2FDBMuXFZ4C2mbJqTvZeeYuhCnBYAGCehA99vo6HDAfiwiyCPiuDkJcqSYH1yu69%2F6ik0r%2Fpkh2KetprpNN43LJJYdANEgbmUOmU&X-Amz-Signature=cda35402449db4f92d83e7b9b32bf70e9828740ab5db4244164491311c9a9626&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/cbe7d9c886746d2574ce0ba2db9cc3ba.png)
 
 1. Scanner sends **SYN**.
 2. Server replies **SYN, ACK**.
@@ -3628,7 +3628,7 @@ The scanner already knows the port is open, so it aborts the connection.
 ## Closed TCP Port
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/74a5a182-9926-4f71-ad12-6f9597e5ed3d/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466YBYSGF4Y%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010339Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJGMEQCIBJGlr0HVPgOB4W2qPjfQMetVX6CQFTMb4ST2OBiOyDaAiBQVMRDvyspH2I4yx%2BeTfP5M0nbS3AVZO4JK%2F48L9T3biqIBAi5%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDYzNzQyMzE4MzgwNSIMLTuUtiss7z5enuw%2FKtwDq4qUs2Wm%2B7wNHoDbF6mcN7U%2FRbac5f3Zt1mPoFVVG8UYifD1xTkrbhER7tf%2F6%2BPWZ2DA0NP7nv0oOrXUfT8ElYG5YfH26xnGNihSeBRc1%2Bd70%2FWEajSqJh%2B%2BstFbRySnZG5rYHlcWm37ZSeEwfhogu2ZMqwpJUvavesJe8FhX7v8XKnjT4zXlW2lKTeA863QqOqDN2YmIzGJQ0AuyOLMfdUHrXL1fuPWDiCkcNIS%2FH4dvluJyUEKXXcdghyE3J4N1eCH%2B7dK85aGS9TTPtzGiZopgZstHlfGU4QKNSqYEH3r9F3YQA8PKEyy4o9gLEo3stmXZlJI6lGTUip3YJCvMId%2FgOWi50Si5EHSXOclLNHVPI95tIBt3o8oKahv8WiIY%2FvD08sCrVxbWQD4FPDM0UdEC4g7nOu6x%2FlyzKUXbe8J4FUfRt1baRmRj%2B5NgCNyQmdJEWVDYBGw%2FRksV6e1SP1NRwKnEUea1fl4x6XyAsbgEO7rQjriiOYBvgOR4s5Vhr21N3srQ39zVH%2BS2vvYEy1NOwdHVxOFIxHtIoP9vqH7vUw6lf4ZKKfjgj5ZSSdZ3Pqnsnr3u4HNsHJ19wcXY2cWINnQVYMEK8ZpV%2FU3g96qXFhtGBVeCpyT4wkwwfi00wY6pgHzaDFsyRRndsEHK4FfctWNVzdyd1iDKdH%2BqY6%2Fitksqw3NhtRwXDUyMpJAdG6SBcmhR6IybKy8aUyKekQ1jTxNjPi1sFIWzKieqB4pH3Qi4c%2Fi7EUwG4K3SflW0%2FDBMuXFZ4C2mbJqTvZeeYuhCnBYAGCehA99vo6HDAfiwiyCPiuDkJcqSYH1yu69%2F6ik0r%2Fpkh2KetprpNN43LJJYdANEgbmUOmU&X-Amz-Signature=5a5b1d48ba920e0c40cc2e870192b0d15c4fe7449c832432c262f87ac293cb19&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/8d6e1ecc1e2065c0471eb8276fb411b9.png)
 
 
 ```plain text
@@ -4004,7 +4004,7 @@ Shows every ARP packet.
 ## ARP Requests
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/7a41848a-22e1-42f1-b2c0-b2558f62c99f/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466W4C5CUQI%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010339Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIH3od3JlufZAO4qYHqY1SWjTYI03H96pAWWKzcsAtQCvAiEAkuR0AGoZuZnXhPHmBGEtBzUdTLSPMWSNBdLALRwtZG8qiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDDxSQAnRv0MiYzxTUyrcA9nDGHqnvF4PcWXzidsA6f%2Bl3D3jCVsF9yL2gRLWHEcB9UGSoOIPb42mwP0%2Fatogr%2B1Wp9uTZF1Fc40cc44e006A0rdBvK%2BZ1coX1mfRx8U0P87hW%2BtxxRjAOb1qlT5MLdo5COGxVlOIll%2BFwQAx3GQh%2FlAhZsPZc4wsqe4f5iNWKXDG0Jmdr%2BEdlyJkUINJsP3OR5EsEpqo7TsEeFKK%2B%2FBvREwsHw59Ab2FxoVb9o607iorJkptsonLnpmM8YD3KlHWMQyLge6GoG6s3oLl8dV8zm%2F8HkrRIRyFg0GzeUkLQ%2BDwdW9eX%2B8VhlzLDKn2A%2FXxcsWZB35m%2BOGfUMYCG7caKUSn70R8dcRSyFYmUjOccVyAAf2JH0NL%2BpAeHeM8cQU1zO0WiehBVaiOSS73OOgD5%2FT6VNVC%2FgMXCJd5LekJDw74NtTC77E%2BsAIoPtqESapFgbDaTlC%2BLXA8KCfe5exvhvXUa3AQKl3o0dTwg68Hgd7MATHNh9vlsWaW89nW4o%2BK29pkZYElKovYr6MlHvAzH1t9e4u5k4OVWH7FIeK%2BggsSAnnyMcypoVQ63fXEviZfqm7dmFEJC4rtwBihc68O%2FQLDbq7A%2B15k6Ryb%2F18gU7FeE%2F3YV2%2BngatDMNL2tNMGOqUBHB400VsLmfFxDD0MBIzY%2BQMalW2jbJS2nHiJdzidvl816Jaj61jJeMXYNjD%2FyD46v2oVA7ZZCTLV%2Bp%2B5rjB%2FBEkWn%2FFO4TvqRqBwBJ%2Fd2TVOFXGLbOY8BAUjY8DMsZzpJAxgXKYApPPxBue0BCnDBSLHNReuxNvLL2MQNHcYtInh6HsThfYymEM1Q9c6%2FXxNOUdgePMTOLRcC2bw8r9K%2BUazpwXr&X-Amz-Signature=0a98b221723295fd4e40c07ea05e9e9e8ce9204933a38f8363320496ae5908bb&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/06117e9a294c43eabe36d4e521f59765.png)
 
 
 ```plain text
@@ -4031,7 +4031,7 @@ Who has 192.168.1.1?
 ## ARP Replies
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/2946fc2d-dac3-4473-b63b-6513a6ba629a/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466W4C5CUQI%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010339Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIH3od3JlufZAO4qYHqY1SWjTYI03H96pAWWKzcsAtQCvAiEAkuR0AGoZuZnXhPHmBGEtBzUdTLSPMWSNBdLALRwtZG8qiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDDxSQAnRv0MiYzxTUyrcA9nDGHqnvF4PcWXzidsA6f%2Bl3D3jCVsF9yL2gRLWHEcB9UGSoOIPb42mwP0%2Fatogr%2B1Wp9uTZF1Fc40cc44e006A0rdBvK%2BZ1coX1mfRx8U0P87hW%2BtxxRjAOb1qlT5MLdo5COGxVlOIll%2BFwQAx3GQh%2FlAhZsPZc4wsqe4f5iNWKXDG0Jmdr%2BEdlyJkUINJsP3OR5EsEpqo7TsEeFKK%2B%2FBvREwsHw59Ab2FxoVb9o607iorJkptsonLnpmM8YD3KlHWMQyLge6GoG6s3oLl8dV8zm%2F8HkrRIRyFg0GzeUkLQ%2BDwdW9eX%2B8VhlzLDKn2A%2FXxcsWZB35m%2BOGfUMYCG7caKUSn70R8dcRSyFYmUjOccVyAAf2JH0NL%2BpAeHeM8cQU1zO0WiehBVaiOSS73OOgD5%2FT6VNVC%2FgMXCJd5LekJDw74NtTC77E%2BsAIoPtqESapFgbDaTlC%2BLXA8KCfe5exvhvXUa3AQKl3o0dTwg68Hgd7MATHNh9vlsWaW89nW4o%2BK29pkZYElKovYr6MlHvAzH1t9e4u5k4OVWH7FIeK%2BggsSAnnyMcypoVQ63fXEviZfqm7dmFEJC4rtwBihc68O%2FQLDbq7A%2B15k6Ryb%2F18gU7FeE%2F3YV2%2BngatDMNL2tNMGOqUBHB400VsLmfFxDD0MBIzY%2BQMalW2jbJS2nHiJdzidvl816Jaj61jJeMXYNjD%2FyD46v2oVA7ZZCTLV%2Bp%2B5rjB%2FBEkWn%2FFO4TvqRqBwBJ%2Fd2TVOFXGLbOY8BAUjY8DMsZzpJAxgXKYApPPxBue0BCnDBSLHNReuxNvLL2MQNHcYtInh6HsThfYymEM1Q9c6%2FXxNOUdgePMTOLRcC2bw8r9K%2BUazpwXr&X-Amz-Signature=baf334bf31e0f7244d10480e2921d78bcb0cfd3a1a5b6e771ad9a1ad12142a2b&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/890a7c991a3db5a55ce81d455babfa95.png)
 
 
 ```plain text
@@ -4083,7 +4083,7 @@ If one MAC sends **many ARP requests** to different IPs, it is likely performing
 ## Duplicate Address Detection
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/f843cbfa-19b2-4b3c-ab36-96d8b4057348/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466W4C5CUQI%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010339Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIH3od3JlufZAO4qYHqY1SWjTYI03H96pAWWKzcsAtQCvAiEAkuR0AGoZuZnXhPHmBGEtBzUdTLSPMWSNBdLALRwtZG8qiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDDxSQAnRv0MiYzxTUyrcA9nDGHqnvF4PcWXzidsA6f%2Bl3D3jCVsF9yL2gRLWHEcB9UGSoOIPb42mwP0%2Fatogr%2B1Wp9uTZF1Fc40cc44e006A0rdBvK%2BZ1coX1mfRx8U0P87hW%2BtxxRjAOb1qlT5MLdo5COGxVlOIll%2BFwQAx3GQh%2FlAhZsPZc4wsqe4f5iNWKXDG0Jmdr%2BEdlyJkUINJsP3OR5EsEpqo7TsEeFKK%2B%2FBvREwsHw59Ab2FxoVb9o607iorJkptsonLnpmM8YD3KlHWMQyLge6GoG6s3oLl8dV8zm%2F8HkrRIRyFg0GzeUkLQ%2BDwdW9eX%2B8VhlzLDKn2A%2FXxcsWZB35m%2BOGfUMYCG7caKUSn70R8dcRSyFYmUjOccVyAAf2JH0NL%2BpAeHeM8cQU1zO0WiehBVaiOSS73OOgD5%2FT6VNVC%2FgMXCJd5LekJDw74NtTC77E%2BsAIoPtqESapFgbDaTlC%2BLXA8KCfe5exvhvXUa3AQKl3o0dTwg68Hgd7MATHNh9vlsWaW89nW4o%2BK29pkZYElKovYr6MlHvAzH1t9e4u5k4OVWH7FIeK%2BggsSAnnyMcypoVQ63fXEviZfqm7dmFEJC4rtwBihc68O%2FQLDbq7A%2B15k6Ryb%2F18gU7FeE%2F3YV2%2BngatDMNL2tNMGOqUBHB400VsLmfFxDD0MBIzY%2BQMalW2jbJS2nHiJdzidvl816Jaj61jJeMXYNjD%2FyD46v2oVA7ZZCTLV%2Bp%2B5rjB%2FBEkWn%2FFO4TvqRqBwBJ%2Fd2TVOFXGLbOY8BAUjY8DMsZzpJAxgXKYApPPxBue0BCnDBSLHNReuxNvLL2MQNHcYtInh6HsThfYymEM1Q9c6%2FXxNOUdgePMTOLRcC2bw8r9K%2BUazpwXr&X-Amz-Signature=fd660676a722a4c3810e1ca0aef915c3b504aa7898a9a9829e4b23a3251d2b58&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/a523ecc2a53b9c7b731a3f03cd710f53.png)
 
 
 ```plain text
@@ -4266,7 +4266,7 @@ Example:
 Check if that MAC sends many ARP Requests.
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/4e167cb2-27a8-44f6-922d-716bdcbe424a/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466W4C5CUQI%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010339Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIH3od3JlufZAO4qYHqY1SWjTYI03H96pAWWKzcsAtQCvAiEAkuR0AGoZuZnXhPHmBGEtBzUdTLSPMWSNBdLALRwtZG8qiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDDxSQAnRv0MiYzxTUyrcA9nDGHqnvF4PcWXzidsA6f%2Bl3D3jCVsF9yL2gRLWHEcB9UGSoOIPb42mwP0%2Fatogr%2B1Wp9uTZF1Fc40cc44e006A0rdBvK%2BZ1coX1mfRx8U0P87hW%2BtxxRjAOb1qlT5MLdo5COGxVlOIll%2BFwQAx3GQh%2FlAhZsPZc4wsqe4f5iNWKXDG0Jmdr%2BEdlyJkUINJsP3OR5EsEpqo7TsEeFKK%2B%2FBvREwsHw59Ab2FxoVb9o607iorJkptsonLnpmM8YD3KlHWMQyLge6GoG6s3oLl8dV8zm%2F8HkrRIRyFg0GzeUkLQ%2BDwdW9eX%2B8VhlzLDKn2A%2FXxcsWZB35m%2BOGfUMYCG7caKUSn70R8dcRSyFYmUjOccVyAAf2JH0NL%2BpAeHeM8cQU1zO0WiehBVaiOSS73OOgD5%2FT6VNVC%2FgMXCJd5LekJDw74NtTC77E%2BsAIoPtqESapFgbDaTlC%2BLXA8KCfe5exvhvXUa3AQKl3o0dTwg68Hgd7MATHNh9vlsWaW89nW4o%2BK29pkZYElKovYr6MlHvAzH1t9e4u5k4OVWH7FIeK%2BggsSAnnyMcypoVQ63fXEviZfqm7dmFEJC4rtwBihc68O%2FQLDbq7A%2B15k6Ryb%2F18gU7FeE%2F3YV2%2BngatDMNL2tNMGOqUBHB400VsLmfFxDD0MBIzY%2BQMalW2jbJS2nHiJdzidvl816Jaj61jJeMXYNjD%2FyD46v2oVA7ZZCTLV%2Bp%2B5rjB%2FBEkWn%2FFO4TvqRqBwBJ%2Fd2TVOFXGLbOY8BAUjY8DMsZzpJAxgXKYApPPxBue0BCnDBSLHNReuxNvLL2MQNHcYtInh6HsThfYymEM1Q9c6%2FXxNOUdgePMTOLRcC2bw8r9K%2BUazpwXr&X-Amz-Signature=feff6fa90b58ad89b9850b6393e41062351cf065ea6d2a9c97d097c40b3314e0&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/06b982955d89a73474f1d0fe71e73a88.png)
 
 
 Filter:
@@ -4294,10 +4294,10 @@ Large numbers suggest **ARP Scanning/Flooding**.
 Check whether HTTP traffic is redirected. If HTTP is not enough then we will add MAC address as column.
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/dc4ffae3-53d9-4454-b735-51cc568c12dd/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466W4C5CUQI%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010339Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIH3od3JlufZAO4qYHqY1SWjTYI03H96pAWWKzcsAtQCvAiEAkuR0AGoZuZnXhPHmBGEtBzUdTLSPMWSNBdLALRwtZG8qiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDDxSQAnRv0MiYzxTUyrcA9nDGHqnvF4PcWXzidsA6f%2Bl3D3jCVsF9yL2gRLWHEcB9UGSoOIPb42mwP0%2Fatogr%2B1Wp9uTZF1Fc40cc44e006A0rdBvK%2BZ1coX1mfRx8U0P87hW%2BtxxRjAOb1qlT5MLdo5COGxVlOIll%2BFwQAx3GQh%2FlAhZsPZc4wsqe4f5iNWKXDG0Jmdr%2BEdlyJkUINJsP3OR5EsEpqo7TsEeFKK%2B%2FBvREwsHw59Ab2FxoVb9o607iorJkptsonLnpmM8YD3KlHWMQyLge6GoG6s3oLl8dV8zm%2F8HkrRIRyFg0GzeUkLQ%2BDwdW9eX%2B8VhlzLDKn2A%2FXxcsWZB35m%2BOGfUMYCG7caKUSn70R8dcRSyFYmUjOccVyAAf2JH0NL%2BpAeHeM8cQU1zO0WiehBVaiOSS73OOgD5%2FT6VNVC%2FgMXCJd5LekJDw74NtTC77E%2BsAIoPtqESapFgbDaTlC%2BLXA8KCfe5exvhvXUa3AQKl3o0dTwg68Hgd7MATHNh9vlsWaW89nW4o%2BK29pkZYElKovYr6MlHvAzH1t9e4u5k4OVWH7FIeK%2BggsSAnnyMcypoVQ63fXEviZfqm7dmFEJC4rtwBihc68O%2FQLDbq7A%2B15k6Ryb%2F18gU7FeE%2F3YV2%2BngatDMNL2tNMGOqUBHB400VsLmfFxDD0MBIzY%2BQMalW2jbJS2nHiJdzidvl816Jaj61jJeMXYNjD%2FyD46v2oVA7ZZCTLV%2Bp%2B5rjB%2FBEkWn%2FFO4TvqRqBwBJ%2Fd2TVOFXGLbOY8BAUjY8DMsZzpJAxgXKYApPPxBue0BCnDBSLHNReuxNvLL2MQNHcYtInh6HsThfYymEM1Q9c6%2FXxNOUdgePMTOLRcC2bw8r9K%2BUazpwXr&X-Amz-Signature=7778465d4778d586adaf50d382040b0abde9c87ec00f6f441aa9ce1ffa12b178&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/ca1f22022a284901cef6a7e8b7f550b0.png)
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/14106713-3394-81f2-9cbb-0003700fe0b2/9e639f84-c3f7-4796-aa2e-8276f31d0b16/image.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466W4C5CUQI%2F20260801%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260801T010339Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIH3od3JlufZAO4qYHqY1SWjTYI03H96pAWWKzcsAtQCvAiEAkuR0AGoZuZnXhPHmBGEtBzUdTLSPMWSNBdLALRwtZG8qiAQIuf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDDxSQAnRv0MiYzxTUyrcA9nDGHqnvF4PcWXzidsA6f%2Bl3D3jCVsF9yL2gRLWHEcB9UGSoOIPb42mwP0%2Fatogr%2B1Wp9uTZF1Fc40cc44e006A0rdBvK%2BZ1coX1mfRx8U0P87hW%2BtxxRjAOb1qlT5MLdo5COGxVlOIll%2BFwQAx3GQh%2FlAhZsPZc4wsqe4f5iNWKXDG0Jmdr%2BEdlyJkUINJsP3OR5EsEpqo7TsEeFKK%2B%2FBvREwsHw59Ab2FxoVb9o607iorJkptsonLnpmM8YD3KlHWMQyLge6GoG6s3oLl8dV8zm%2F8HkrRIRyFg0GzeUkLQ%2BDwdW9eX%2B8VhlzLDKn2A%2FXxcsWZB35m%2BOGfUMYCG7caKUSn70R8dcRSyFYmUjOccVyAAf2JH0NL%2BpAeHeM8cQU1zO0WiehBVaiOSS73OOgD5%2FT6VNVC%2FgMXCJd5LekJDw74NtTC77E%2BsAIoPtqESapFgbDaTlC%2BLXA8KCfe5exvhvXUa3AQKl3o0dTwg68Hgd7MATHNh9vlsWaW89nW4o%2BK29pkZYElKovYr6MlHvAzH1t9e4u5k4OVWH7FIeK%2BggsSAnnyMcypoVQ63fXEviZfqm7dmFEJC4rtwBihc68O%2FQLDbq7A%2B15k6Ryb%2F18gU7FeE%2F3YV2%2BngatDMNL2tNMGOqUBHB400VsLmfFxDD0MBIzY%2BQMalW2jbJS2nHiJdzidvl816Jaj61jJeMXYNjD%2FyD46v2oVA7ZZCTLV%2Bp%2B5rjB%2FBEkWn%2FFO4TvqRqBwBJ%2Fd2TVOFXGLbOY8BAUjY8DMsZzpJAxgXKYApPPxBue0BCnDBSLHNReuxNvLL2MQNHcYtInh6HsThfYymEM1Q9c6%2FXxNOUdgePMTOLRcC2bw8r9K%2BUazpwXr&X-Amz-Signature=48180902579a93ead84e5141b7d30237b3f32171fd1aeb0f1193e54c55ddf87d&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject)
+![Image](images/11a29cabeb9cfed3050195cd01530920.png)
 
 
 Filter:
