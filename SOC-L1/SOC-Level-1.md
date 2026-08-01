@@ -20,7 +20,7 @@ It collects detailed data from the endpoints, which includes process modificatio
 The following screenshot shows graphical representation of a process tree. We can see which processes were spawned on the endpoint. Each node represents a process. The lines connecting them represents their relationship. If we click on the `+` icon given with each process, we will be able to see all the network connections, registry changes, file changes etc. associated with that process. 
 
 
-![Image](images/1ac7938e4409797bdc7e08ff05d4c68f.png)
+![Image](images/aa1ee98bcbf9be510e744866b1f78fae.png)
 
 
 ### **Detection**
@@ -32,7 +32,7 @@ It incorporates signature-based detections as well as behavior-based detections,
 The following screenshot shows a dashboard of all the detections happening on the different endpoints. Each detection is represented by a row with different fields including the severity of the detection, time, triggering file, hostname, username, and more. The Tactic via Technique field maps the detection with MITRE. Any detection when clicked will show us rich details which helps a SOC analyst during the analysis.
 
 
-![Image](images/eb56e4cdca7be0d2250e27957f370e59.png)
+![Image](images/5bf430754a07f06b6771947b5449e283.png)
 
 
 ### **Response**
@@ -44,7 +44,7 @@ EDR also empowers analysts to take action on detected threats. These actions ca
 The following screenshot shows the actions available that can be taken on the host after connecting to it.
 
 
-![Image](images/5142151116c711b1b1793cc9f4a7a8bb.png)
+![Image](images/76b564713c612058bdca18255861348f.png)
 
 
 Inside an EDR, response actions focus on four immediate steps:
@@ -69,7 +69,7 @@ All the detailed data sent by the EDR agents is correlated and analyzed throug
 The following screenshot shows the dashboard of an EDR console. All the data from the endpoint agents is coming into this console, and the detections are happening here. This dashboard gives a holistic view of the current status of detections in all the endpoints.
 
 
-![Image](images/b1aa11280bb1aad8f88afc75dbe50c84.png)
+![Image](images/3fde1e1462f6a3ed94e4894845706382.png)
 
 
 ## **What is Telemetry?**
@@ -199,7 +199,7 @@ Elastic Stack (ELK) was originally developed to store, search, and visualize lar
 ### Core components
 
 
-![Image](images/9641f6713b48dd3e4a510026c744c9b8.png)
+![Image](images/5bb331e406bd78237a49812cd574467e.png)
 
 
 ## **How they work together:**
@@ -289,7 +289,7 @@ It connects different tools from various vendors within the unified SOAR inter
 # **Pyramid of Pain** 
 
 
-![Image](images/aa121625405bc93cab52edc41b60f027.png)
+![Image](images/c40b20beeea2271491f87420d0083e7a.png)
 
 
 The **Pyramid of Pain** is **a conceptual model that ranks indicators of compromise (IOCs) from easy to hard for attackers to change: Hash Values, IP Addresses, and Domain Names**
@@ -521,7 +521,7 @@ The attacker performs the final objective, such as stealing credentials, encrypt
 The **Unified Kill Chain (UKC)** extends the traditional 7-stage Cyber Kill Chain into **18 phases**, providing a much more detailed view of how modern attackers operate. It also aligns closely with the **MITRE ATT&CK** framework, making it particularly useful for SOC analysts, threat hunters, and incident responders.
 
 
-![Image](images/fa82df1d03a0db769ea86677c5e60c15.png)
+![Image](images/47ddc4eeff24d90968cd2309d7385f0f.png)
 
 
 # **MITRE ATT&CK Framework**
@@ -565,7 +565,7 @@ In simple terms:
 ---
 
 
-![Image](images/d1afee34acbdb02247aef460ffe6c3a0.png)
+![Image](images/ac1e0f95442e7f076e089fbfe402b986.png)
 
 
 # What Does Each CAR Analytic Contain?
@@ -935,7 +935,7 @@ v=DKIM1; k=rsa; p=<public_key>
 ## DKIM Verification Failure (PermError)
 
 
-![Image](images/b529bbcb6829f355e605332a5ac9dbd8.png)
+![Image](images/668ae49023781ba40bfb1df6f165266b.png)
 
 
 A **PermError (Permanent Error)** means DKIM verification failed due to issues such as:
@@ -1982,7 +1982,7 @@ The **Internal DNS Server acts on behalf of the Host**, so hosts do not directly
 ### 3. SMB with Kerberos Flow
 
 
-![Image](images/85c40b315ee9182ae8b04bd0a0106c3b.png)
+![Image](images/fe4a9a19f01cd0c5bac879771ecb7a7f.png)
 
 
 When a user accesses a shared folder (e.g., `\\FILESERVER\MARKETING`), authentication happens before the SMB connection is established.
@@ -2603,7 +2603,7 @@ IPv4 Endpoints
 **Path:** `Edit → Preferences → Name Resolution`
 
 
-![Image](images/aa1d2538d13da486d28baf496457fef4.png)
+![Image](images/d4179b058e4569d5a6f520c4903564d4.png)
 
 
 ### What it Does
@@ -2658,7 +2658,7 @@ Makes packet analysis much easier by displaying **meaningful names** instead of 
 **Check :** Statistics → Endpoints
 
 
-![Image](images/6a614ab29c044cd9ecfe88be798d10c2.png)
+![Image](images/1febc793455f30c42375bdfd96bbe326.png)
 
 
 ### What it Does
@@ -3515,7 +3515,7 @@ ACK -------------------->
 ### What happens?
 
 
-![Image](images/19a7173f73c78148e0e237c2cabe65c7.png)
+![Image](images/729f66c0409f7f5f1a68d2e7c16410b7.png)
 
 1. Scanner sends **SYN**.
 2. Target replies **SYN, ACK**.
@@ -3542,7 +3542,7 @@ SYN -------------------->
 ### What happens?
 
 
-![Image](images/3ba86f572104711ff852fc12106a655e.png)
+![Image](images/4e1056ca1cd2f3b456f1308686b9aa9c.png)
 
 1. Scanner sends **SYN**.
 2. Target immediately replies **RST, ACK**.
@@ -3610,7 +3610,7 @@ RST -------------------->
 ### What happens?
 
 
-![Image](images/c92f76b1ecfa917564e9747c697e188d.png)
+![Image](images/1f75361489ed62ae22510dc70801afcd.png)
 
 1. Scanner sends **SYN**.
 2. Server replies **SYN, ACK**.
@@ -3628,7 +3628,7 @@ The scanner already knows the port is open, so it aborts the connection.
 ## Closed TCP Port
 
 
-![Image](images/921121e712ac6565b139ec2f448d7543.png)
+![Image](images/46462e6ad47601e42963dade49a33481.png)
 
 
 ```plain text
@@ -4004,7 +4004,7 @@ Shows every ARP packet.
 ## ARP Requests
 
 
-![Image](images/547efce67877ba94a16deee1a30b65a9.png)
+![Image](images/3658ef3f2aab40f0d8ea2d52eb4ca12c.png)
 
 
 ```plain text
@@ -4031,7 +4031,7 @@ Who has 192.168.1.1?
 ## ARP Replies
 
 
-![Image](images/c12da707511a71d2f9af447296108cba.png)
+![Image](images/dcaa2fe7da8ae944eb2ef98f55213528.png)
 
 
 ```plain text
@@ -4083,7 +4083,7 @@ If one MAC sends **many ARP requests** to different IPs, it is likely performing
 ## Duplicate Address Detection
 
 
-![Image](images/2e4f69cc8b8865a42881a4d7355dafc9.png)
+![Image](images/905a61ffa66dfb1a15cad573d66b50c9.png)
 
 
 ```plain text
@@ -4266,7 +4266,7 @@ Example:
 Check if that MAC sends many ARP Requests.
 
 
-![Image](images/99b844f73e773738357ed098e4a7be0c.png)
+![Image](images/5a118cf90a7716864a500fa1e45496d3.png)
 
 
 Filter:
@@ -4294,10 +4294,10 @@ Large numbers suggest **ARP Scanning/Flooding**.
 Check whether HTTP traffic is redirected. If HTTP is not enough then we will add MAC address as column.
 
 
-![Image](images/376c992dfc5852a92da61ba96e065bc6.png)
+![Image](images/dd39df1c2898d403275872852e504dd0.png)
 
 
-![Image](images/741213920f74327dfc01d8365f5d515f.png)
+![Image](images/a7cc8962e3fb732dcc4ab998ddb3e0ca.png)
 
 
 Filter:
@@ -10047,7 +10047,7 @@ all traffic from that IP is denied.
 ---
 
 
-# MAC Address-Based Rules
+## MAC Address-Based Rules
 
 
 Sometimes filtering by IP is not sufficient.
@@ -10070,7 +10070,7 @@ Only that physical device matches the rule.
 ---
 
 
-# Practice Questions
+## Practice Questions
 
 
 ## Question 1
@@ -10369,7 +10369,7 @@ regardless of the source.
 ---
 
 
-# Investigation Workflow
+## Investigation Workflow
 
 
 When converting packet analysis into actionable firewall rules:
@@ -10463,7 +10463,7 @@ Review the generated rule before deploying it to production.
 ---
 
 
-# Best Practices
+## Best Practices
 
 - **Verify before deploying:** Automatically generated rules are based on a single packet. Confirm the traffic is truly malicious (or trusted) before applying the rule.
 - **Choose the right match criteria:** Blocking an entire source IP may affect legitimate users. In some cases, filtering by a specific port or MAC address is more appropriate.
@@ -10472,7 +10472,7 @@ Review the generated rule before deploying it to production.
 ---
 
 
-# Quick Summary
+## Quick Summary
 
 
 | Action                                   | Purpose                                                     |
@@ -10483,3 +10483,710 @@ Review the generated rule before deploying it to production.
 | `add deny ip from 10.10.10.13 to any in` | Block all incoming IP traffic from source `10.10.10.13`     |
 | `add allow MAC 00:d0:59:aa:af:80 any in` | Allow incoming traffic destined for MAC `00:d0:59:aa:af:80` |
 
+
+# Network Perimeter Monitoring & Protection
+
+
+## What is Network Perimeter Monitoring?
+
+
+The **network perimeter** is the boundary between an organization's **internal network** and the **Internet**.
+
+
+Security devices such as:
+
+- Firewalls
+- IDS/IPS
+- Web Application Firewalls (WAF)
+- VPN Gateways
+
+monitor this boundary to detect and stop attacks before they reach internal systems.
+
+
+---
+
+
+## Why Monitor the Perimeter?
+
+
+Monitoring helps security analysts:
+
+- Detect port scans
+- Detect brute-force attacks
+- Detect malware communication
+- Detect data exfiltration
+- Find exposed services
+- Identify firewall misconfigurations
+
+---
+
+
+# Scenario 1: Port Scanning
+
+
+## What is a Port Scan?
+
+
+Before attacking a system, attackers first discover **which ports are open**.
+
+
+Example:
+
+
+```plain text
+Attacker
+
+↓
+
+Port 21 (FTP)
+
+↓
+
+Blocked
+
+↓
+
+Port 22 (SSH)
+
+↓
+
+Blocked
+
+↓
+
+Port 23 (Telnet)
+
+↓
+
+Blocked
+
+↓
+
+Port 80 (HTTP)
+
+↓
+
+Open
+```
+
+
+Now the attacker knows **HTTP is available** and may attack the web server.
+
+
+---
+
+
+### Example Firewall Log
+
+
+```plain text
+BLOCK TCP 203.0.113.10 → 10.0.0.20:21
+
+BLOCK TCP 203.0.113.10 → 10.0.0.20:22
+
+BLOCK TCP 203.0.113.10 → 10.0.0.20:23
+
+BLOCK TCP 203.0.113.10 → 10.0.0.20:25
+
+BLOCK TCP 203.0.113.10 → 10.0.0.20:53
+```
+
+
+---
+
+
+### How to Identify It
+
+
+Notice:
+
+- Same **Source IP**
+- Same **Destination IP**
+- Different destination ports
+- Very short time interval
+
+Pattern:
+
+
+```plain text
+One Source
+
+↓
+
+Many Ports
+
+↓
+
+Port Scan
+```
+
+
+---
+
+
+### Analyst Verdict
+
+
+The attacker is trying to discover which services are running before launching an attack.
+
+
+---
+
+
+# Scenario 2: Web Application Attacks
+
+
+Unlike a firewall, a **Web Application Firewall (WAF)** understands HTTP requests and identifies the exact attack.
+
+
+Example attacks include:
+
+- SQL Injection
+- Cross-Site Scripting (XSS)
+- Directory Traversal
+
+---
+
+
+## SQL Injection
+
+
+Attacker tries to manipulate database queries.
+
+
+Example:
+
+
+```plain text
+/products.php?id=1 OR 1=1
+```
+
+
+Goal:
+
+
+Read or dump database information.
+
+
+---
+
+
+## Cross Site Scripting (XSS)
+
+
+Attacker injects JavaScript into a webpage.
+
+
+Example:
+
+
+```html
+<script>alert('XSS')</script>
+```
+
+
+Goal:
+
+
+Steal cookies or execute scripts in a victim's browser.
+
+
+---
+
+
+## Directory Traversal
+
+
+Attacker tries to access files outside the web directory.
+
+
+Example:
+
+
+```plain text
+../../../../etc/passwd
+```
+
+
+Goal:
+
+
+Read sensitive system files.
+
+
+---
+
+
+### Example WAF Log
+
+
+```plain text
+action=BLOCK
+
+attack_type="XSS"
+```
+
+
+```plain text
+action=BLOCK
+
+attack_type="Directory Traversal"
+```
+
+
+---
+
+
+### Why is WAF Better than a Firewall?
+
+
+A firewall only knows:
+
+
+```plain text
+Connection Allowed
+
+or
+
+Connection Blocked
+```
+
+
+A WAF knows:
+
+- What page was requested
+- What payload was sent
+- Which attack technique was used
+
+Example:
+
+
+```plain text
+attack_type="SQL Injection"
+```
+
+
+This immediately tells the analyst what happened.
+
+
+---
+
+
+### Analyst Verdict
+
+
+The website is under active attack.
+
+
+The WAF successfully blocked the malicious requests.
+
+
+---
+
+
+# Scenario 3: VPN Brute Force Attack
+
+
+## What is a Brute Force Attack?
+
+
+Instead of exploiting software,
+
+
+the attacker repeatedly guesses usernames and passwords.
+
+
+Example:
+
+
+```plain text
+admin : admin
+
+admin : password
+
+admin : 123456
+
+admin : welcome
+
+...
+```
+
+
+Eventually one password may work.
+
+
+---
+
+
+### Example VPN Log
+
+
+```plain text
+FAILED_AUTH
+
+FAILED_AUTH
+
+FAILED_AUTH
+
+FAILED_AUTH
+
+SUCCESS_AUTH
+```
+
+
+---
+
+
+### How to Identify It
+
+
+Normal users:
+
+
+```plain text
+1-2 Failed Login Attempts
+```
+
+
+Attackers:
+
+
+```plain text
+100+
+
+Failed Logins
+
+within a few minutes
+```
+
+
+Pattern:
+
+
+```plain text
+One Source
+
+↓
+
+One Destination
+
+↓
+
+Many Login Attempts
+
+↓
+
+Brute Force Attack
+```
+
+
+---
+
+
+### Analyst Verdict
+
+
+One external IP repeatedly attempted to log into the VPN using common usernames such as:
+
+- admin
+- guest
+- root
+- user
+
+This indicates a brute-force attack.
+
+
+---
+
+
+# Recognizing Common Attack Patterns
+
+
+## Port Scan
+
+
+Pattern:
+
+
+```plain text
+One Source
+
+↓
+
+Many Destination Ports
+```
+
+
+Purpose:
+
+
+Find open services.
+
+
+---
+
+
+## Brute Force
+
+
+Pattern:
+
+
+```plain text
+One Source
+
+↓
+
+One Service
+
+↓
+
+Many Login Attempts
+```
+
+
+Purpose:
+
+
+Guess passwords.
+
+
+---
+
+
+## Malware Beaconing
+
+
+Pattern:
+
+
+```plain text
+One Host
+
+↓
+
+One Destination
+
+↓
+
+Regular Time Intervals
+```
+
+
+Example:
+
+
+Every 30 minutes:
+
+
+```plain text
+10:00
+
+10:30
+
+11:00
+
+11:30
+```
+
+
+Purpose:
+
+
+Malware checking in with its Command & Control (C2) server.
+
+
+---
+
+
+# IDS vs Firewall
+
+
+## Firewall
+
+
+Can tell:
+
+
+```plain text
+Allowed
+
+Blocked
+```
+
+
+Cannot explain **why**.
+
+
+---
+
+
+## IDS / IPS / WAF
+
+
+Can tell:
+
+- SQL Injection
+- XSS
+- Directory Traversal
+- Malware
+- Exploit Type
+
+This provides much richer context for investigations.
+
+
+---
+
+
+# Investigation Workflow
+
+
+### Step 1
+
+
+Look for repeated events.
+
+
+↓
+
+
+### Step 2
+
+
+Identify the source IP.
+
+
+↓
+
+
+### Step 3
+
+
+Look for patterns.
+
+- One IP → Many Ports → Port Scan
+- One IP → One Service → Brute Force
+- Regular Intervals → Beaconing
+
+↓
+
+
+### Step 4
+
+
+Use IDS/WAF alerts to understand **what attack** is occurring.
+
+
+↓
+
+
+### Step 5
+
+
+Determine whether the activity should be blocked or investigated further.
+
+
+---
+
+
+# Lab Questions
+
+
+## Question 1
+
+
+**Which IP is performing the port scan?**
+
+
+**Answer**
+
+
+```plain text
+203.0.113.10
+```
+
+
+### Why?
+
+
+The same source IP rapidly attempts connections to multiple ports on the same destination.
+
+
+---
+
+
+## Question 2
+
+
+**Which IP is responsible for all blocked web attacks?**
+
+
+**Answer**
+
+
+```plain text
+198.51.100.12
+```
+
+
+### Why?
+
+
+Every `action=BLOCK` entry in the WAF logs originates from this IP.
+
+
+---
+
+
+## Question 3
+
+
+**How many brute-force attempts failed?**
+
+
+**Answer**
+
+
+```plain text
+90
+```
+
+
+### How to Find It
+
+
+Count all:
+
+
+```plain text
+FAILED_AUTH
+```
+
+
+entries.
+
+
+---
+
+
+## Question 4
+
+
+**Which IP attempted the VPN brute-force attack?**
+
+
+### How to Find It
+
+1. Open the VPN log.
+2. Filter or search for:
+
+```plain text
+FAILED_AUTH
+```
+
+1. Group the results by **Source IP**.
+2. Find the IP with the **highest number of failed logins** (about 90).
+
+That IP is the attacker.
+
+> Unlike normal users who may fail once or twice, the brute-force attacker generates dozens of `FAILED_AUTH` events in a very short time.
