@@ -6,7 +6,7 @@ on:
   workflow_dispatch:      
 
 permissions:
-  contents: write       
+  contents: write        
 
 jobs:
   sync:
@@ -31,7 +31,37 @@ jobs:
               const n2m = new NotionToMarkdown({ notionClient: client });
               
               const pageId = '3a406713339480468dcffa3fadbf47ff'; 
-              
+              n2m.setCustomTransformer('image', async (block) => {
+                const fs = require('fs');
+                const path = require('path');
+                const crypto = require('crypto');
+                const imgDir = 'SOC-L1/images';
+                if (!fs.existsSync(imgDir)){
+                    fs.mkdirSync(imgDir, { recursive: true });
+                }
+                let imageUrl = '';
+                if (block.image.type === 'external') imageUrl = block.image.external.url;
+                if (block.image.type === 'file') imageUrl = block.image.file.url;
+                
+                if (!imageUrl) return '';
+
+                try {
+                  const hash = crypto.createHash('md5').update(imageUrl).digest('hex');
+                  const fileName = hash + '.png';
+                  const localPath = path.join(imgDir, fileName);
+                  const markdownPath = 'images/' + fileName;
+                  const response = await fetch(imageUrl);
+                  const arrayBuffer = await response.arrayBuffer();
+                  const buffer = Buffer.from(arrayBuffer);
+                  fs.writeFileSync(localPath, buffer);
+                  const caption = block.image.caption?.[0]?.plain_text || 'Image';
+                  return '![' + caption + '](' + markdownPath + ')';
+                } catch (error) {
+                  console.error('Failed to download image:', error.message);
+                  return '![Image Download Failed](' + imageUrl + ')';
+                }
+              });
+
               n2m.pageToMarkdown(pageId).then(mdblocks => {
                 const mdString = n2m.toMarkdownString(mdblocks);
                 const fs = require('fs');
@@ -46,7 +76,12 @@ jobs:
       - name: Commit and Push Changes
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@://github.com"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Stage the text notes alongside the local downloaded images directory
           git add SOC-L1/SOC-Level-1.md
-          git diff-index --quiet HEAD || git commit -m "notion-sync: auto update SOC Level 1 notes"
+          if [ -d "SOC-L1/images" ]; then git add SOC-L1/images/; fi
+          
+          # Commit updates only if changes exist to clean up workspace commits history
+          git diff-index --quiet HEAD || git commit -m "notion-sync: auto update SOC Level 1 notes and assets"
           git push origin main
