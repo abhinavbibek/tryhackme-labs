@@ -75,9 +75,8 @@ jobs:
 
       - name: Commit and Push Changes
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
+          git config --global user.name "abhinavbibek"
+          git config --global user.email "bibekavi22@gmail.com"
           # Stage the text notes alongside the local downloaded images directory
           git add SOC-L1/SOC-Level-1.md
           if [ -d "SOC-L1/images" ]; then git add SOC-L1/images/; fi
