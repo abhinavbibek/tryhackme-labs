@@ -20,7 +20,7 @@ It collects detailed data from the endpoints, which includes process modificatio
 The following screenshot shows graphical representation of a process tree. We can see which processes were spawned on the endpoint. Each node represents a process. The lines connecting them represents their relationship. If we click on the `+` icon given with each process, we will be able to see all the network connections, registry changes, file changes etc. associated with that process. 
 
 
-![Image](images/47faf85d0054256e2547cee0d6cc8f57.png)
+![Image](images/05b86b78af90a36efc13bc1d3dedc41b.png)
 
 
 ### **Detection**
@@ -32,7 +32,7 @@ It incorporates signature-based detections as well as behavior-based detections,
 The following screenshot shows a dashboard of all the detections happening on the different endpoints. Each detection is represented by a row with different fields including the severity of the detection, time, triggering file, hostname, username, and more. The Tactic via Technique field maps the detection with MITRE. Any detection when clicked will show us rich details which helps a SOC analyst during the analysis.
 
 
-![Image](images/dfc211627d3f4c31195758b2faf08260.png)
+![Image](images/62cdc83fa3ea99f901bba30c68a867f4.png)
 
 
 ### **Response**
@@ -44,7 +44,7 @@ EDR also empowers analysts to take action on detected threats. These actions ca
 The following screenshot shows the actions available that can be taken on the host after connecting to it.
 
 
-![Image](images/29a890e5157759bcf4cf13c505a78e01.png)
+![Image](images/42e75cd92d2692bb182481b332f556bf.png)
 
 
 Inside an EDR, response actions focus on four immediate steps:
@@ -69,7 +69,7 @@ All the detailed data sent by the EDR agents is correlated and analyzed throug
 The following screenshot shows the dashboard of an EDR console. All the data from the endpoint agents is coming into this console, and the detections are happening here. This dashboard gives a holistic view of the current status of detections in all the endpoints.
 
 
-![Image](images/29cfbc2eeb57fc272d31881015da028b.png)
+![Image](images/43d24478ab1dbd856ffed90e4a4e42fb.png)
 
 
 ## **What is Telemetry?**
@@ -199,7 +199,7 @@ Elastic Stack (ELK) was originally developed to store, search, and visualize lar
 ### Core components
 
 
-![Image](images/df9ea82dce615a97a35ef442abbcd4df.png)
+![Image](images/d65b39d04c6d25fcc7f4b0b155a15c2b.png)
 
 
 ## **How they work together:**
@@ -289,7 +289,7 @@ It connects different tools from various vendors within the unified SOAR inter
 # **Pyramid of Pain** 
 
 
-![Image](images/84505efbc1011165e70a3fc033bf5723.png)
+![Image](images/1232241e3a7231ad7bf3825403ee6c89.png)
 
 
 The **Pyramid of Pain** is **a conceptual model that ranks indicators of compromise (IOCs) from easy to hard for attackers to change: Hash Values, IP Addresses, and Domain Names**
@@ -521,7 +521,7 @@ The attacker performs the final objective, such as stealing credentials, encrypt
 The **Unified Kill Chain (UKC)** extends the traditional 7-stage Cyber Kill Chain into **18 phases**, providing a much more detailed view of how modern attackers operate. It also aligns closely with the **MITRE ATT&CK** framework, making it particularly useful for SOC analysts, threat hunters, and incident responders.
 
 
-![Image](images/93881080873a6cad7c0383d1318f8c6e.png)
+![Image](images/f2a16706dc0f73194d23d8cff71add99.png)
 
 
 # **MITRE ATT&CK Framework**
@@ -565,7 +565,7 @@ In simple terms:
 ---
 
 
-![Image](images/9890c88a74421e08ea601edaf9b9d01a.png)
+![Image](images/a5c51c58b010fb893bc58411023cebb8.png)
 
 
 # What Does Each CAR Analytic Contain?
@@ -935,7 +935,7 @@ v=DKIM1; k=rsa; p=<public_key>
 ## DKIM Verification Failure (PermError)
 
 
-![Image](images/ba0092d696745bb61f6d80d33c6ac36b.png)
+![Image](images/4d36b35227222e3b334c44315e2b194c.png)
 
 
 A **PermError (Permanent Error)** means DKIM verification failed due to issues such as:
@@ -1982,7 +1982,7 @@ The **Internal DNS Server acts on behalf of the Host**, so hosts do not directly
 ### 3. SMB with Kerberos Flow
 
 
-![Image](images/28ecc6393bb10e702fe6647ae26361ff.png)
+![Image](images/240d8b0774462507ff213140a7648ab4.png)
 
 
 When a user accesses a shared folder (e.g., `\\FILESERVER\MARKETING`), authentication happens before the SMB connection is established.
@@ -2603,7 +2603,7 @@ IPv4 Endpoints
 **Path:** `Edit → Preferences → Name Resolution`
 
 
-![Image](images/6d9a7a890ebb27d61ef9d9c6da41a63b.png)
+![Image](images/679d6c5c0ca25fe8c6692e770f4d41ac.png)
 
 
 ### What it Does
@@ -2658,7 +2658,7 @@ Makes packet analysis much easier by displaying **meaningful names** instead of 
 **Check :** Statistics → Endpoints
 
 
-![Image](images/5aedd3057d22e9bed805c1f617d959af.png)
+![Image](images/831f6c9454b944b70efe2a03f0c7e214.png)
 
 
 ### What it Does
@@ -3515,7 +3515,7 @@ ACK -------------------->
 ### What happens?
 
 
-![Image](images/bf63825c428f420891cda886d277d087.png)
+![Image](images/73c6480d8eec88f987fa738864076dd0.png)
 
 1. Scanner sends **SYN**.
 2. Target replies **SYN, ACK**.
@@ -3542,7 +3542,7 @@ SYN -------------------->
 ### What happens?
 
 
-![Image](images/a536f406ffd95103b12d81a3474073cd.png)
+![Image](images/58ac97ec2e8731fc64659b9e600b599c.png)
 
 1. Scanner sends **SYN**.
 2. Target immediately replies **RST, ACK**.
@@ -3610,7 +3610,7 @@ RST -------------------->
 ### What happens?
 
 
-![Image](images/584c3a4550197fcb8f3b537e13aa584c.png)
+![Image](images/da127cd3e20414178a31deaa38627e50.png)
 
 1. Scanner sends **SYN**.
 2. Server replies **SYN, ACK**.
@@ -3628,7 +3628,7 @@ The scanner already knows the port is open, so it aborts the connection.
 ## Closed TCP Port
 
 
-![Image](images/aa4683312a94a980130687d9fdc41f50.png)
+![Image](images/14bd4d0c1e0c450890cd42b365373ac8.png)
 
 
 ```plain text
@@ -4004,7 +4004,7 @@ Shows every ARP packet.
 ## ARP Requests
 
 
-![Image](images/3f9c375d68d84e684d7430e864ae1d50.png)
+![Image](images/f958111eca3e98838e5639a67091c3bf.png)
 
 
 ```plain text
@@ -4031,7 +4031,7 @@ Who has 192.168.1.1?
 ## ARP Replies
 
 
-![Image](images/f1d33ded5df48780e080ad518d54bddc.png)
+![Image](images/eeab91403eda5fbab826bd9f076a864e.png)
 
 
 ```plain text
@@ -4083,7 +4083,7 @@ If one MAC sends **many ARP requests** to different IPs, it is likely performing
 ## Duplicate Address Detection
 
 
-![Image](images/9fa379b515e0798964bc2ce7ba20d6a1.png)
+![Image](images/281d3427e000c16d73910b97f9bcacb5.png)
 
 
 ```plain text
@@ -4266,7 +4266,7 @@ Example:
 Check if that MAC sends many ARP Requests.
 
 
-![Image](images/32835c18b0cb65add66a288d7d0c2b34.png)
+![Image](images/ba571f8cb29b74449712b2e1fe007bfe.png)
 
 
 Filter:
@@ -4294,10 +4294,10 @@ Large numbers suggest **ARP Scanning/Flooding**.
 Check whether HTTP traffic is redirected. If HTTP is not enough then we will add MAC address as column.
 
 
-![Image](images/050475ebb4c5c626d1a4c7280de2c801.png)
+![Image](images/b15cd8abadc3dd228a945ce3aa64a816.png)
 
 
-![Image](images/4ee2e0278a7970bf4f540363746fc2fc.png)
+![Image](images/c28dce507e369498ce0783179e4ea944.png)
 
 
 Filter:
