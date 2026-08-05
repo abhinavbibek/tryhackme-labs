@@ -20,7 +20,7 @@ It collects detailed data from the endpoints, which includes process modificatio
 The following screenshot shows graphical representation of a process tree. We can see which processes were spawned on the endpoint. Each node represents a process. The lines connecting them represents their relationship. If we click on the `+` icon given with each process, we will be able to see all the network connections, registry changes, file changes etc. associated with that process. 
 
 
-![Image](images/f08a84f2e6739638310a8f3097efe455.png)
+![Image](images/a7f48b05c4500f4e7dcf20e70a97923b.png)
 
 
 ### **Detection**
@@ -32,7 +32,7 @@ It incorporates signature-based detections as well as behavior-based detections,
 The following screenshot shows a dashboard of all the detections happening on the different endpoints. Each detection is represented by a row with different fields including the severity of the detection, time, triggering file, hostname, username, and more. The Tactic via Technique field maps the detection with MITRE. Any detection when clicked will show us rich details which helps a SOC analyst during the analysis.
 
 
-![Image](images/5b0058f59ce4a2c3578bf36980136bb3.png)
+![Image](images/bda8a4903f197c52cf032d36fa41c833.png)
 
 
 ### **Response**
@@ -44,7 +44,7 @@ EDR also empowers analysts to take action on detected threats. These actions ca
 The following screenshot shows the actions available that can be taken on the host after connecting to it.
 
 
-![Image](images/e55088752ff187908a3af0f568035a6c.png)
+![Image](images/5f37432bfcdb692327474283644041b1.png)
 
 
 Inside an EDR, response actions focus on four immediate steps:
@@ -69,7 +69,7 @@ All the detailed data sent by the EDR agents is correlated and analyzed throug
 The following screenshot shows the dashboard of an EDR console. All the data from the endpoint agents is coming into this console, and the detections are happening here. This dashboard gives a holistic view of the current status of detections in all the endpoints.
 
 
-![Image](images/6224b9b1e938f99c5b00229228d153da.png)
+![Image](images/f3f0219b629e6017cab76d8a46d1b75d.png)
 
 
 ## **What is Telemetry?**
@@ -79,6 +79,251 @@ Telemetry are the activities which is captured by EDR agents from their endpoin
 
 
 Usually, many activities are going on in the endpoints, most of which are legitimate. It is often difficult to differentiate between regular and malicious activity. The more data is collected, the better judgments can be made. EDR collects detailed telemetry from the endpoints. It uses complex logic and machine learning algorithms to assess the activities. Advanced threats keep most of their activities stealthy, using legitimate utilities during execution. Individually, their activities may seem harmless, but when observed through detailed telemetry, they tell a different story. This detailed telemetry not only helps the EDR detect advanced threats and make better judgments on the legitimacy of the activities, but it is also very helpful for the analysts during the investigations. The analysts can understand the full chain of events, identify the root cause, and reconstruct the attack timeline.
+
+
+# Perimeter Logs Investigation (Splunk)
+
+
+Index:
+
+
+```plain text
+index="network_logs"
+```
+
+
+---
+
+
+## Q1. What external IP performed the most reconnaissance?
+
+
+**Answer**
+
+
+```plain text
+203.0.113.45
+```
+
+
+### Splunk Query
+
+
+```plain text
+index="network_logs" sourcetype="firewall_logs" action=BLOCK
+| stats count by src_ip
+| sort -count
+```
+
+
+### Meaning
+
+
+Shows all blocked firewall connections, counts them by **Source IP**, and the IP with the highest count is the reconnaissance attacker.
+
+
+---
+
+
+## Q2. Which internal host was targeted by scans?
+
+
+**Answer**
+
+
+```plain text
+10.0.0.20
+```
+
+
+### Splunk Query
+
+
+```plain text
+index="network_logs" sourcetype="firewall_logs" action=BLOCK src_ip="203.0.113.45"
+| stats count by dst_ip
+```
+
+
+### Meaning
+
+
+Shows which destination IP received the most scan attempts from the attacker.
+
+
+---
+
+
+## Q3. Which username was targeted in VPN logs?
+
+
+**Answer**
+
+
+```plain text
+svc_backup
+```
+
+
+### Splunk Query
+
+
+```plain text
+index="network_logs" sourcetype="vpn_logs" result=FAIL
+| stats count by user
+| sort -count
+```
+
+
+### Meaning
+
+
+Counts failed VPN logins by username. The most targeted username is the brute-force target.
+
+
+---
+
+
+## Q4. What internal IP was assigned after successful VPN login?
+
+
+**Answer**
+
+
+```plain text
+10.8.0.23
+```
+
+
+### Splunk Query
+
+
+```plain text
+index="network_logs" sourcetype="vpn_logs" user="svc_backup" result=SUCCESS
+```
+
+
+### Meaning
+
+
+Shows successful logins for **svc_backup**. Read the **assigned_ip** field.
+
+
+---
+
+
+## Q5. Which port was used for lateral SMB attempts?
+
+
+**Answer**
+
+
+```plain text
+445
+```
+
+
+### Splunk Query
+
+
+```plain text
+index="network_logs" sourcetype="ids_logs" SMB
+```
+
+
+### Meaning
+
+
+Shows IDS alerts related to SMB lateral movement. The destination port is **445**.
+
+
+---
+
+
+## Q6. Which host beaconed to the C2?
+
+
+**Answer**
+
+
+```plain text
+10.0.0.60
+```
+
+
+### Splunk Query
+
+
+```plain text
+index="network_logs" sourcetype="ids_logs" alert="ET TROJAN Possible C2 Beaconing"
+| stats count by src_ip
+```
+
+
+### Meaning
+
+
+Lists hosts generating C2 Beaconing alerts. The source IP is the compromised host.
+
+
+---
+
+
+## Q7. Which IP was associated with the C2 server?
+
+
+**Answer**
+
+
+```plain text
+198.51.100.77
+```
+
+
+### Splunk Query
+
+
+```plain text
+index="network_logs" sourcetype="ids_logs" alert="ET TROJAN Possible C2 Beaconing"
+| stats count by dst_ip
+| sort -count
+```
+
+
+### Meaning
+
+
+Shows the destination IP receiving beacon traffic. That external IP is the C2 server.
+
+
+---
+
+
+## Q8. Which host showed data exfiltration attempts?
+
+
+**Answer**
+
+
+```plain text
+10.0.0.51
+```
+
+
+### Splunk Query
+
+
+```plain text
+index="network_logs" sourcetype="ids_logs" classification="Potential Data Exfiltration"
+| stats count by src_ip
+| sort -count
+```
+
+
+### Meaning
+
+
+Shows hosts generating **Potential Data Exfiltration** alerts. The source IP is the compromised machine attempting to upload data.
 
 
 # SIEM
@@ -199,7 +444,7 @@ Elastic Stack (ELK) was originally developed to store, search, and visualize lar
 ### Core components
 
 
-![Image](images/4f4b216c042c86defd5ba47b7c8359ee.png)
+![Image](images/a77293aef0db0d3e365e81c571bbaed3.png)
 
 
 ## **How they work together:**
@@ -289,7 +534,7 @@ It connects different tools from various vendors within the unified SOAR inter
 # **Pyramid of Pain** 
 
 
-![Image](images/a6c07776b3d610c1b07f86db004f64fb.png)
+![Image](images/e54de7f2b1609af97ccc14ecf5f27468.png)
 
 
 The **Pyramid of Pain** is **a conceptual model that ranks indicators of compromise (IOCs) from easy to hard for attackers to change: Hash Values, IP Addresses, and Domain Names**
@@ -521,7 +766,7 @@ The attacker performs the final objective, such as stealing credentials, encrypt
 The **Unified Kill Chain (UKC)** extends the traditional 7-stage Cyber Kill Chain into **18 phases**, providing a much more detailed view of how modern attackers operate. It also aligns closely with the **MITRE ATT&CK** framework, making it particularly useful for SOC analysts, threat hunters, and incident responders.
 
 
-![Image](images/bd755bbd078025bf668bd3b17ac3139d.png)
+![Image](images/a9fa6680fbcf5d85de9feec7e50f7338.png)
 
 
 # **MITRE ATT&CK Framework**
@@ -565,7 +810,7 @@ In simple terms:
 ---
 
 
-![Image](images/7c441b868fa1a13da630ff032e7b28eb.png)
+![Image](images/d251ab21f36f8f8a9c07a093560716a6.png)
 
 
 # What Does Each CAR Analytic Contain?
@@ -935,7 +1180,7 @@ v=DKIM1; k=rsa; p=<public_key>
 ## DKIM Verification Failure (PermError)
 
 
-![Image](images/2e764d334b5ffbf831c698e11552d7c4.png)
+![Image](images/1da3bdb72ac5efbe3beff98acec6dfdd.png)
 
 
 A **PermError (Permanent Error)** means DKIM verification failed due to issues such as:
@@ -1982,7 +2227,7 @@ The **Internal DNS Server acts on behalf of the Host**, so hosts do not directly
 ### 3. SMB with Kerberos Flow
 
 
-![Image](images/c3bdc7432fb68ad43bd1f367a95a409c.png)
+![Image](images/298585430198f3e6ca935caebece8cc0.png)
 
 
 When a user accesses a shared folder (e.g., `\\FILESERVER\MARKETING`), authentication happens before the SMB connection is established.
@@ -2603,7 +2848,7 @@ IPv4 Endpoints
 **Path:** `Edit → Preferences → Name Resolution`
 
 
-![Image](images/7c2389b1685cd3bd32fbb85cce1fd74a.png)
+![Image](images/98e6993d2d81e9aa71588cf9d3940574.png)
 
 
 ### What it Does
@@ -2658,7 +2903,7 @@ Makes packet analysis much easier by displaying **meaningful names** instead of 
 **Check :** Statistics → Endpoints
 
 
-![Image](images/885b8624ef6c742484480b35de6d03b3.png)
+![Image](images/4c7cb2b42153952a021f53a10abbea1c.png)
 
 
 ### What it Does
@@ -3515,7 +3760,7 @@ ACK -------------------->
 ### What happens?
 
 
-![Image](images/c2ccd4e71b887d5948eb45f465790e90.png)
+![Image](images/8cc24a9f30ee46eb13d77e7357901691.png)
 
 1. Scanner sends **SYN**.
 2. Target replies **SYN, ACK**.
@@ -3542,7 +3787,7 @@ SYN -------------------->
 ### What happens?
 
 
-![Image](images/876573c1defd0cad2e2d830fc0e6e347.png)
+![Image](images/511502776e276a23898a4d7ea0e744d4.png)
 
 1. Scanner sends **SYN**.
 2. Target immediately replies **RST, ACK**.
@@ -3610,7 +3855,7 @@ RST -------------------->
 ### What happens?
 
 
-![Image](images/0061f0f99bfa882f8829e7c3c6951efb.png)
+![Image](images/8a51ad60fb13ed584903b697cc87cb28.png)
 
 1. Scanner sends **SYN**.
 2. Server replies **SYN, ACK**.
@@ -3628,7 +3873,7 @@ The scanner already knows the port is open, so it aborts the connection.
 ## Closed TCP Port
 
 
-![Image](images/3feeccf55b82017137495d0b7b57a818.png)
+![Image](images/245c3462bc4cbe9fa2b5ca231fd0f1a7.png)
 
 
 ```plain text
@@ -4004,7 +4249,7 @@ Shows every ARP packet.
 ## ARP Requests
 
 
-![Image](images/40c364d508632f50751cfe40104aefe2.png)
+![Image](images/56a394a614423d856ca978373555ed74.png)
 
 
 ```plain text
@@ -4031,7 +4276,7 @@ Who has 192.168.1.1?
 ## ARP Replies
 
 
-![Image](images/59eddd67167a44d398c8a43ce4809baa.png)
+![Image](images/f81788521d5b8d4f3151d965a8e5f871.png)
 
 
 ```plain text
@@ -4083,7 +4328,7 @@ If one MAC sends **many ARP requests** to different IPs, it is likely performing
 ## Duplicate Address Detection
 
 
-![Image](images/417b64d3c2835b6e32176e79345f95ce.png)
+![Image](images/e0b2bb85ed6629e2ef24e0b378304ff4.png)
 
 
 ```plain text
@@ -4266,7 +4511,7 @@ Example:
 Check if that MAC sends many ARP Requests.
 
 
-![Image](images/ee88ec3912b808472e349ab02543efc8.png)
+![Image](images/0f47c8a7c1b400d17fe93af0e18ea322.png)
 
 
 Filter:
@@ -4294,10 +4539,10 @@ Large numbers suggest **ARP Scanning/Flooding**.
 Check whether HTTP traffic is redirected. If HTTP is not enough then we will add MAC address as column.
 
 
-![Image](images/620bd1c17ec44866ba50af2770f8357d.png)
+![Image](images/e945cc2f64dcce7d376d167d19e60c75.png)
 
 
-![Image](images/95c202b9bfab042d8225abe378522ab7.png)
+![Image](images/903149b6e20319a8b1a482ebe4627108.png)
 
 
 Filter:
