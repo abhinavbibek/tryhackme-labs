@@ -1,86 +1,86 @@
-name: Sync Notion Page to Git
+# name: Sync Notion Page to Git
 
-on:
-  schedule:
-    - cron: '*/30 * * * *' 
-  workflow_dispatch:      
+# on:
+#   schedule:
+#     - cron: '*/30 * * * *' 
+#   workflow_dispatch:      
 
-permissions:
-  contents: write        
+# permissions:
+#   contents: write        
 
-jobs:
-  sync:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+# jobs:
+#   sync:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Repository
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
 
-      - name: Install Notion MD Exporter Tool (Local Installation)
-        run: npm install notion-to-md @notionhq/client 
+#       - name: Install Notion MD Exporter Tool (Local Installation)
+#         run: npm install notion-to-md @notionhq/client 
 
-      - name: Fetch and Convert Notion Page
-        env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-        run: |
-          node -e "
-          import('notion-to-md').then(({ NotionToMarkdown }) => {
-            import('@notionhq/client').then(({ Client }) => {
-              const client = new Client({ auth: process.env.NOTION_TOKEN });
-              const n2m = new NotionToMarkdown({ notionClient: client });
+#       - name: Fetch and Convert Notion Page
+#         env:
+#           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+#         run: |
+#           node -e "
+#           import('notion-to-md').then(({ NotionToMarkdown }) => {
+#             import('@notionhq/client').then(({ Client }) => {
+#               const client = new Client({ auth: process.env.NOTION_TOKEN });
+#               const n2m = new NotionToMarkdown({ notionClient: client });
               
-              const pageId = '3a406713339480468dcffa3fadbf47ff'; 
-              n2m.setCustomTransformer('image', async (block) => {
-                const fs = require('fs');
-                const path = require('path');
-                const crypto = require('crypto');
-                const imgDir = 'SOC-L1/images';
-                if (!fs.existsSync(imgDir)){
-                    fs.mkdirSync(imgDir, { recursive: true });
-                }
-                let imageUrl = '';
-                if (block.image.type === 'external') imageUrl = block.image.external.url;
-                if (block.image.type === 'file') imageUrl = block.image.file.url;
+#               const pageId = '3a406713339480468dcffa3fadbf47ff'; 
+#               n2m.setCustomTransformer('image', async (block) => {
+#                 const fs = require('fs');
+#                 const path = require('path');
+#                 const crypto = require('crypto');
+#                 const imgDir = 'SOC-L1/images';
+#                 if (!fs.existsSync(imgDir)){
+#                     fs.mkdirSync(imgDir, { recursive: true });
+#                 }
+#                 let imageUrl = '';
+#                 if (block.image.type === 'external') imageUrl = block.image.external.url;
+#                 if (block.image.type === 'file') imageUrl = block.image.file.url;
                 
-                if (!imageUrl) return '';
+#                 if (!imageUrl) return '';
 
-                try {
-                  const hash = crypto.createHash('md5').update(imageUrl).digest('hex');
-                  const fileName = hash + '.png';
-                  const localPath = path.join(imgDir, fileName);
-                  const markdownPath = 'images/' + fileName;
-                  const response = await fetch(imageUrl);
-                  const arrayBuffer = await response.arrayBuffer();
-                  const buffer = Buffer.from(arrayBuffer);
-                  fs.writeFileSync(localPath, buffer);
-                  const caption = block.image.caption?.[0]?.plain_text || 'Image';
-                  return '![' + caption + '](' + markdownPath + ')';
-                } catch (error) {
-                  console.error('Failed to download image:', error.message);
-                  return '![Image Download Failed](' + imageUrl + ')';
-                }
-              });
+#                 try {
+#                   const hash = crypto.createHash('md5').update(imageUrl).digest('hex');
+#                   const fileName = hash + '.png';
+#                   const localPath = path.join(imgDir, fileName);
+#                   const markdownPath = 'images/' + fileName;
+#                   const response = await fetch(imageUrl);
+#                   const arrayBuffer = await response.arrayBuffer();
+#                   const buffer = Buffer.from(arrayBuffer);
+#                   fs.writeFileSync(localPath, buffer);
+#                   const caption = block.image.caption?.[0]?.plain_text || 'Image';
+#                   return '![' + caption + '](' + markdownPath + ')';
+#                 } catch (error) {
+#                   console.error('Failed to download image:', error.message);
+#                   return '![Image Download Failed](' + imageUrl + ')';
+#                 }
+#               });
 
-              n2m.pageToMarkdown(pageId).then(mdblocks => {
-                const mdString = n2m.toMarkdownString(mdblocks);
-                const fs = require('fs');
+#               n2m.pageToMarkdown(pageId).then(mdblocks => {
+#                 const mdString = n2m.toMarkdownString(mdblocks);
+#                 const fs = require('fs');
                 
-                fs.writeFileSync('SOC-L1/SOC-Level-1.md', mdString.parent);
-                console.log('Notion notes converted successfully!');
-              });
-            });
-          });
-          "
+#                 fs.writeFileSync('SOC-L1/SOC-Level-1.md', mdString.parent);
+#                 console.log('Notion notes converted successfully!');
+#               });
+#             });
+#           });
+#           "
 
-      - name: Commit and Push Changes
-        run: |
-          git config --global user.name "abhinavbibek"
-          git config --global user.email "bibekavi22@gmail.com"
-          # Stage the text notes alongside the local downloaded images directory
-          git add SOC-L1/SOC-Level-1.md
-          if [ -d "SOC-L1/images" ]; then git add SOC-L1/images/; fi
+#       - name: Commit and Push Changes
+#         run: |
+#           git config --global user.name "abhinavbibek"
+#           git config --global user.email "bibekavi22@gmail.com"
+#           # Stage the text notes alongside the local downloaded images directory
+#           git add SOC-L1/SOC-Level-1.md
+#           if [ -d "SOC-L1/images" ]; then git add SOC-L1/images/; fi
           
-          # Commit updates only if changes exist to clean up workspace commits history
-          git diff-index --quiet HEAD || git commit -m "notion-sync: auto update SOC Level 1 notes and assets"
-          git push origin main
+#           # Commit updates only if changes exist to clean up workspace commits history
+#           git diff-index --quiet HEAD || git commit -m "notion-sync: auto update SOC Level 1 notes and assets"
+#           git push origin main
