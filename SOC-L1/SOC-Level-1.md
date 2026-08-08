@@ -72,6 +72,117 @@ The following screenshot shows the dashboard of an EDR console. All the data f
 ![Image](images/d62c5aef6fd127b9db76ebfb5b0a1fd7.png)
 
 
+
+
+
+# SIEM
+
+
+→ A unique Event ID **104** is logged every time a user tries to remove or clear event logs. 
+
+
+## Splunk
+
+
+Splunk is one of the leading SIEM solutions in the market. It allows users to collect, analyze, and correlate network and machine logs in real time.
+
+
+Splunk has three main components: Forwarder, Indexer, and Search Head. These components work together to help us search and analyze the data. These components are explained below:
+
+
+## Splunk Forwarder
+
+
+Splunk Forwarder is a lightweight agent installed on the endpoint intended to be monitored, and its main task is to collect the data and send it to the Splunk instance.
+
+
+The forwarder collects the data from the log sources and sends it to the Splunk Indexer. 
+
+
+## Splunk Indexer
+
+
+Splunk Indexer plays the main role in processing the data it receives from forwarders. It parses and normalizes the data into field-value pairs, categorizes it, and stores the results as events, making the processed data easy to search and analyze.
+
+
+Now, the data, which is normalized and stored by the indexer, can be searched by the Search Head, as explained below.
+
+
+## Search Head
+
+
+Splunk Search Head is the place within the **Search & Reporting App** where users can search the indexed logs, as shown below. The searches are done using the **SPL** (Search Processing Language), a powerful query language for searching indexed data. When the user performs a search, the request is sent to the indexer, and the relevant events are returned as field-value pairs.
+
+
+![Image](images/f01f09e7bdcd5c4f7383a768d7cb3aab.png)
+
+
+The Search Head also allows you to transform results into presentable tables and visualizations such as pie, bar, and column charts, as shown below:
+
+
+![Image](images/19f7bf39773e7b8aa7387119f4368261.png)
+
+
+## Practical Demo with a json VPN Log file
+
+
+The downloaded `VPN_logs` file is newline-delimited JSON. Use the Splunk upload wizard so Splunk treats each line as one event.
+
+1. Open **Add Data** and choose **Upload**.
+2. Select the downloaded `VPN_logs` file.
+3. Keep the JSON source type detected by .
+
+    Splunk
+
+4. On **Input Settings**, create or select the index `VPN_Logs`.
+5. After the upload completes, open **Search & Reporting** and set the time picker to **All time**.
+
+If the field names do not appear in search results, add `| spath` after the base search. That tells Splunk to parse the JSON fields from each event.
+
+
+## **Useful checks**
+
+
+Use these searches to check your import before answering the questions:
+
+
+```plain text
+index=VPN_Logs
+| stats count
+```
+
+
+```plain text
+index=VPN_Logs
+| spath
+| search UserName="Maleena"
+| stats count
+```
+
+
+```plain text
+index=VPN_Logs
+| spath
+| search Source_ip="107.14.182.38"
+| stats values(UserName) as UserName count
+```
+
+
+```plain text
+index=VPN_Logs
+| spath
+| search Source_Country!="France"
+| stats count
+```
+
+
+```plain text
+index=VPN_Logs
+| spath
+| search Source_ip="107.3.206.58"
+| stats count
+```
+
 ## **What is Telemetry?**
 
 
@@ -324,116 +435,6 @@ index="network_logs" sourcetype="ids_logs" classification="Potential Data Exfilt
 
 
 Shows hosts generating **Potential Data Exfiltration** alerts. The source IP is the compromised machine attempting to upload data.
-
-
-# SIEM
-
-
-→ A unique Event ID **104** is logged every time a user tries to remove or clear event logs. 
-
-
-## Splunk
-
-
-Splunk is one of the leading SIEM solutions in the market. It allows users to collect, analyze, and correlate network and machine logs in real time.
-
-
-Splunk has three main components: Forwarder, Indexer, and Search Head. These components work together to help us search and analyze the data. These components are explained below:
-
-
-## Splunk Forwarder
-
-
-Splunk Forwarder is a lightweight agent installed on the endpoint intended to be monitored, and its main task is to collect the data and send it to the Splunk instance.
-
-
-The forwarder collects the data from the log sources and sends it to the Splunk Indexer. 
-
-
-## Splunk Indexer
-
-
-Splunk Indexer plays the main role in processing the data it receives from forwarders. It parses and normalizes the data into field-value pairs, categorizes it, and stores the results as events, making the processed data easy to search and analyze.
-
-
-Now, the data, which is normalized and stored by the indexer, can be searched by the Search Head, as explained below.
-
-
-## Search Head
-
-
-Splunk Search Head is the place within the **Search & Reporting App** where users can search the indexed logs, as shown below. The searches are done using the **SPL** (Search Processing Language), a powerful query language for searching indexed data. When the user performs a search, the request is sent to the indexer, and the relevant events are returned as field-value pairs.
-
-
-![Image](images/f01f09e7bdcd5c4f7383a768d7cb3aab.png)
-
-
-The Search Head also allows you to transform results into presentable tables and visualizations such as pie, bar, and column charts, as shown below:
-
-
-![Image](images/19f7bf39773e7b8aa7387119f4368261.png)
-
-
-## Practical Demo with a json VPN Log file
-
-
-The downloaded `VPN_logs` file is newline-delimited JSON. Use the Splunk upload wizard so Splunk treats each line as one event.
-
-1. Open **Add Data** and choose **Upload**.
-2. Select the downloaded `VPN_logs` file.
-3. Keep the JSON source type detected by .
-
-    Splunk
-
-4. On **Input Settings**, create or select the index `VPN_Logs`.
-5. After the upload completes, open **Search & Reporting** and set the time picker to **All time**.
-
-If the field names do not appear in search results, add `| spath` after the base search. That tells Splunk to parse the JSON fields from each event.
-
-
-## **Useful checks**
-
-
-Use these searches to check your import before answering the questions:
-
-
-```plain text
-index=VPN_Logs
-| stats count
-```
-
-
-```plain text
-index=VPN_Logs
-| spath
-| search UserName="Maleena"
-| stats count
-```
-
-
-```plain text
-index=VPN_Logs
-| spath
-| search Source_ip="107.14.182.38"
-| stats values(UserName) as UserName count
-```
-
-
-```plain text
-index=VPN_Logs
-| spath
-| search Source_Country!="France"
-| stats count
-```
-
-
-```plain text
-index=VPN_Logs
-| spath
-| search Source_ip="107.3.206.58"
-| stats count
-```
-
 
 # **Elastic Stack**
 
@@ -11435,3 +11436,229 @@ FAILED_AUTH
 That IP is the attacker.
 
 > Unlike normal users who may fail once or twice, the brute-force attacker generates dozens of `FAILED_AUTH` events in a very short time.
+
+# Horizontal and Vertical Scanning
+
+## Horizontal Scanning
+
+A **horizontal scan** occurs when an attacker scans the **same port across multiple destination IP addresses**.
+
+Example:
+
+```text
+Attacker → 10.0.0.10:445
+Attacker → 10.0.0.20:445
+Attacker → 10.0.0.30:445
+Attacker → 10.0.0.40:445
+```
+
+The attacker is checking:
+
+> Which machines have port 445 open?
+
+### Detection Pattern
+
+```text
+Same Source IP
+      +
+Same Destination Port
+      +
+Multiple Destination IPs
+```
+
+### Splunk Filter
+
+```spl
+index="network_logs"
+| stats dc(dst_ip) AS unique_destinations BY src_ip dst_port
+| where unique_destinations > 5
+```
+
+### Filter Meaning
+
+- `BY src_ip dst_port` → Groups traffic by the **source IP and destination port**.
+- `dc(dst_ip)` → Counts the number of **unique destination IPs**.
+- `where unique_destinations > 5` → Shows cases where one source contacted more than 5 different hosts using the same port.
+
+Example result:
+
+```text
+src_ip         dst_port    unique_destinations
+203.0.113.10   445         20
+```
+
+This means `203.0.113.10` contacted 20 different hosts on port `445`.
+
+**Many destination IPs + same port = Horizontal Scan**
+
+---
+
+## Vertical Scanning
+
+A **vertical scan** occurs when an attacker scans **multiple ports on the same destination IP**.
+
+Example:
+
+```text
+Attacker → 10.0.0.20:21
+Attacker → 10.0.0.20:22
+Attacker → 10.0.0.20:23
+Attacker → 10.0.0.20:80
+Attacker → 10.0.0.20:443
+```
+
+The attacker is checking:
+
+> Which services/ports are open on this machine?
+
+### Detection Pattern
+
+```text
+Same Source IP
+      +
+Same Destination IP
+      +
+Multiple Destination Ports
+```
+
+### Splunk Filter
+
+```spl
+index="network_logs"
+| stats dc(dst_port) AS unique_ports BY src_ip dst_ip
+| where unique_ports > 5
+```
+
+### Filter Meaning
+
+- `BY src_ip dst_ip` → Groups traffic by the **source IP and destination IP**.
+- `dc(dst_port)` → Counts the number of **unique destination ports**.
+- `where unique_ports > 5` → Shows cases where one source scanned more than 5 different ports on the same host.
+
+Example result:
+
+```text
+src_ip         dst_ip       unique_ports
+203.0.113.10   10.0.0.20    15
+```
+
+This means `203.0.113.10` scanned 15 different ports on `10.0.0.20`.
+
+**Same destination IP + many ports = Vertical Scan**
+
+---
+
+## Horizontal vs Vertical
+
+| Scan Type | Source IP | Destination IP | Destination Port |
+|---|---|---|---|
+| **Horizontal** | Same | Many | Same |
+| **Vertical** | Same | Same | Many |
+
+### Easy Way to Remember
+
+**Horizontal = many machines**
+
+```text
+Attacker → Host 1:445
+         → Host 2:445
+         → Host 3:445
+```
+
+**Vertical = many ports**
+
+```text
+Attacker → Server:21
+         → Server:22
+         → Server:80
+         → Server:443
+```
+
+---
+
+## Mixed Scanning
+
+Attackers can combine both techniques by scanning **multiple ports across multiple hosts**.
+
+Example:
+
+```text
+Attacker → Host 1:22
+Attacker → Host 1:445
+Attacker → Host 2:22
+Attacker → Host 2:445
+Attacker → Host 3:22
+Attacker → Host 3:445
+```
+
+This combines **horizontal and vertical scanning**.
+
+
+## Network Discovery Scans
+
+### Ping Sweep
+
+A **ping sweep** sends ICMP requests to many IPs to find live hosts.
+
+**Detection pattern:**
+```text
+Same Source IP → Many Destination IPs → ICMP
+```
+
+**Splunk filter:**
+```spl
+index="network_logs" network.protocol="icmp"
+```
+
+Look for one source communicating with many destination IPs.
+
+**Answer:** `192.168.230.127`
+
+### TCP SYN Scan
+
+A **SYN scan** sends SYN packets to check TCP ports without completing the handshake.
+
+```text
+SYN → SYN,ACK → RST
+```
+
+**Splunk filter:**
+```spl
+index="network_logs" src_ip="203.0.113.25" dest_ip="192.168.230.145"
+```
+
+Check `zeek.conn.conn_state`. `S0` means a connection attempt was seen but no connection was established, which is commonly seen with SYN scans.
+
+**Answer:** `TCP SYN Scan`
+
+### UDP Scan
+
+A **UDP scan** sends UDP probes to multiple ports. A closed UDP port commonly responds with **ICMP Type 3, Code 3 (Port Unreachable)**.
+
+**Splunk filter:**
+```spl
+index="network_logs" network.protocol="udp"
+```
+
+For possible UDP port scanning:
+
+```spl
+index="network_logs" network.protocol="udp"
+| stats dc(destination.port) AS unique_ports BY source.ip destination.ip
+| where unique_ports > 5
+```
+
+`dc(destination.port)` counts different UDP ports contacted by the same source against the same destination.
+
+**UDP scan indicator:** One source → many UDP ports.
+
+**TryHackMe answer:** `N`
+
+### Quick Reference
+
+| Scan | Main Indicator |
+|---|---|
+| Ping Sweep | ICMP from one source to many IPs |
+| TCP SYN Scan | SYN attempts / `S0` |
+| UDP Scan | One source probing many UDP ports |
+| Closed UDP Port | ICMP Type 3, Code 3 |
