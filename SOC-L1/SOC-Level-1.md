@@ -20,7 +20,7 @@ It collects detailed data from the endpoints, which includes process modificatio
 The following screenshot shows graphical representation of a process tree. We can see which processes were spawned on the endpoint. Each node represents a process. The lines connecting them represents their relationship. If we click on the `+` icon given with each process, we will be able to see all the network connections, registry changes, file changes etc. associated with that process. 
 
 
-![Image](images/752adbc387aae9032a87bbce12e8fc0d.png)
+![Image](images/6ece900bb769f8804d58adcb7196b53e.png)
 
 
 ### **Detection**
@@ -32,7 +32,7 @@ It incorporates signature-based detections as well as behavior-based detections,
 The following screenshot shows a dashboard of all the detections happening on the different endpoints. Each detection is represented by a row with different fields including the severity of the detection, time, triggering file, hostname, username, and more. The Tactic via Technique field maps the detection with MITRE. Any detection when clicked will show us rich details which helps a SOC analyst during the analysis.
 
 
-![Image](images/fef89245c98a7677e1f7a63458c5c6b5.png)
+![Image](images/2db2ce1c9e39677ce2540e65c56d55e6.png)
 
 
 ### **Response**
@@ -44,7 +44,7 @@ EDR also empowers analysts to take action on detected threats. These actions ca
 The following screenshot shows the actions available that can be taken on the host after connecting to it.
 
 
-![Image](images/7aa73a4255e10214f1809dedbb486b44.png)
+![Image](images/2b11d732d98e9876e5d517fc859643ab.png)
 
 
 Inside an EDR, response actions focus on four immediate steps:
@@ -69,118 +69,9 @@ All the detailed data sent by the EDR agents is correlated and analyzed throug
 The following screenshot shows the dashboard of an EDR console. All the data from the endpoint agents is coming into this console, and the detections are happening here. This dashboard gives a holistic view of the current status of detections in all the endpoints.
 
 
-![Image](images/10453c325bc728f54316c9a3ab34c8b0.png)
+![Image](images/d62c5aef6fd127b9db76ebfb5b0a1fd7.png)
 
 
-
-
-# SIEM
-
-
-→ A unique Event ID **104** is logged every time a user tries to remove or clear event logs. 
-
-
-## Splunk
-
-
-Splunk is one of the leading SIEM solutions in the market. It allows users to collect, analyze, and correlate network and machine logs in real time.
-
-
-Splunk has three main components: Forwarder, Indexer, and Search Head. These components work together to help us search and analyze the data. These components are explained below:
-
-
-## Splunk Forwarder
-
-
-Splunk Forwarder is a lightweight agent installed on the endpoint intended to be monitored, and its main task is to collect the data and send it to the Splunk instance.
-
-
-The forwarder collects the data from the log sources and sends it to the Splunk Indexer. 
-
-
-## Splunk Indexer
-
-
-Splunk Indexer plays the main role in processing the data it receives from forwarders. It parses and normalizes the data into field-value pairs, categorizes it, and stores the results as events, making the processed data easy to search and analyze.
-
-
-Now, the data, which is normalized and stored by the indexer, can be searched by the Search Head, as explained below.
-
-
-## Search Head
-
-
-Splunk Search Head is the place within the **Search & Reporting App** where users can search the indexed logs, as shown below. The searches are done using the **SPL** (Search Processing Language), a powerful query language for searching indexed data. When the user performs a search, the request is sent to the indexer, and the relevant events are returned as field-value pairs.
-
-
-![Image](images/f01f09e7bdcd5c4f7383a768d7cb3aab.png)
-
-
-The Search Head also allows you to transform results into presentable tables and visualizations such as pie, bar, and column charts, as shown below:
-
-
-![Image](images/19f7bf39773e7b8aa7387119f4368261.png)
-
-
-## Practical Demo with a json VPN Log file
-
-
-The downloaded `VPN_logs` file is newline-delimited JSON. Use the Splunk upload wizard so Splunk treats each line as one event.
-
-1. Open **Add Data** and choose **Upload**.
-2. Select the downloaded `VPN_logs` file.
-3. Keep the JSON source type detected by .
-
-    Splunk
-
-4. On **Input Settings**, create or select the index `VPN_Logs`.
-5. After the upload completes, open **Search & Reporting** and set the time picker to **All time**.
-
-If the field names do not appear in search results, add `| spath` after the base search. That tells Splunk to parse the JSON fields from each event.
-
-
-## **Useful checks**
-
-
-Use these searches to check your import before answering the questions:
-
-
-```plain text
-index=VPN_Logs
-| stats count
-```
-
-
-```plain text
-index=VPN_Logs
-| spath
-| search UserName="Maleena"
-| stats count
-```
-
-
-```plain text
-index=VPN_Logs
-| spath
-| search Source_ip="107.14.182.38"
-| stats values(UserName) as UserName count
-```
-
-
-```plain text
-index=VPN_Logs
-| spath
-| search Source_Country!="France"
-| stats count
-```
-
-
-```plain text
-index=VPN_Logs
-| spath
-| search Source_ip="107.3.206.58"
-| stats count
-```
 ## **What is Telemetry?**
 
 
@@ -434,6 +325,116 @@ index="network_logs" sourcetype="ids_logs" classification="Potential Data Exfilt
 
 Shows hosts generating **Potential Data Exfiltration** alerts. The source IP is the compromised machine attempting to upload data.
 
+
+# SIEM
+
+
+→ A unique Event ID **104** is logged every time a user tries to remove or clear event logs. 
+
+
+## Splunk
+
+
+Splunk is one of the leading SIEM solutions in the market. It allows users to collect, analyze, and correlate network and machine logs in real time.
+
+
+Splunk has three main components: Forwarder, Indexer, and Search Head. These components work together to help us search and analyze the data. These components are explained below:
+
+
+## Splunk Forwarder
+
+
+Splunk Forwarder is a lightweight agent installed on the endpoint intended to be monitored, and its main task is to collect the data and send it to the Splunk instance.
+
+
+The forwarder collects the data from the log sources and sends it to the Splunk Indexer. 
+
+
+## Splunk Indexer
+
+
+Splunk Indexer plays the main role in processing the data it receives from forwarders. It parses and normalizes the data into field-value pairs, categorizes it, and stores the results as events, making the processed data easy to search and analyze.
+
+
+Now, the data, which is normalized and stored by the indexer, can be searched by the Search Head, as explained below.
+
+
+## Search Head
+
+
+Splunk Search Head is the place within the **Search & Reporting App** where users can search the indexed logs, as shown below. The searches are done using the **SPL** (Search Processing Language), a powerful query language for searching indexed data. When the user performs a search, the request is sent to the indexer, and the relevant events are returned as field-value pairs.
+
+
+![Image](images/f01f09e7bdcd5c4f7383a768d7cb3aab.png)
+
+
+The Search Head also allows you to transform results into presentable tables and visualizations such as pie, bar, and column charts, as shown below:
+
+
+![Image](images/19f7bf39773e7b8aa7387119f4368261.png)
+
+
+## Practical Demo with a json VPN Log file
+
+
+The downloaded `VPN_logs` file is newline-delimited JSON. Use the Splunk upload wizard so Splunk treats each line as one event.
+
+1. Open **Add Data** and choose **Upload**.
+2. Select the downloaded `VPN_logs` file.
+3. Keep the JSON source type detected by .
+
+    Splunk
+
+4. On **Input Settings**, create or select the index `VPN_Logs`.
+5. After the upload completes, open **Search & Reporting** and set the time picker to **All time**.
+
+If the field names do not appear in search results, add `| spath` after the base search. That tells Splunk to parse the JSON fields from each event.
+
+
+## **Useful checks**
+
+
+Use these searches to check your import before answering the questions:
+
+
+```plain text
+index=VPN_Logs
+| stats count
+```
+
+
+```plain text
+index=VPN_Logs
+| spath
+| search UserName="Maleena"
+| stats count
+```
+
+
+```plain text
+index=VPN_Logs
+| spath
+| search Source_ip="107.14.182.38"
+| stats values(UserName) as UserName count
+```
+
+
+```plain text
+index=VPN_Logs
+| spath
+| search Source_Country!="France"
+| stats count
+```
+
+
+```plain text
+index=VPN_Logs
+| spath
+| search Source_ip="107.3.206.58"
+| stats count
+```
+
+
 # **Elastic Stack**
 
 
@@ -443,7 +444,7 @@ Elastic Stack (ELK) was originally developed to store, search, and visualize lar
 ### Core components
 
 
-![Image](images/c19c2227b3d2860d6765e2d5c6b3d98c.png)
+![Image](images/6e3e45eb4a465d661cac53dbabb9d543.png)
 
 
 ## **How they work together:**
@@ -533,7 +534,7 @@ It connects different tools from various vendors within the unified SOAR inter
 # **Pyramid of Pain** 
 
 
-![Image](images/27a22287751692ba21b32969b205d50f.png)
+![Image](images/501193d6b4971aa3f48949d8f34cc43d.png)
 
 
 The **Pyramid of Pain** is **a conceptual model that ranks indicators of compromise (IOCs) from easy to hard for attackers to change: Hash Values, IP Addresses, and Domain Names**
@@ -765,7 +766,7 @@ The attacker performs the final objective, such as stealing credentials, encrypt
 The **Unified Kill Chain (UKC)** extends the traditional 7-stage Cyber Kill Chain into **18 phases**, providing a much more detailed view of how modern attackers operate. It also aligns closely with the **MITRE ATT&CK** framework, making it particularly useful for SOC analysts, threat hunters, and incident responders.
 
 
-![Image](images/b053198a87fea4f6f05aa02d40cea1f9.png)
+![Image](images/213e2500a5187f5ad4ae264801241834.png)
 
 
 # **MITRE ATT&CK Framework**
@@ -809,7 +810,7 @@ In simple terms:
 ---
 
 
-![Image](images/bdcf16c5ba21d545c441ae562c8fb92d.png)
+![Image](images/080b08e836f989eb95e89fe0d25056a0.png)
 
 
 # What Does Each CAR Analytic Contain?
@@ -1179,7 +1180,7 @@ v=DKIM1; k=rsa; p=<public_key>
 ## DKIM Verification Failure (PermError)
 
 
-![Image](images/8d743e38fcc75165581f67f5d9dad48a.png)
+![Image](images/799b2235ebcd7a6abfa9ffae5d7d5fdb.png)
 
 
 A **PermError (Permanent Error)** means DKIM verification failed due to issues such as:
@@ -2226,7 +2227,7 @@ The **Internal DNS Server acts on behalf of the Host**, so hosts do not directly
 ### 3. SMB with Kerberos Flow
 
 
-![Image](images/a732c6a506f70e0c77bd091b36ca811b.png)
+![Image](images/83998d224b7b59c029c7bf093117381f.png)
 
 
 When a user accesses a shared folder (e.g., `\\FILESERVER\MARKETING`), authentication happens before the SMB connection is established.
@@ -2847,7 +2848,7 @@ IPv4 Endpoints
 **Path:** `Edit → Preferences → Name Resolution`
 
 
-![Image](images/4b6a0c84a21b19979677a5db9f5ccbca.png)
+![Image](images/851aea7d29d0a0cd0a948359d367be30.png)
 
 
 ### What it Does
@@ -2902,7 +2903,7 @@ Makes packet analysis much easier by displaying **meaningful names** instead of 
 **Check :** Statistics → Endpoints
 
 
-![Image](images/3a310cdb04b1096fe5a3491dd324cc16.png)
+![Image](images/232fc0586bb00ac10410da105e6cf0be.png)
 
 
 ### What it Does
@@ -3759,7 +3760,7 @@ ACK -------------------->
 ### What happens?
 
 
-![Image](images/d373696bcccb140dbbc909c80a948661.png)
+![Image](images/8e527aefedf6a79454577c7012133838.png)
 
 1. Scanner sends **SYN**.
 2. Target replies **SYN, ACK**.
@@ -3786,7 +3787,7 @@ SYN -------------------->
 ### What happens?
 
 
-![Image](images/4c0a87059f0beb32522ca0209779746c.png)
+![Image](images/1fd5b4682b0e36c747daae6405316ebf.png)
 
 1. Scanner sends **SYN**.
 2. Target immediately replies **RST, ACK**.
@@ -3854,7 +3855,7 @@ RST -------------------->
 ### What happens?
 
 
-![Image](images/597891ff7cc698579cd09dc7380c0194.png)
+![Image](images/c0287796fa502bfa93a8c7f957140178.png)
 
 1. Scanner sends **SYN**.
 2. Server replies **SYN, ACK**.
@@ -3872,7 +3873,7 @@ The scanner already knows the port is open, so it aborts the connection.
 ## Closed TCP Port
 
 
-![Image](images/1fd5dcf64736ba0e1c4cd68080e8e809.png)
+![Image](images/1e88c174987b083d2f09db9d94e56585.png)
 
 
 ```plain text
@@ -4248,7 +4249,7 @@ Shows every ARP packet.
 ## ARP Requests
 
 
-![Image](images/ec92c0b9131facc56a50c50477837d81.png)
+![Image](images/c0233c5e8f7babd9b0625e535c48f1dc.png)
 
 
 ```plain text
@@ -4275,7 +4276,7 @@ Who has 192.168.1.1?
 ## ARP Replies
 
 
-![Image](images/215b7a63944c5242defcb0a920388144.png)
+![Image](images/6f3f733724b3b149560d775133fb213a.png)
 
 
 ```plain text
@@ -4327,7 +4328,7 @@ If one MAC sends **many ARP requests** to different IPs, it is likely performing
 ## Duplicate Address Detection
 
 
-![Image](images/64bb370fe88c59cde957bb2589f7b9c1.png)
+![Image](images/9de39febe8f1aae8b130a360d216e56a.png)
 
 
 ```plain text
@@ -4510,7 +4511,7 @@ Example:
 Check if that MAC sends many ARP Requests.
 
 
-![Image](images/9b64043ea8a4620e96131cf513b5c277.png)
+![Image](images/0866e9fc7c781877499497dd6aa55827.png)
 
 
 Filter:
@@ -4538,10 +4539,10 @@ Large numbers suggest **ARP Scanning/Flooding**.
 Check whether HTTP traffic is redirected. If HTTP is not enough then we will add MAC address as column.
 
 
-![Image](images/204eccc8b72f707709dc2e5563697eeb.png)
+![Image](images/74b0b972a46800376cea581849fea407.png)
 
 
-![Image](images/d61c68ba88fed6dc501b83e10005227f.png)
+![Image](images/ecd054db320f02a5dcfae63d4ccb5b26.png)
 
 
 Filter:
