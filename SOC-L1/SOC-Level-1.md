@@ -72,6 +72,115 @@ The following screenshot shows the dashboard of an EDR console. All the data f
 ![Image](images/10453c325bc728f54316c9a3ab34c8b0.png)
 
 
+
+
+# SIEM
+
+
+→ A unique Event ID **104** is logged every time a user tries to remove or clear event logs. 
+
+
+## Splunk
+
+
+Splunk is one of the leading SIEM solutions in the market. It allows users to collect, analyze, and correlate network and machine logs in real time.
+
+
+Splunk has three main components: Forwarder, Indexer, and Search Head. These components work together to help us search and analyze the data. These components are explained below:
+
+
+## Splunk Forwarder
+
+
+Splunk Forwarder is a lightweight agent installed on the endpoint intended to be monitored, and its main task is to collect the data and send it to the Splunk instance.
+
+
+The forwarder collects the data from the log sources and sends it to the Splunk Indexer. 
+
+
+## Splunk Indexer
+
+
+Splunk Indexer plays the main role in processing the data it receives from forwarders. It parses and normalizes the data into field-value pairs, categorizes it, and stores the results as events, making the processed data easy to search and analyze.
+
+
+Now, the data, which is normalized and stored by the indexer, can be searched by the Search Head, as explained below.
+
+
+## Search Head
+
+
+Splunk Search Head is the place within the **Search & Reporting App** where users can search the indexed logs, as shown below. The searches are done using the **SPL** (Search Processing Language), a powerful query language for searching indexed data. When the user performs a search, the request is sent to the indexer, and the relevant events are returned as field-value pairs.
+
+
+![Image](images/f01f09e7bdcd5c4f7383a768d7cb3aab.png)
+
+
+The Search Head also allows you to transform results into presentable tables and visualizations such as pie, bar, and column charts, as shown below:
+
+
+![Image](images/19f7bf39773e7b8aa7387119f4368261.png)
+
+
+## Practical Demo with a json VPN Log file
+
+
+The downloaded `VPN_logs` file is newline-delimited JSON. Use the Splunk upload wizard so Splunk treats each line as one event.
+
+1. Open **Add Data** and choose **Upload**.
+2. Select the downloaded `VPN_logs` file.
+3. Keep the JSON source type detected by .
+
+    Splunk
+
+4. On **Input Settings**, create or select the index `VPN_Logs`.
+5. After the upload completes, open **Search & Reporting** and set the time picker to **All time**.
+
+If the field names do not appear in search results, add `| spath` after the base search. That tells Splunk to parse the JSON fields from each event.
+
+
+## **Useful checks**
+
+
+Use these searches to check your import before answering the questions:
+
+
+```plain text
+index=VPN_Logs
+| stats count
+```
+
+
+```plain text
+index=VPN_Logs
+| spath
+| search UserName="Maleena"
+| stats count
+```
+
+
+```plain text
+index=VPN_Logs
+| spath
+| search Source_ip="107.14.182.38"
+| stats values(UserName) as UserName count
+```
+
+
+```plain text
+index=VPN_Logs
+| spath
+| search Source_Country!="France"
+| stats count
+```
+
+
+```plain text
+index=VPN_Logs
+| spath
+| search Source_ip="107.3.206.58"
+| stats count
+```
 ## **What is Telemetry?**
 
 
@@ -324,116 +433,6 @@ index="network_logs" sourcetype="ids_logs" classification="Potential Data Exfilt
 
 
 Shows hosts generating **Potential Data Exfiltration** alerts. The source IP is the compromised machine attempting to upload data.
-
-
-# SIEM
-
-
-→ A unique Event ID **104** is logged every time a user tries to remove or clear event logs. 
-
-
-## Splunk
-
-
-Splunk is one of the leading SIEM solutions in the market. It allows users to collect, analyze, and correlate network and machine logs in real time.
-
-
-Splunk has three main components: Forwarder, Indexer, and Search Head. These components work together to help us search and analyze the data. These components are explained below:
-
-
-## Splunk Forwarder
-
-
-Splunk Forwarder is a lightweight agent installed on the endpoint intended to be monitored, and its main task is to collect the data and send it to the Splunk instance.
-
-
-The forwarder collects the data from the log sources and sends it to the Splunk Indexer. 
-
-
-## Splunk Indexer
-
-
-Splunk Indexer plays the main role in processing the data it receives from forwarders. It parses and normalizes the data into field-value pairs, categorizes it, and stores the results as events, making the processed data easy to search and analyze.
-
-
-Now, the data, which is normalized and stored by the indexer, can be searched by the Search Head, as explained below.
-
-
-## Search Head
-
-
-Splunk Search Head is the place within the **Search & Reporting App** where users can search the indexed logs, as shown below. The searches are done using the **SPL** (Search Processing Language), a powerful query language for searching indexed data. When the user performs a search, the request is sent to the indexer, and the relevant events are returned as field-value pairs.
-
-
-![Image](images/f01f09e7bdcd5c4f7383a768d7cb3aab.png)
-
-
-The Search Head also allows you to transform results into presentable tables and visualizations such as pie, bar, and column charts, as shown below:
-
-
-![Image](images/19f7bf39773e7b8aa7387119f4368261.png)
-
-
-## Practical Demo with a json VPN Log file
-
-
-The downloaded `VPN_logs` file is newline-delimited JSON. Use the Splunk upload wizard so Splunk treats each line as one event.
-
-1. Open **Add Data** and choose **Upload**.
-2. Select the downloaded `VPN_logs` file.
-3. Keep the JSON source type detected by .
-
-    Splunk
-
-4. On **Input Settings**, create or select the index `VPN_Logs`.
-5. After the upload completes, open **Search & Reporting** and set the time picker to **All time**.
-
-If the field names do not appear in search results, add `| spath` after the base search. That tells Splunk to parse the JSON fields from each event.
-
-
-## **Useful checks**
-
-
-Use these searches to check your import before answering the questions:
-
-
-```plain text
-index=VPN_Logs
-| stats count
-```
-
-
-```plain text
-index=VPN_Logs
-| spath
-| search UserName="Maleena"
-| stats count
-```
-
-
-```plain text
-index=VPN_Logs
-| spath
-| search Source_ip="107.14.182.38"
-| stats values(UserName) as UserName count
-```
-
-
-```plain text
-index=VPN_Logs
-| spath
-| search Source_Country!="France"
-| stats count
-```
-
-
-```plain text
-index=VPN_Logs
-| spath
-| search Source_ip="107.3.206.58"
-| stats count
-```
-
 
 # **Elastic Stack**
 
