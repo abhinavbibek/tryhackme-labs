@@ -10645,6 +10645,234 @@ Select the packet in Wireshark.
 Open:
 
 
+
+## Data Exfiltration Through DNS Tunneling
+
+DNS tunneling hides stolen data inside DNS queries, usually by encoding data into long/random-looking subdomains.
+
+Example:
+
+```text
+aj83jd92jd82jd.dataexfil.com
+k29dk39dk20dk.dataexfil.com
+```
+
+The changing subdomain can contain encoded data, while `dataexfil.com` is the attacker's domain.
+
+### Main Indicators
+
+- Large number of DNS queries
+- Very long/random-looking query names
+- Many queries to the same external domain
+- Queries with no response
+- One internal host generating unusually many requests
+- TXT or other unusual DNS record types
+- Repeated queries at regular intervals
+
+---
+
+## Wireshark Analysis
+
+### Show All DNS Traffic
+
+```text
+dns
+```
+
+Shows all DNS queries and responses.
+
+### Show Only DNS Queries
+
+```text
+dns.flags.response == 0
+```
+
+`0` means the packet is a **DNS query**, not a response.
+
+Useful because exfiltrated data is commonly placed inside outbound DNS queries.
+
+### Find Large Packets
+
+```text
+dns && frame.len > 70
+```
+
+Shows DNS packets larger than 70 bytes.
+
+Large DNS packets can help identify suspicious tunneling traffic, although packet size alone does not prove tunneling.
+
+### Find Long DNS Names
+
+```text
+dns.qry.name.len > 30 && dns.flags.response == 0
+```
+
+Shows outbound DNS queries with unusually long query names.
+
+These may contain encoded or chunked data.
+
+### Exclude mDNS
+
+```text
+dns.qry.name.len > 30 && dns.flags.response == 0 && !mdns
+```
+
+`!mdns` removes local multicast DNS traffic and reduces noise.
+
+### Search for a Known Suspicious Domain
+
+```text
+dns.qry.name contains "dataexfil"
+```
+
+Shows DNS queries containing `dataexfil`.
+
+Once a suspicious domain is discovered, this is useful for confirming and counting its traffic.
+
+### Look for DNS Tunneling Tools
+
+```text
+dns contains "dnscat"
+```
+
+Searches DNS packet contents for the string `dnscat`.
+
+---
+
+## Splunk Analysis
+
+### Show DNS Logs
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+```
+
+Shows all DNS events in the dataset.
+
+### Count DNS Requests by Source IP
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+| stats count by src_ip
+| sort -count
+```
+
+Shows which local host generated the most DNS requests.
+
+**Useful for:** Finding the potentially compromised host generating the highest DNS volume.
+
+### Count Requests by Domain/Query
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+| stats count by query
+| sort -count
+```
+
+Shows which DNS queries occur most frequently.
+
+Look for a suspicious domain appearing repeatedly with different/random subdomains.
+
+### Find Long DNS Queries
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+| where len(query) > 30
+```
+
+Shows DNS queries longer than 30 characters.
+
+Long, random-looking queries are suspicious because attackers can encode stolen data into the subdomain.
+
+### Find Very Long Queries
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+| where len(query) > 60
+| sort -len(query)
+```
+
+Useful for focusing on the most abnormal DNS queries.
+
+### Find Queries With No Response
+
+If the log contains a response/status field, filter for events representing unanswered queries. In the PCAP, the equivalent Wireshark filter is:
+
+```text
+dns.flags.response == 0
+```
+
+### Count Suspicious Requests by Source
+
+After identifying suspicious long queries:
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+| where len(query) > 30
+| stats count by src_ip
+| sort -count
+```
+
+This shows which local IP generated the most suspicious long DNS requests.
+
+---
+
+## How to Solve the Questions
+
+### 1. What is the suspicious domain receiving the DNS traffic?
+
+In Wireshark:
+
+```text
+dns.qry.name.len > 30 && dns.flags.response == 0
+```
+
+Look at the queries:
+
+```text
+random-data-1.suspiciousdomain.com
+random-data-2.suspiciousdomain.com
+random-data-3.suspiciousdomain.com
+```
+
+The repeated root domain is the suspicious domain.
+
+Then confirm it with:
+
+```text
+dns.qry.name contains "suspiciousdomain"
+```
+
+---
+
+### 2. How many suspicious DNS tunneling events were observed?
+
+In Splunk:
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+| where len(query) > 30
+| stats count
+```
+
+The `count` is the number of DNS events matching the suspicious long-query condition.
+
+---
+
+### 3. Which local IP sent the maximum number of suspicious requests?
+
+In Splunk:
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+| where len(query) > 30
+| stats count by src_ip
+| sort -count
+```
+
+The IP at the top is the host that generated the most suspicious DNS tunneling requests.
+
+---
 ```plain text
 Tools
 
