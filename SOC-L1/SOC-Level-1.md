@@ -10646,233 +10646,7 @@ Open:
 
 
 
-## Data Exfiltration Through DNS Tunneling
 
-DNS tunneling hides stolen data inside DNS queries, usually by encoding data into long/random-looking subdomains.
-
-Example:
-
-```text
-aj83jd92jd82jd.dataexfil.com
-k29dk39dk20dk.dataexfil.com
-```
-
-The changing subdomain can contain encoded data, while `dataexfil.com` is the attacker's domain.
-
-### Main Indicators
-
-- Large number of DNS queries
-- Very long/random-looking query names
-- Many queries to the same external domain
-- Queries with no response
-- One internal host generating unusually many requests
-- TXT or other unusual DNS record types
-- Repeated queries at regular intervals
-
----
-
-## Wireshark Analysis
-
-### Show All DNS Traffic
-
-```text
-dns
-```
-
-Shows all DNS queries and responses.
-
-### Show Only DNS Queries
-
-```text
-dns.flags.response == 0
-```
-
-`0` means the packet is a **DNS query**, not a response.
-
-Useful because exfiltrated data is commonly placed inside outbound DNS queries.
-
-### Find Large Packets
-
-```text
-dns && frame.len > 70
-```
-
-Shows DNS packets larger than 70 bytes.
-
-Large DNS packets can help identify suspicious tunneling traffic, although packet size alone does not prove tunneling.
-
-### Find Long DNS Names
-
-```text
-dns.qry.name.len > 30 && dns.flags.response == 0
-```
-
-Shows outbound DNS queries with unusually long query names.
-
-These may contain encoded or chunked data.
-
-### Exclude mDNS
-
-```text
-dns.qry.name.len > 30 && dns.flags.response == 0 && !mdns
-```
-
-`!mdns` removes local multicast DNS traffic and reduces noise.
-
-### Search for a Known Suspicious Domain
-
-```text
-dns.qry.name contains "dataexfil"
-```
-
-Shows DNS queries containing `dataexfil`.
-
-Once a suspicious domain is discovered, this is useful for confirming and counting its traffic.
-
-### Look for DNS Tunneling Tools
-
-```text
-dns contains "dnscat"
-```
-
-Searches DNS packet contents for the string `dnscat`.
-
----
-
-## Splunk Analysis
-
-### Show DNS Logs
-
-```spl
-index="data_exfil" sourcetype="DNS_logs"
-```
-
-Shows all DNS events in the dataset.
-
-### Count DNS Requests by Source IP
-
-```spl
-index="data_exfil" sourcetype="DNS_logs"
-| stats count by src_ip
-| sort -count
-```
-
-Shows which local host generated the most DNS requests.
-
-**Useful for:** Finding the potentially compromised host generating the highest DNS volume.
-
-### Count Requests by Domain/Query
-
-```spl
-index="data_exfil" sourcetype="DNS_logs"
-| stats count by query
-| sort -count
-```
-
-Shows which DNS queries occur most frequently.
-
-Look for a suspicious domain appearing repeatedly with different/random subdomains.
-
-### Find Long DNS Queries
-
-```spl
-index="data_exfil" sourcetype="DNS_logs"
-| where len(query) > 30
-```
-
-Shows DNS queries longer than 30 characters.
-
-Long, random-looking queries are suspicious because attackers can encode stolen data into the subdomain.
-
-### Find Very Long Queries
-
-```spl
-index="data_exfil" sourcetype="DNS_logs"
-| where len(query) > 60
-| sort -len(query)
-```
-
-Useful for focusing on the most abnormal DNS queries.
-
-### Find Queries With No Response
-
-If the log contains a response/status field, filter for events representing unanswered queries. In the PCAP, the equivalent Wireshark filter is:
-
-```text
-dns.flags.response == 0
-```
-
-### Count Suspicious Requests by Source
-
-After identifying suspicious long queries:
-
-```spl
-index="data_exfil" sourcetype="DNS_logs"
-| where len(query) > 30
-| stats count by src_ip
-| sort -count
-```
-
-This shows which local IP generated the most suspicious long DNS requests.
-
----
-
-## How to Solve the Questions
-
-### 1. What is the suspicious domain receiving the DNS traffic?
-
-In Wireshark:
-
-```text
-dns.qry.name.len > 30 && dns.flags.response == 0
-```
-
-Look at the queries:
-
-```text
-random-data-1.suspiciousdomain.com
-random-data-2.suspiciousdomain.com
-random-data-3.suspiciousdomain.com
-```
-
-The repeated root domain is the suspicious domain.
-
-Then confirm it with:
-
-```text
-dns.qry.name contains "suspiciousdomain"
-```
-
----
-
-### 2. How many suspicious DNS tunneling events were observed?
-
-In Splunk:
-
-```spl
-index="data_exfil" sourcetype="DNS_logs"
-| where len(query) > 30
-| stats count
-```
-
-The `count` is the number of DNS events matching the suspicious long-query condition.
-
----
-
-### 3. Which local IP sent the maximum number of suspicious requests?
-
-In Splunk:
-
-```spl
-index="data_exfil" sourcetype="DNS_logs"
-| where len(query) > 30
-| stats count by src_ip
-| sort -count
-```
-
-The IP at the top is the host that generated the most suspicious DNS tunneling requests.
-
----
 ```plain text
 Tools
 
@@ -11890,3 +11664,407 @@ index="network_logs" network.protocol="udp"
 | TCP SYN Scan | SYN attempts / `S0` |
 | UDP Scan | One source probing many UDP ports |
 | Closed UDP Port | ICMP Type 3, Code 3 |
+
+
+
+## Data Exfiltration Through DNS Tunneling
+
+DNS tunneling hides stolen data inside DNS queries, usually by encoding data into long/random-looking subdomains.
+
+Example:
+
+```text
+aj83jd92jd82jd.dataexfil.com
+k29dk39dk20dk.dataexfil.com
+```
+
+The changing subdomain can contain encoded data, while `dataexfil.com` is the attacker's domain.
+
+### Main Indicators
+
+- Large number of DNS queries
+- Very long/random-looking query names
+- Many queries to the same external domain
+- Queries with no response
+- One internal host generating unusually many requests
+- TXT or other unusual DNS record types
+- Repeated queries at regular intervals
+
+---
+
+## Wireshark Analysis
+
+### Show All DNS Traffic
+
+```text
+dns
+```
+
+Shows all DNS queries and responses.
+
+### Show Only DNS Queries
+
+```text
+dns.flags.response == 0
+```
+
+`0` means the packet is a **DNS query**, not a response.
+
+Useful because exfiltrated data is commonly placed inside outbound DNS queries.
+
+### Find Large Packets
+
+```text
+dns && frame.len > 70
+```
+
+Shows DNS packets larger than 70 bytes.
+
+Large DNS packets can help identify suspicious tunneling traffic, although packet size alone does not prove tunneling.
+
+### Find Long DNS Names
+
+```text
+dns.qry.name.len > 30 && dns.flags.response == 0
+```
+
+Shows outbound DNS queries with unusually long query names.
+
+These may contain encoded or chunked data.
+
+### Exclude mDNS
+
+```text
+dns.qry.name.len > 30 && dns.flags.response == 0 && !mdns
+```
+
+`!mdns` removes local multicast DNS traffic and reduces noise.
+
+### Search for a Known Suspicious Domain
+
+```text
+dns.qry.name contains "dataexfil"
+```
+
+Shows DNS queries containing `dataexfil`.
+
+Once a suspicious domain is discovered, this is useful for confirming and counting its traffic.
+
+### Look for DNS Tunneling Tools
+
+```text
+dns contains "dnscat"
+```
+
+Searches DNS packet contents for the string `dnscat`.
+
+---
+
+## Splunk Analysis
+
+### Show DNS Logs
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+```
+
+Shows all DNS events in the dataset.
+
+### Count DNS Requests by Source IP
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+| stats count by src_ip
+| sort -count
+```
+
+Shows which local host generated the most DNS requests.
+
+**Useful for:** Finding the potentially compromised host generating the highest DNS volume.
+
+### Count Requests by Domain/Query
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+| stats count by query
+| sort -count
+```
+
+Shows which DNS queries occur most frequently.
+
+Look for a suspicious domain appearing repeatedly with different/random subdomains.
+
+### Find Long DNS Queries
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+| where len(query) > 30
+```
+
+Shows DNS queries longer than 30 characters.
+
+Long, random-looking queries are suspicious because attackers can encode stolen data into the subdomain.
+
+### Find Very Long Queries
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+| where len(query) > 60
+| sort -len(query)
+```
+
+Useful for focusing on the most abnormal DNS queries.
+
+### Find Queries With No Response
+
+If the log contains a response/status field, filter for events representing unanswered queries. In the PCAP, the equivalent Wireshark filter is:
+
+```text
+dns.flags.response == 0
+```
+
+### Count Suspicious Requests by Source
+
+After identifying suspicious long queries:
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+| where len(query) > 30
+| stats count by src_ip
+| sort -count
+```
+
+This shows which local IP generated the most suspicious long DNS requests.
+
+---
+
+## How to Solve the Questions
+
+### 1. What is the suspicious domain receiving the DNS traffic?
+
+In Wireshark:
+
+```text
+dns.qry.name.len > 30 && dns.flags.response == 0
+```
+
+Look at the queries:
+
+```text
+random-data-1.suspiciousdomain.com
+random-data-2.suspiciousdomain.com
+random-data-3.suspiciousdomain.com
+```
+
+The repeated root domain is the suspicious domain.
+
+Then confirm it with:
+
+```text
+dns.qry.name contains "suspiciousdomain"
+```
+
+---
+
+### 2. How many suspicious DNS tunneling events were observed?
+
+In Splunk:
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+| where len(query) > 30
+| stats count
+```
+
+The `count` is the number of DNS events matching the suspicious long-query condition.
+
+---
+
+### 3. Which local IP sent the maximum number of suspicious requests?
+
+In Splunk:
+
+```spl
+index="data_exfil" sourcetype="DNS_logs"
+| where len(query) > 30
+| stats count by src_ip
+| sort -count
+```
+
+The IP at the top is the host that generated the most suspicious DNS tunneling requests.
+
+---
+
+
+## Task 5: Detection — Data Exfiltration Through FTP
+
+FTP (File Transfer Protocol) transfers files between a client and server. Because traditional FTP sends commands and credentials in cleartext, attackers can abuse it to move stolen data outside the network.
+
+## How Attackers Use FTP for Exfiltration
+
+- Use compromised FTP accounts to transfer stolen files.
+- Upload sensitive files using `STOR`.
+- Download files using `RETR`.
+- Transfer data to suspicious external IP addresses.
+- Use passive FTP connections and high-numbered data ports to transfer files.
+
+## Indicators of FTP Exfiltration
+
+Look for:
+
+- Suspicious `USER` / `PASS` credentials.
+- `STOR` commands → client uploads a file to the FTP server.
+- Large FTP data transfers.
+- Sensitive filenames such as `.csv`, `.pdf`, `.txt`, `.doc`.
+- FTP connections to unusual external IP addresses.
+- Repeated file transfers from the same host/account.
+
+---
+
+## Wireshark Analysis
+
+### Show FTP Control and Data Traffic
+
+```text
+ftp || ftp-data
+```
+
+- `ftp` → FTP control traffic (commands, usernames, passwords).
+- `ftp-data` → FTP file-transfer data.
+- `||` → OR.
+
+This gives an overall view of the FTP session.
+
+### Find Login Credentials
+
+```text
+ftp.request.command == "USER" || ftp.request.command == "PASS"
+```
+
+- `USER` → Username submitted to the FTP server.
+- `PASS` → Password submitted to the FTP server.
+
+Useful for finding compromised or suspicious accounts.
+
+### Find File Uploads
+
+```text
+ftp.request.command == "STOR"
+```
+
+`STOR` means the client is **uploading a file to the FTP server**.
+
+This is important when investigating possible data movement.
+
+### Find File Downloads
+
+```text
+ftp.request.command == "RETR"
+```
+
+`RETR` means the client is **requesting/download­ing a file from the FTP server**.
+
+### Search for Suspicious Filenames
+
+```text
+ftp contains "csv"
+```
+
+Searches FTP packets for the string `csv`.
+
+Other useful searches:
+
+```text
+ftp contains "pdf"
+ftp contains "txt"
+ftp contains "doc"
+ftp contains "password"
+ftp contains "backup"
+```
+
+These can help identify potentially sensitive files.
+
+### Find Large FTP Packets
+
+```text
+ftp && frame.len > 90
+```
+
+Shows FTP packets larger than 90 bytes.
+
+Large packets can help identify file-transfer activity, but **packet size alone does not prove exfiltration**. Follow the TCP stream and inspect the associated transfer.
+
+### Search for a Specific FTP Account
+
+```text
+ftp.request.arg contains "guest"
+```
+
+Useful when investigating a suspicious username.
+
+### Find Successful Logins
+
+```text
+ftp.response.code == 230
+```
+
+`230` means the user has successfully logged in.
+
+### Find Failed Logins
+
+```text
+ftp.response.code == 530
+```
+
+`530` indicates that the login failed / the user was not logged in.
+
+Repeated `530` responses can indicate brute-force activity.
+
+---
+
+## Follow the FTP Transfer
+
+When you find a suspicious `STOR` or `RETR` packet:
+
+```text
+Right-click packet
+→ Follow
+→ TCP Stream
+```
+
+Inspect the stream for:
+
+- Username
+- Password
+- Filename
+- File contents
+- Destination
+- Suspicious commands
+
+---
+
+## Example Investigation
+
+Suppose you find:
+
+```text
+USER guest
+PASS guest123
+STOR employee_data.csv
+```
+
+This means:
+
+```text
+guest account
+      ↓
+successful/suspicious FTP session
+      ↓
+employee_data.csv uploaded
+      ↓
+possible data exfiltration
+```
+
+If the FTP server is external and the file contains sensitive information, this becomes a strong exfiltration indicator.
+
+---
