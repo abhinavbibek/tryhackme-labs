@@ -12068,3 +12068,365 @@ possible data exfiltration
 If the FTP server is external and the file contains sensitive information, this becomes a strong exfiltration indicator.
 
 ---
+
+## Task 6: Detection — Data Exfiltration via HTTP
+
+HTTP is commonly abused for data exfiltration because it is normal, trusted web traffic and is usually allowed through firewalls and proxies.
+
+Attackers can send stolen data using:
+- `POST` request bodies
+- `GET` parameters
+- Custom HTTP headers
+- Large or repeated requests
+- Chunked/multipart uploads
+- External attacker-controlled servers
+
+## Indicators of HTTP Exfiltration
+
+Look for:
+
+- Large `POST` requests to unusual external destinations.
+- Repeated uploads to the same external domain/IP.
+- Unusually large `bytes_sent` values in HTTP logs.
+- Suspicious or rarely seen domains.
+- Encoded or unusual data inside HTTP requests.
+- Multiple smaller requests that together transfer a large amount of data.
+
+## Splunk Analysis
+
+### Show All HTTP Logs
+
+```text
+index="data_exfil" sourcetype="http_logs"
+```
+
+Shows all events from the HTTP log source.
+
+### Show Only POST Requests
+
+```text
+index="data_exfil" sourcetype="http_logs" method=POST
+```
+
+- `method=POST` → Shows HTTP POST requests.
+- POST is important because request bodies can contain uploaded data.
+
+### Compare POST Traffic by Domain
+
+```text
+index="data_exfil" sourcetype="http_logs" method=POST | stats count avg(bytes_sent) max(bytes_sent) min(bytes_sent) by domain | sort - count
+```
+
+This helps identify:
+
+- Which domains receive the most POST requests.
+- Average amount of data sent.
+- Maximum and minimum upload sizes.
+
+A domain receiving unusually large or frequent uploads deserves investigation.
+
+### Find Large POST Uploads
+
+```text
+index="data_exfil" sourcetype="http_logs" method=POST bytes_sent > 600 | table _time src_ip uri domain dst_ip bytes_sent | sort - bytes_sent
+```
+
+- `bytes_sent > 600` → Shows POST requests sending more than 600 bytes.
+- `table` → Displays only useful investigation fields.
+- `sort - bytes_sent` → Places the largest uploads first.
+
+This is useful for quickly finding possible exfiltration events.
+
+## Wireshark Analysis
+
+### Show All HTTP Traffic
+
+```text
+http
+```
+
+Shows HTTP requests and responses.
+
+### Show Only POST Requests
+
+```text
+http.request.method == "POST"
+```
+
+Shows HTTP POST requests, which are commonly used to upload data.
+
+### Find Large POST Requests
+
+```text
+http.request.method == "POST" and frame.len > 500
+```
+
+Shows POST packets larger than 500 bytes.
+
+### Narrow the Search Further
+
+```text
+http.request.method == "POST" and frame.len > 750
+```
+
+This reduces the results to unusually large POST packets.
+
+Large packets are not automatically malicious, but a large POST to an unusual external destination is worth investigating.
+
+### Search for Sensitive File Extensions
+
+```text
+http contains ".csv"
+```
+
+Other useful searches:
+
+```text
+http contains ".pdf"
+http contains ".txt"
+http contains ".doc"
+http contains ".docx"
+http contains "password"
+http contains "secret"
+```
+
+These can help identify sensitive information being transferred over HTTP.
+
+### Find Requests to a Specific Host
+
+```text
+http.host == "example.com"
+```
+
+Shows HTTP traffic where the `Host` header matches the specified domain.
+
+### Find Large HTTP Requests to a Specific Host
+
+```text
+http.request.method == "POST" and http.host == "example.com" and frame.len > 500
+```
+
+Useful when a suspicious destination has already been identified.
+
+## Follow the HTTP Stream
+
+When a suspicious POST packet is found:
+
+```text
+Right-click packet
+→ Follow
+→ HTTP Stream
+```
+
+Inspect the stream for:
+
+- Uploaded filenames
+- Sensitive document contents
+- Credentials
+- Encoded data
+- Suspicious commands
+- Destination information
+
+## Investigation Logic
+
+```text
+HTTP traffic
+    ↓
+POST requests
+    ↓
+Large POST requests
+    ↓
+Unusual external destination
+    ↓
+Inspect HTTP stream
+    ↓
+Identify uploaded data
+    ↓
+Possible data exfiltration
+```
+
+---
+
+## Task 7: Detection — Data Exfiltration via ICMP
+
+ICMP is normally used for network diagnostics such as `ping` and error reporting. Attackers can abuse ICMP by placing stolen or encoded data inside ICMP payloads and sending it to a remote system.
+
+## How Attackers Use ICMP for Exfiltration
+
+A normal ping looks like:
+
+```text
+Victim
+   │
+   │ ICMP Echo Request
+   ↓
+Server
+   │
+   │ ICMP Echo Reply
+   ↓
+Victim
+```
+
+During ICMP exfiltration:
+
+```text
+Victim
+   │
+   │ ICMP + encoded stolen data
+   ↓
+Attacker Server
+```
+
+The ICMP payload can contain:
+
+- Encoded files
+- Commands
+- Credentials
+- C2 data
+- Other stolen information
+
+## Indicators of ICMP Exfiltration
+
+Look for:
+
+- Large ICMP packets.
+- Large ICMP payloads.
+- High volumes of ICMP traffic.
+- Repeated ICMP traffic between the same hosts.
+- Regularly timed ICMP packets.
+- Random-looking or encoded payloads.
+- ICMP traffic to unusual external IP addresses.
+
+## Wireshark Analysis
+
+### Show All ICMP Traffic
+
+```text
+icmp
+```
+
+Shows every ICMP packet in the capture.
+
+Start with this filter to understand how much ICMP traffic exists.
+
+### Show ICMP Echo Requests
+
+```text
+icmp.type == 8
+```
+
+ICMP type `8` = Echo Request.
+
+These are the packets normally generated by `ping`.
+
+### Show ICMP Echo Replies
+
+```text
+icmp.type == 0
+```
+
+ICMP type `0` = Echo Reply.
+
+This shows responses to Echo Requests.
+
+### Find Large ICMP Packets
+
+```text
+icmp.type == 8 and frame.len > 100
+```
+
+- `icmp.type == 8` → Only Echo Requests.
+- `frame.len > 100` → Only packets larger than 100 bytes.
+
+Normal ping packets are usually much smaller, so unusually large Echo Requests may contain additional data.
+
+### Find Very Large ICMP Packets
+
+```text
+icmp.type == 8 and frame.len > 500
+```
+
+Useful when the capture contains many normal-sized pings and you want to quickly isolate extremely large packets.
+
+### Search ICMP Payload for Text
+
+```text
+icmp contains "SSH"
+```
+
+Other useful searches:
+
+```text
+icmp contains "HTTP"
+icmp contains "FTP"
+icmp contains "password"
+icmp contains "user"
+```
+
+These can help identify recognizable application data inside an ICMP payload.
+
+## Investigating a Suspicious Packet
+
+After finding a large ICMP packet:
+
+1. Select the packet.
+2. Open the **Packet Details** pane.
+3. Expand the ICMP section.
+4. Inspect the payload/data.
+5. Check the **Packet Bytes** pane.
+6. Look for readable text, encoded data, or repeated patterns.
+7. Check the source and destination IP addresses.
+
+If many large packets are sent repeatedly from one internal host to one external IP, ICMP tunnelling or exfiltration becomes more likely.
+
+## Investigation Logic
+
+```text
+ICMP traffic
+    ↓
+Echo Requests
+    ↓
+Large packets
+    ↓
+Repeated communication
+    ↓
+Unusual external destination
+    ↓
+Inspect ICMP payload
+    ↓
+Encoded/readable data
+    ↓
+Possible ICMP exfiltration
+```
+
+## Quick Reference
+
+| Purpose | Wireshark Filter |
+|---|---|
+| All ICMP | `icmp` |
+| Echo Requests | `icmp.type == 8` |
+| Echo Replies | `icmp.type == 0` |
+| Large Echo Requests | `icmp.type == 8 and frame.len > 100` |
+| Very large Echo Requests | `icmp.type == 8 and frame.len > 500` |
+| Search for SSH inside ICMP | `icmp contains "SSH"` |
+| Search for HTTP inside ICMP | `icmp contains "HTTP"` |
+| Search for FTP inside ICMP | `icmp contains "FTP"` |
+| Search for credentials | `icmp contains "password"` |
+
+## Important Note
+
+Packet size alone does **not** prove ICMP exfiltration. Large ICMP packets can be legitimate. The strongest indication comes from correlating:
+
+```text
+Large payload
++
+Repeated traffic
++
+Same source/destination
++
+Unusual external destination
++
+Suspicious/encoded payload
+```
+
+Together, these provide much stronger evidence of possible ICMP-based data exfiltration.
