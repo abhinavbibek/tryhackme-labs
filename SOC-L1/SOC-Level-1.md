@@ -12430,3 +12430,387 @@ Suspicious/encoded payload
 ```
 
 Together, these provide much stronger evidence of possible ICMP-based data exfiltration.
+
+
+# Man In The Middle Detection
+## Task 4: Detecting ARP Spoofing
+
+## What Is ARP?
+
+ARP maps a local IP address to a MAC address.
+
+```text
+192.168.10.1 → 02:aa:bb:cc:00:01
+```
+
+A device asks:
+
+```text
+Who has 192.168.10.1?
+```
+
+The owner replies:
+
+```text
+192.168.10.1 is at 02:aa:bb:cc:00:01
+```
+
+## ARP Spoofing
+
+An attacker sends a fake ARP reply:
+
+```text
+192.168.10.1 is at ATTACKER-MAC
+```
+
+The victim then sends gateway traffic to the attacker, allowing a MITM attack.
+
+## Useful Wireshark Filters
+
+### Show all ARP
+
+```text
+arp
+```
+
+### ARP Requests
+
+```text
+arp.opcode == 1
+```
+
+`1` = ARP Request (`who-has`).
+
+### ARP Replies
+
+```text
+arp.opcode == 2
+```
+
+`2` = ARP Reply (`is-at`).
+
+### Gratuitous ARP
+
+```text
+arp.isgratuitous
+```
+
+Shows ARP announcements that are not normal request/reply traffic.
+
+### Gateway ARP Activity
+
+```text
+arp && arp.src.proto_ipv4 == 192.168.10.1
+```
+
+Shows ARP packets claiming to represent the gateway IP.
+
+### Gateway Replies
+
+```text
+arp.opcode == 2 && arp.src.proto_ipv4 == 192.168.10.1
+```
+
+Look for **different MAC addresses claiming the same gateway IP**.
+
+### Specific Gateway MAC
+
+```text
+arp.opcode == 2 && arp.src.proto_ipv4 == 192.168.10.1 && eth.src == 02:aa:bb:cc:00:01
+```
+
+Shows ARP replies for the gateway sent by the specified MAC.
+
+### Duplicate IP/MAC Mapping
+
+```text
+arp.duplicate-address-detected || arp.duplicate-address-frame
+```
+
+Wireshark's built-in detection for duplicate IP-address claims.
+
+### Find a Specific Attacker MAC
+
+```text
+eth.src == 02:fe:bb:cd:55:55 && arp
+```
+
+Shows all ARP activity from the suspected attacker.
+
+### Find the Attacker Claiming the Gateway
+
+```text
+arp.opcode == 2 && arp.src.proto_ipv4 == 192.168.10.1 && eth.src == 02:fe:bb:cd:55:55
+```
+
+If the MAC is not the legitimate gateway MAC, this is strong evidence of ARP spoofing.
+
+## What to Look For
+
+```text
+Same IP
+   ↓
+MAC A claims it
+   ↓
+MAC B also claims it
+   ↓
+Possible ARP spoofing
+```
+
+---
+
+## Task 5: Unmasking DNS Spoofing
+
+## What Is DNS Spoofing?
+
+DNS normally maps:
+
+```text
+corp-login.acme-corp.local
+        ↓
+192.168.10.10
+```
+
+In DNS spoofing, an attacker sends a fake response:
+
+```text
+corp-login.acme-corp.local
+        ↓
+192.168.10.55
+```
+
+The victim is redirected to the attacker.
+
+## Useful Wireshark Filters
+
+### Show all DNS
+
+```text
+dns
+```
+
+### Show DNS Responses
+
+```text
+dns.flags.response == 1
+```
+
+### Show DNS Queries
+
+```text
+dns.flags.response == 0
+```
+
+### Show Legitimate DNS Server Responses
+
+```text
+dns.flags.response == 1 && ip.src == 8.8.8.8
+```
+
+Shows responses from the known legitimate resolver.
+
+### Find Responses from Other Sources
+
+```text
+dns.flags.response == 1 && ip.src != 8.8.8.8
+```
+
+Useful for finding unexpected DNS responders.
+
+### Search for the Target Domain
+
+```text
+dns.qry.name == "corp-login.acme-corp.local"
+```
+
+Shows all DNS traffic concerning the domain.
+
+### Find Legitimate Responses for the Domain
+
+```text
+dns.flags.response == 1 && ip.src == 8.8.8.8 && dns.qry.name == "corp-login.acme-corp.local"
+```
+
+### Find Suspicious Responses for the Domain
+
+```text
+dns.flags.response == 1 && ip.src != 8.8.8.8 && dns.qry.name == "corp-login.acme-corp.local"
+```
+
+This is the key filter for finding a rogue DNS response.
+
+### Find Responses Pointing to Attacker IP
+
+```text
+dns.flags.response == 1 && dns.a == 192.168.10.55
+```
+
+Shows DNS responses containing the attacker's IP.
+
+## What to Look For
+
+```text
+Victim asks for domain
+        ↓
+Legitimate DNS response
+        ↓
+Another host sends a second response
+        ↓
+Same domain → different IP
+        ↓
+Possible DNS spoofing
+```
+
+---
+
+## Task 6: Spotting SSL Stripping
+
+## What Is SSL Stripping?
+
+SSL stripping is a MITM attack where the attacker prevents the victim from using HTTPS and keeps the victim communicating over HTTP.
+
+```text
+Victim ──HTTP──> Attacker ──HTTPS──> Real Server
+```
+
+The attacker can therefore see plaintext HTTP data.
+
+## Useful Wireshark Filters
+
+### Show TLS/SSL Traffic
+
+```text
+tls || ssl
+```
+
+### Find Client Hello
+
+```text
+tls.handshake.type == 1
+```
+
+`1` = TLS Client Hello.
+
+### Find Client Hello for the Target Domain
+
+```text
+tls.handshake.type == 1 && tls.handshake.extensions_server_name == "corp-login.acme-corp.local"
+```
+
+Confirms that the domain normally uses TLS.
+
+### Find Server Hello
+
+```text
+tls.handshake.type == 2
+```
+
+`2` = TLS Server Hello.
+
+### Find the Attacker's DNS Spoof
+
+```text
+dns.flags.response == 1 && ip.src == 192.168.10.55 && dns.qry.name == "corp-login.acme-corp.local"
+```
+
+Shows the attacker's forged DNS response.
+
+### Show HTTP Traffic
+
+```text
+http
+```
+
+Useful for checking whether traffic has been downgraded to plaintext HTTP.
+
+### Show HTTP Traffic from Victim to Attacker
+
+```text
+http && ip.src == 192.168.10.10 && ip.dst == 192.168.10.55
+```
+
+Shows plaintext HTTP communication between the victim and suspected MITM host.
+
+### Find POST Requests
+
+```text
+http.request.method == "POST"
+```
+
+POST requests are important because credentials and form data are commonly submitted using POST.
+
+### Find POST Requests for the Target Domain
+
+```text
+http.request.method == "POST" && http.host == "corp-login.acme-corp.local"
+```
+
+Shows POST requests sent to the target domain.
+
+### Search for Password Fields
+
+```text
+http contains "password"
+```
+
+Searches HTTP packet contents for the word `password`.
+
+### Search for Common Credential Fields
+
+```text
+http contains "username"
+```
+
+```text
+http contains "password"
+```
+
+```text
+http contains "login"
+```
+
+### Inspect the Plaintext Session
+
+```text
+Right-click packet
+→ Follow
+→ HTTP Stream
+```
+
+This can reveal the submitted username, password, and other form data.
+
+## SSL Stripping Investigation
+
+```text
+1. DNS spoofing
+       ↓
+2. Victim resolves domain to attacker
+       ↓
+3. Victim communicates using HTTP
+       ↓
+4. POST request contains credentials
+       ↓
+5. Credentials visible in plaintext
+```
+
+## Quick Reference
+
+| Investigation | Filter |
+|---|---|
+| All ARP | `arp` |
+| ARP Requests | `arp.opcode == 1` |
+| ARP Replies | `arp.opcode == 2` |
+| Gratuitous ARP | `arp.isgratuitous` |
+| Duplicate ARP claims | `arp.duplicate-address-detected || arp.duplicate-address-frame` |
+| All DNS | `dns` |
+| DNS Queries | `dns.flags.response == 0` |
+| DNS Responses | `dns.flags.response == 1` |
+| Unexpected DNS responder | `dns.flags.response == 1 && ip.src != 8.8.8.8` |
+| Target DNS domain | `dns.qry.name == "corp-login.acme-corp.local"` |
+| TLS Client Hello | `tls.handshake.type == 1` |
+| TLS Server Hello | `tls.handshake.type == 2` |
+| All HTTP | `http` |
+| HTTP POST | `http.request.method == "POST"` |
+| Target HTTP POST | `http.request.method == "POST" && http.host == "corp-login.acme-corp.local"` |
+| Search password | `http contains "password"` |
+| Search username | `http contains "username"` |
