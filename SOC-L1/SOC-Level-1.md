@@ -12911,3 +12911,511 @@ Firewall → Blocks/Allows
 IDS      → Detects/Alerts
 IPS      → Detects/Blocks
 ```
+
+# Snort
+
+## Snort Overview
+
+**Snort** is an open-source, rule-based **NIDS/NIPS**.
+
+### Modes
+
+| Mode | Purpose |
+|---|---|
+| **Sniffer** | View packets |
+| **Packet Logger** | Save packets/logs |
+| **NIDS** | Detect and alert |
+| **NIPS** | Detect and block |
+
+### Detection Techniques
+
+- **Signature-based** → Known attack patterns
+- **Behaviour-based** → Detects abnormal behaviour
+- **Policy-based** → Detects policy violations
+
+---
+
+# Task 4: First Interaction
+
+### Check version
+
+```bash
+snort -V
+```
+
+### Test configuration
+
+```bash
+snort -T -c /etc/snort/snort.conf
+```
+
+```bash
+snort -T -c /etc/snort/snortv2.conf
+```
+
+### Useful options
+
+| Option | Meaning |
+|---|---|
+| `-V` | Version |
+| `-c` | Configuration file |
+| `-T` | Test configuration |
+| `-q` | Quiet mode |
+
+---
+
+# Task 5: Sniffer Mode
+
+### Sniff traffic
+
+```bash
+sudo snort -v
+```
+
+### Select interface
+
+```bash
+sudo snort -v -i eth0
+```
+
+### Show packet payload
+
+```bash
+sudo snort -d
+```
+
+### Show link-layer headers
+
+```bash
+sudo snort -de
+```
+
+### Show full packet in HEX
+
+```bash
+sudo snort -X
+```
+
+### Combine options
+
+```bash
+sudo snort -vde
+sudo snort -X
+```
+
+---
+
+# Task 6: Packet Logger Mode
+
+### Log packets as ASCII
+
+```bash
+sudo snort -dev -K ASCII -l .
+```
+
+- `-l .` → Save logs in current directory
+- `-K ASCII` → ASCII logging
+- `-r` → Read a Snort log/PCAP
+- `-n` → Process only specified number of packets
+
+### Read a log
+
+```bash
+snort -r snort.log.1640048004
+```
+
+### Read first 10 packets
+
+```bash
+snort -r snort.log.1640048004 -n 10
+```
+
+### Display packet details
+
+```bash
+sudo snort -Xr snort.log.1640048004 -n 4
+```
+
+### Filter traffic with BPF
+
+```bash
+sudo snort -r snort.log.1640048004 'tcp port 80'
+```
+
+### Run traffic generator
+
+```bash
+sudo ./traffic-generator.sh
+```
+
+---
+
+# Task 7: IDS/IPS Mode
+
+### Test configuration
+
+```bash
+sudo snort -c /etc/snort/snort.conf -T
+```
+
+### Run IDS
+
+```bash
+sudo snort -c /etc/snort/snort.conf -A console
+```
+
+### Alert formats
+
+```bash
+sudo snort -c /etc/snort/snort.conf -A fast
+sudo snort -c /etc/snort/snort.conf -A full
+sudo snort -c /etc/snort/snort.conf -A console
+sudo snort -c /etc/snort/snort.conf -A cmg
+sudo snort -c /etc/snort/snort.conf -A none
+```
+
+### Background mode
+
+```bash
+sudo snort -c /etc/snort/snort.conf -D
+```
+
+### Check running Snort process
+
+```bash
+ps -ef | grep snort
+```
+
+### Stop Snort
+
+```bash
+sudo kill -9 <PID>
+```
+
+### Run with logging
+
+```bash
+sudo snort -c /etc/snort/snort.conf -A full -l .
+```
+
+### Disable logging
+
+```bash
+sudo snort -c /etc/snort/snort.conf -N
+```
+
+### Use custom rules directly
+
+```bash
+sudo snort -c /etc/snort/rules/local.rules -A console
+```
+
+### IPS / Inline mode
+
+```bash
+sudo snort -c /etc/snort/snort.conf -q -Q --daq afpacket -i eth0:eth1 -A console
+```
+
+---
+
+# Task 8: PCAP Investigation
+
+### Analyze one PCAP
+
+```bash
+sudo snort -c /etc/snort/snort.conf -q -r icmp-test.pcap -A console -n 10
+```
+
+### Analyze multiple PCAPs
+
+```bash
+sudo snort -c /etc/snort/snort.conf -q --pcap-list="icmp-test.pcap http2.pcap" -A console
+```
+
+### Show PCAP names
+
+```bash
+sudo snort -c /etc/snort/snort.conf -q --pcap-list="icmp-test.pcap http2.pcap" -A console --pcap-show
+```
+
+### Analyze a PCAP with full alerts
+
+```bash
+sudo snort -c /etc/snort/snort.conf -A full -l . -r mx-1.pcap
+```
+
+### Use another configuration
+
+```bash
+sudo snort -c /etc/snort/snortv2.conf -A full -l . -r mx-1.pcap
+```
+
+---
+
+# Task 9: Snort Rules
+
+## Basic Rule Structure
+
+```text
+action protocol source_ip source_port direction destination_ip destination_port (options)
+```
+
+Example:
+
+```text
+alert icmp any any -> $HOME_NET any (msg:"ICMP Packet Found"; sid:100001; rev:1;)
+```
+
+### Actions
+
+```text
+alert   → Alert + log
+log     → Log
+drop    → Block + log
+reject  → Block + terminate session
+```
+
+### Direction
+
+```text
+->    Source → Destination
+<>    Bidirectional
+```
+
+## IP Filtering
+
+### Specific IP
+
+```text
+alert icmp 192.168.1.56 any -> any any (msg:"ICMP"; sid:100001; rev:1;)
+```
+
+### Subnet
+
+```text
+alert icmp 192.168.1.0/24 any -> any any (msg:"ICMP"; sid:100001; rev:1;)
+```
+
+### Multiple networks
+
+```text
+alert icmp [192.168.1.0/24,10.1.1.0/24] any -> any any (msg:"ICMP"; sid:100001; rev:1;)
+```
+
+### Exclude IP
+
+```text
+alert icmp !192.168.1.0/24 any -> any any (msg:"ICMP"; sid:100001; rev:1;)
+```
+
+## Port Filtering
+
+### Specific port
+
+```text
+alert tcp any 21 -> any any (msg:"FTP"; sid:100001; rev:1;)
+```
+
+### Exclude port
+
+```text
+alert tcp any !21 -> any any (msg:"Not FTP"; sid:100001; rev:1;)
+```
+
+### Port range
+
+```text
+1:1024
+```
+
+```text
+:1024
+```
+
+```text
+1024:
+```
+
+```text
+80,1024:
+```
+
+---
+
+# Rule Options
+
+## Content
+
+Detect specific payload text:
+
+```text
+content:"GET";
+```
+
+Example:
+
+```text
+alert tcp any any -> any 80 (msg:"GET Request"; content:"GET"; sid:100001; rev:1;)
+```
+
+### HEX content
+
+```text
+content:"|47 45 54|";
+```
+
+### Case-insensitive
+
+```text
+content:"GET"; nocase;
+```
+
+### Fast pattern
+
+```text
+content:"GET"; fast_pattern; content:"www";
+```
+
+## Non-Payload Options
+
+### IP ID
+
+```text
+id:35369;
+```
+
+Example:
+
+```text
+alert tcp any any <> any any (msg:"ID Test"; id:35369; sid:10000000001; rev:1;)
+```
+
+### TCP Flags
+
+```text
+flags:S;
+```
+
+Common flags:
+
+```text
+S  = SYN
+A  = ACK
+P  = PSH
+R  = RST
+F  = FIN
+U  = URG
+```
+
+Example:
+
+```text
+alert tcp any any <> any any (msg:"SYN"; flags:S; sid:10000000002; rev:1;)
+```
+
+### PUSH + ACK
+
+```text
+flags:PA;
+```
+
+### Packet payload size
+
+```text
+dsize:>100;
+dsize:<100;
+dsize:100<>300;
+```
+
+### Same source/destination IP
+
+```text
+sameip;
+```
+
+Example:
+
+```text
+alert ip any any <> any any (msg:"SAME IP"; sameip; sid:10000000004; rev:1;)
+```
+
+---
+
+# Test Custom Rules
+
+### Edit rules
+
+```bash
+sudo nano local.rules
+```
+
+or:
+
+```bash
+sudo nano /etc/snort/rules/local.rules
+```
+
+### Run against PCAP
+
+```bash
+sudo snort -c local.rules -A full -l . -r task9.pcap
+```
+
+### Count specific alerts
+
+```bash
+cat alert | grep "Push-Ack" | wc -l
+```
+
+### Important
+
+After modifying a rule, increase:
+
+```text
+rev:1;
+```
+
+to:
+
+```text
+rev:2;
+```
+
+---
+
+# Task 10: Important Files
+
+```text
+/etc/snort/snort.conf       # Main configuration
+/etc/snort/rules/local.rules # Custom rules
+```
+
+### Important Snort components
+
+```text
+Packet Decoder
+      ↓
+Preprocessors
+      ↓
+Detection Engine
+      ↓
+Logging / Alerts
+```
+
+### DAQ
+
+```text
+pcap      → Normal packet capture
+afpacket  → Inline IPS
+```
+
+### Key Commands
+
+```bash
+snort -V
+snort -T -c /etc/snort/snort.conf
+sudo snort -v
+sudo snort -dev -K ASCII -l .
+sudo snort -c /etc/snort/snort.conf -A console
+sudo snort -c /etc/snort/snort.conf -r file.pcap -A console
+```
