@@ -12814,3 +12814,100 @@ This can reveal the submitted username, password, and other form data.
 | Target HTTP POST | `http.request.method == "POST" && http.host == "corp-login.acme-corp.local"` |
 | Search password | `http contains "password"` |
 | Search username | `http contains "username"` |
+
+## What Is an IDS?
+
+**IDS (Intrusion Detection System)** monitors network/system activity and **alerts** when suspicious activity is detected.
+
+- **Firewall:** Allows/blocks traffic.
+- **IDS:** Detects and alerts on suspicious traffic.
+- **IPS:** Detects and can also block traffic.
+
+### IDS Types
+
+| Type | Meaning |
+|---|---|
+| **HIDS** | Monitors one host |
+| **NIDS** | Monitors network traffic |
+| **Signature-based** | Detects known attack patterns |
+| **Anomaly-based** | Detects deviations from normal behavior |
+| **Hybrid** | Combines signature + anomaly detection |
+
+## Snort
+
+**Snort** is an open-source IDS/IPS commonly used for network traffic detection.
+
+### Snort Modes
+
+- **Packet Sniffer:** Displays packets.
+- **Packet Logger:** Saves traffic to PCAP.
+- **NIDS:** Monitors traffic and generates alerts.
+
+## Snort Important Files
+
+```text
+/etc/snort/
+├── snort.lua          # Main configuration
+└── rules/
+    └── local.rules    # Custom rules
+```
+
+## Snort Rule Format
+
+```text
+alert icmp any any -> $HOME_NET any (msg:"Ping Detected"; sid:10001; rev:1;)
+```
+
+Meaning:
+
+- `alert` → Generate an alert
+- `icmp` → Protocol
+- `any any` → Any source IP/port
+- `->` → Traffic direction
+- `$HOME_NET` → Internal network
+- `any` → Any destination port
+- `msg` → Alert message
+- `sid` → Unique rule ID
+- `rev` → Rule revision
+
+## Create a Custom Rule
+
+```bash
+sudo nano /etc/snort/rules/local.rules
+```
+
+Example:
+
+```text
+alert icmp any any -> 127.0.0.1 any (msg:"Loopback Ping Detected"; sid:10003; rev:1;)
+```
+
+This alerts whenever ICMP traffic is sent to `127.0.0.1`.
+
+## Run Snort on Live Traffic
+
+```bash
+sudo snort -q -l /var/log/snort -i lo -A alert_fast -c /etc/snort/snort.lua
+```
+
+- `-i lo` → Network interface
+- `-A alert_fast` → Display alerts in a simple format
+- `-c` → Configuration file
+- `-l` → Log directory
+
+## Run Snort Against a PCAP
+
+```bash
+sudo snort -q -l /var/log/snort -r Task.pcap -A alert_fast -c /etc/snort/snort.lua
+```
+
+- `-r` → Read an existing PCAP
+- Useful for **incident investigation / forensic analysis**.
+
+## Key Point
+
+```text
+Firewall → Blocks/Allows
+IDS      → Detects/Alerts
+IPS      → Detects/Blocks
+```
