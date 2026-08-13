@@ -13419,3 +13419,221 @@ sudo snort -dev -K ASCII -l .
 sudo snort -c /etc/snort/snort.conf -A console
 sudo snort -c /etc/snort/snort.conf -r file.pcap -A console
 ```
+# Web Shell Detection
+
+## What is a Web Shell?
+
+A **web shell** is a malicious script uploaded to a web server that allows an attacker to execute commands remotely.
+
+Common extensions:
+
+```text
+.php
+.jsp
+.aspx
+```
+
+Common indicators:
+
+- Suspicious file upload
+- Repeated requests to the same script
+- `cmd=`, `exec=`, `shell_exec=`, `eval=`
+- Suspicious User-Agent such as `curl` or `wget`
+- Web shell in `/uploads/`, `/tmp/`, or web root
+
+**MITRE ATT&CK:** `T1505.003 – Web Shell`
+
+**Microsoft Exchange web shells:** commonly `.aspx`
+
+---
+
+## Useful Wireshark Filters
+
+### HTTP traffic
+
+```text
+http
+```
+
+### HTTP methods
+
+```text
+http.request.method == "GET"
+http.request.method == "POST"
+http.request.method == "PUT"
+http.request.method == "DELETE"
+http.request.method == "OPTIONS"
+```
+
+### PHP files
+
+```text
+http.request.uri contains ".php"
+```
+
+### ASPX files
+
+```text
+http.request.uri contains ".aspx"
+```
+
+### JSP files
+
+```text
+http.request.uri contains ".jsp"
+```
+
+### Suspicious commands in URL
+
+```text
+http.request.uri contains "cmd="
+```
+
+```text
+http.request.uri contains "exec="
+```
+
+```text
+http.request.uri contains "shell"
+```
+
+### Suspicious User-Agent
+
+```text
+http.user_agent contains "curl"
+```
+
+```text
+http.user_agent contains "wget"
+```
+
+### Upload requests
+
+```text
+http.request.method == "POST" || http.request.method == "PUT"
+```
+
+### Large HTTP requests
+
+```text
+http.request.method == "POST" && frame.len > 500
+```
+
+---
+
+## Useful Linux Commands
+
+### Find recently modified PHP files
+
+```bash
+find /var/www -type f -name "*.php" -mtime -7
+```
+
+### Find web shells by extension
+
+```bash
+find /var/www -type f \( -name "*.php" -o -name "*.jsp" -o -name "*.aspx" \)
+```
+
+### Search for dangerous PHP functions
+
+```bash
+grep -r "eval(" /var/www
+```
+
+```bash
+grep -r "shell_exec(" /var/www
+```
+
+```bash
+grep -r "system(" /var/www
+```
+
+```bash
+grep -r "passthru(" /var/www
+```
+
+### Search Auditd
+
+```bash
+ausearch -k web_shell
+```
+
+---
+
+# DoS / DDoS Detection
+
+## Key Indicators
+
+- Very high request rate
+- Many requests from one IP → **DoS**
+- Many IPs → one server → **DDoS**
+- Repeated requests to `/login`, `/search`, `/api`
+- Large spike in `5xx` responses
+- Suspicious automated User-Agents
+
+## Useful Splunk Filters
+
+### All web logs
+
+```spl
+index="main"
+```
+
+### Requests by source IP
+
+```spl
+index="main" | stats count by clientip | sort -count
+```
+
+### Requests by URI
+
+```spl
+index="main" | stats count by uri | sort -count
+```
+
+### Requests by User-Agent
+
+```spl
+index="main" | stats count by useragent | sort -count
+```
+
+### HTTP errors
+
+```spl
+index="main" status>=500 | stats count by status
+```
+
+### Requests from one IP
+
+```spl
+index="main" clientip="203.0.113.55"
+```
+
+### High request volume per IP
+
+```spl
+index="main" | stats count by clientip | sort -count
+```
+
+### Requests over time
+
+```spl
+index="main" | timechart count
+```
+
+### Targeted endpoint
+
+```spl
+index="main" uri="/login.php" | stats count by clientip
+```
+
+### Suspicious User-Agent
+
+```spl
+index="main" useragent="curl*"
+```
+
+```spl
+index="main" useragent="wget*"
+```
