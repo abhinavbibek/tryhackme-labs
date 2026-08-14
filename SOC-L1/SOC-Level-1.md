@@ -13637,3 +13637,227 @@ index="main" useragent="curl*"
 ```spl
 index="main" useragent="wget*"
 ```
+
+
+# Windows Logging for SOC
+
+## Why Windows Logs Matter
+
+Windows logs help SOC analysts with:
+
+- **Incident Response** — understand what happened
+- **Threat Hunting** — find suspicious activity
+- **Detection & Alerting** — create security detections
+
+Open logs with:
+
+```text
+Win + R → eventvwr
+```
+
+EVTX files:
+
+```text
+C:\Windows\System32\winevt\Logs
+```
+
+## Important Windows Security Event IDs
+
+| Event ID | Meaning | Main Use |
+|---|---|---|
+| **4624** | Successful Logon | Suspicious logins / RDP |
+| **4625** | Failed Logon | Brute force / password spraying |
+| **4720** | User Created | Backdoor accounts |
+| **4722** | User Enabled | Re-enable accounts |
+| **4723** | Password Changed | Account manipulation |
+| **4724** | Password Reset | Account takeover |
+| **4725** | User Disabled | Account manipulation |
+| **4726** | User Deleted | Removing accounts |
+| **4732** | Added to Security Group | Privilege escalation |
+| **4733** | Removed from Security Group | Account manipulation |
+| **4688** | Process Created | Process monitoring |
+
+## 4624 / 4625 Logons
+
+### Failed Logons
+
+```text
+Event ID: 4625
+```
+
+- Many failures from one IP → **Brute Force**
+- Many usernames → **Password Spraying**
+- Logon Type **3** → Network
+- Logon Type **10** → RDP
+
+### Successful RDP Login
+
+```text
+Event ID: 4624
+Logon Type: 10
+```
+
+Save the **Logon ID** to correlate later events.
+
+# User Management
+
+## Important Events
+
+```text
+4720 → User created
+4722 → User enabled
+4723 → Password changed
+4724 → Password reset
+4725 → User disabled
+4726 → User deleted
+4732 → Added to security group
+4733 → Removed from security group
+```
+
+## Red Flags
+
+- Unknown account created
+- Account created outside working hours
+- Unexpected user added to **Administrators**
+- Disabled account suddenly enabled
+- Unexpected password reset
+
+Use the **Logon ID** to identify who performed the action.
+
+# Sysmon
+
+Sysmon provides detailed endpoint telemetry.
+
+```text
+Event Viewer
+→ Applications and Services
+→ Microsoft
+→ Windows
+→ Sysmon
+→ Operational
+```
+
+## Important Sysmon Events
+
+| Event ID | Meaning |
+|---|---|
+| **1** | Process Creation |
+| **3** | Network Connection |
+| **11** | File Created |
+| **13** | Registry Value Set |
+| **22** | DNS Query |
+
+## Sysmon Event ID 1 — Process Creation
+
+Important fields:
+
+```text
+Image
+CommandLine
+ParentImage
+ProcessId
+ParentProcessId
+Hashes
+User
+LogonId
+```
+
+### Suspicious Examples
+
+```text
+C:\Temp\malware.exe
+C:\Users\Public\something.exe
+```
+
+Suspicious parent-child relationships:
+
+```text
+winword.exe → powershell.exe
+notepad.exe → cmd.exe
+```
+
+Use `ProcessId` to correlate with other Sysmon events.
+
+## Sysmon Event 3 — Network
+
+Look for:
+
+```text
+External IPs
+Unusual ports
+Known malicious IPs
+Unexpected processes making connections
+```
+
+## Sysmon Event 11 — File Creation
+
+Look for:
+
+```text
+C:\Temp\
+C:\Users\Public\
+.bat
+.ps1
+.exe
+```
+
+## Sysmon Event 22 — DNS
+
+Look for:
+
+```text
+Suspicious domains
+Unknown domains
+Unusual TLDs
+```
+
+# PowerShell Logging
+
+PowerShell commands are not fully visible in Sysmon Event ID 1.
+
+## PowerShell History
+
+```text
+C:\Users\<USER>\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
+```
+
+Useful commands to investigate:
+
+```text
+whoami
+Get-LocalUser
+Get-LocalGroup
+Get-ChildItem
+Get-Content
+Invoke-WebRequest
+```
+
+## Limitations
+
+PowerShell history:
+
+- Records commands
+- Does **not** record command output
+- Does **not** show executed script contents
+- Can be deleted
+
+# Quick SOC Cheat Sheet
+
+```text
+4624 → Successful login
+4625 → Failed login
+4720 → New user
+4722 → User enabled
+4724 → Password reset
+4732 → Added to group
+4688 → Process creation
+
+Sysmon 1  → Process
+Sysmon 3  → Network
+Sysmon 11 → File creation
+Sysmon 13 → Registry
+Sysmon 22 → DNS
+
+Logon ID  → Correlate user activity
+ProcessId → Correlate Sysmon activity
+```
