@@ -16939,3 +16939,835 @@ Determine Legitimate vs Malicious
 ```
 
 > The key principle is: **Do not treat the use of a legitimate Windows utility as malicious by itself. Detect the combination of the tool, command line, process ancestry, user context, network activity, and resulting behaviour.**
+
+# Cyber Threat Intelligence
+
+Cyber Threat Intelligence (**CTI**) provides context about threats, adversaries, indicators, and their behaviour so that security teams can make informed decisions.
+
+CTI helps SOC analysts answer three key questions:
+
+1. **Who or what is associated with this indicator?**
+2. **What has this threat or adversary done previously?**
+3. **What should the organisation do about it now?**
+
+CTI helps transform SOC triage from simple alert handling into **context-driven decision making**.
+
+# From Raw Data to Intelligence
+
+| Layer | Definition | Example | SOC L1 Action |
+|---|---|---|---|
+| **Data** | Unprocessed observable | `45.155.205.3:443` | Capture the artefact |
+| **Information** | Data with factual context | IP registered to a hosting provider and first seen on a specific date | Record attributes |
+| **Intelligence** | Analysed information that answers "so what?" | IP associated with an active malware C2 infrastructure | Block, investigate, or escalate |
+
+## Enrichment
+
+**Enrichment** is the process of investigating an indicator using external and internal sources to determine its:
+
+- Origin
+- Reputation
+- History
+- Behaviour
+- Relationships
+- Relevance to the organisation
+
+Typical enrichment sources include:
+
+- SIEM
+- EDR
+- WHOIS
+- VirusTotal
+- AbuseIPDB
+- URLhaus
+- Passive DNS
+- Threat-intelligence platforms
+- Sandboxes
+- Internal incident history
+- Vendor reports
+
+# IOC, IOA, and TTP
+
+## Indicator of Compromise (IOC)
+
+An **IOC** is an artefact that can indicate that a compromise has occurred or that malicious infrastructure is present.
+
+Examples:
+
+```text
+Malicious IP address
+Malicious domain
+File hash
+Malicious URL
+Suspicious registry key
+Known C2 address
+```
+
+## Indicator of Attack (IOA)
+
+An **IOA** represents suspicious or malicious behaviour associated with an attack.
+
+Examples:
+
+```text
+PowerShell spawning from Word
+Repeated failed SSH authentication
+Credential dumping
+Unexpected service creation
+DNS tunnelling
+```
+
+## Tactics, Techniques, and Procedures (TTPs)
+
+**TTPs** describe how an adversary operates.
+
+They are commonly mapped to **MITRE ATT&CK** techniques.
+
+Example:
+
+```text
+PowerShell
+    ↓
+MITRE ATT&CK T1059.001
+```
+
+# Indicator Types
+
+| Indicator | Example | Useful Enrichment Sources | Example IOA/TTP |
+|---|---|---|---|
+| **IPv4 / IPv6** | `45.155.205.3` | WHOIS, ASN data, VirusTotal, Shodan | Repeated SSH failures |
+| **Domain / FQDN** | `malicious-updates[.]net` | WHOIS, passive DNS, URLScan | Sudden DNS queries |
+| **URL** | `hxxp://malicious-updates[.]net/login` | URLhaus, URLScan, sandboxes | Browser POST to suspicious endpoint |
+| **File Hash** | `e99a18c428cb38d5...` | VirusTotal, Hybrid Analysis, malware repositories | Process injection |
+| **Email Address** | `billing@evil-corp.com` | Header analysis, reputation services | SPF failure |
+| **Local Artefact** | `HKCU\Software\Run\updater.exe` | EDR, Sigma, vendor knowledge bases | Registry Run Key persistence |
+
+## Useful Analyst Practice
+
+Maintain shortcuts or bookmarks for commonly used enrichment services.
+
+This reduces the time required to investigate repetitive indicators.
+
+# CTI Feeds and Platforms
+
+## Threat Intelligence Feed
+
+A **feed** is a regularly updated stream of threat indicators.
+
+Common formats include:
+
+```text
+CSV
+JSON
+STIX
+TAXII
+```
+
+Examples of feed content:
+
+```text
+IP addresses
+Domains
+URLs
+File hashes
+Malware indicators
+C2 infrastructure
+```
+
+> Ingesting too many poorly curated feeds can create excessive false positives and reduce analyst trust.
+
+## Threat Intelligence Platform
+
+A **CTI platform** stores, enriches, correlates, and manages threat intelligence.
+
+Examples:
+
+- **MISP**
+- **OpenCTI**
+
+A CTI platform can provide:
+
+- Indicator storage
+- Enrichment
+- Relationships
+- Historical context
+- Threat-actor tracking
+- Campaign tracking
+- Sharing controls
+- TLP handling
+
+# Sources of Cyber Threat Intelligence
+
+## Internal Telemetry
+
+Examples:
+
+- SIEM logs
+- EDR detections
+- Firewall logs
+- DNS logs
+- Authentication logs
+- Phishing reports
+- Previous incidents
+
+Internal telemetry usually has the highest immediate relevance to the organisation.
+
+## Commercial Intelligence
+
+Examples:
+
+- Vendor threat feeds
+- Premium intelligence platforms
+- Commercial sandboxes
+- Proprietary analytics
+
+Advantages:
+
+- High-quality data
+- Strong enrichment
+- Dedicated research
+
+Limitations:
+
+- Licensing restrictions
+- Sharing restrictions
+- Cost
+
+## Open-Source Intelligence (OSINT)
+
+Examples:
+
+- AbuseIPDB
+- URLhaus
+- Public threat reports
+- Security blogs
+- Academic research
+- Public IOC repositories
+
+> OSINT should generally be cross-validated before high-impact actions are taken.
+
+## Communities and ISACs
+
+Information-sharing communities and **ISACs (Information Sharing and Analysis Centers)** provide sector-specific intelligence.
+
+Examples:
+
+```text
+Financial-sector intelligence
+Healthcare-sector intelligence
+Energy-sector intelligence
+Government-sector intelligence
+```
+
+# Threat Intelligence Classifications
+
+## Strategic Intelligence
+
+High-level intelligence focused on:
+
+- Long-term trends
+- Business risk
+- Emerging threats
+- Threat landscape
+- Strategic decision-making
+
+Example:
+
+```text
+Ransomware groups increasingly combining
+data theft with destructive attacks.
+```
+
+## Tactical Intelligence
+
+Focuses on adversary **TTPs**.
+
+Examples:
+
+```text
+T1059.001 → PowerShell
+T1071.001 → Web Protocols
+T1053.005 → Scheduled Task/Job
+```
+
+Useful for:
+
+- Detection engineering
+- Threat hunting
+- Security controls
+
+## Operational Intelligence
+
+Focuses on specific:
+
+- Campaigns
+- Threat actors
+- Attack objectives
+- Motives
+- Targeted organisations
+- Infrastructure
+
+## Technical Intelligence
+
+Focuses on atomic indicators and technical artefacts.
+
+Examples:
+
+```text
+IP addresses
+Domains
+URLs
+File hashes
+Malware samples
+C2 infrastructure
+```
+
+### L1 Analyst Focus
+
+L1 analysts commonly:
+
+- Investigate technical IOCs
+- Observe tactical IOAs
+- Identify patterns
+- Escalate relevant findings
+- Provide context to L2/IR teams
+
+# CTI Lifecycle
+
+The CTI lifecycle transforms raw information into actionable intelligence.
+
+```text
+Direction
+    ↓
+Collection
+    ↓
+Processing
+    ↓
+Analysis
+    ↓
+Dissemination
+    ↓
+Feedback
+    ↓
+Improved Direction
+```
+
+# Traffic Light Protocol (TLP)
+
+**TLP (Traffic Light Protocol)** defines how widely information can be shared.
+
+| TLP Label | Sharing Boundary | Typical Handling |
+|---|---|---|
+| **TLP:CLEAR** | No restriction | Can be shared publicly |
+| **TLP:GREEN** | Community sharing | Share with relevant communities |
+| **TLP:AMBER** | Limited sharing | Share only with authorised recipients |
+| **TLP:RED** | Named recipients only | Strictly restricted |
+
+> Always preserve the TLP classification when copying, storing, or disseminating intelligence.
+
+# STIX
+
+**STIX (Structured Threat Information Expression)** is a structured format for representing threat intelligence.
+
+STIX can represent:
+
+- Indicators
+- Malware
+- Threat actors
+- Campaigns
+- Attack patterns
+- Relationships
+- Observed data
+
+STIX commonly uses **JSON**.
+
+Example conceptual structure:
+
+```text
+Threat Actor
+     ↓
+Campaign
+     ↓
+Malware
+     ↓
+C2 Domain
+     ↓
+IP Address
+```
+
+# CTI Lifecycle Scenario
+
+## Scenario
+
+TryHatMe Corp operates a PostgreSQL production database containing sensitive customer information.
+
+Security controls include:
+
+- Next-generation firewall
+- EDR
+- SIEM
+- Segmented database network
+
+The SOC wants CTI to improve its ability to detect emerging threats.
+
+## Step 1: Direction
+
+Direction defines what intelligence the organisation needs.
+
+### Primary Asset
+
+```text
+PostgreSQL production database
+```
+
+### Business Risk
+
+```text
+Data breach
+GDPR penalties
+Loss of customer trust
+```
+
+### Available Controls
+
+```text
+NGFW → IP/domain blocking
+EDR  → File/hash detection and quarantine
+```
+
+### Intelligence Requirements
+
+```text
+Q1: Which IPs/domains are currently used to attack PostgreSQL
+    or exfiltrate database data?
+
+Q2: Which malware families target PostgreSQL credentials/drivers
+    and what hashes are associated with them?
+```
+
+# Step 2: Collection
+
+Collect relevant information from multiple sources.
+
+| Source | Purpose | Example |
+|---|---|---|
+| **Commercial feed** | High-fidelity intelligence | Database-exfiltration C2 IPs |
+| **AbuseIPDB** | Community reputation | Brute-force IPs |
+| **MISP** | Internal historical intelligence | Malware hashes |
+| **Vendor threat report** | New research | New C2 domains and malware hashes |
+
+Collected data can be stored in:
+
+```text
+STIX
+CSV
+JSON
+```
+
+Maintain dated raw copies to preserve reproducibility.
+
+# Step 3: Processing
+
+Raw intelligence often comes in inconsistent formats.
+
+Processing includes:
+
+1. **Normalisation**
+2. **Correlation**
+3. **Deduplication**
+4. **Tagging**
+5. **Classification**
+6. **Conversion into detection formats**
+
+## Normalisation
+
+Standardise indicators.
+
+Examples:
+
+```text
+Lowercase domains
+Normalised IPv6 addresses
+Standardised hashes
+Removed unnecessary subnet notation
+```
+
+## Correlation
+
+Identify relationships between indicators and sources.
+
+Example:
+
+```text
+IP
+ ↓
+Multiple threat feeds
+ ↓
+Same malware family
+ ↓
+Same campaign
+```
+
+## Deduplication
+
+Remove duplicate indicators received from multiple sources.
+
+## Metadata
+
+Indicators should include metadata such as:
+
+```text
+Source
+Date
+Confidence
+TLP
+Malware family
+Threat actor
+Campaign
+```
+
+# Step 4: Analysis
+
+Analysis determines whether intelligence is relevant and actionable.
+
+## Example Analysis
+
+### Firewall Indicator
+
+A threat feed reports a malicious IP.
+
+Internal SIEM logs show:
+
+```text
+Production subnet
+      ↓
+Connection attempt
+      ↓
+Malicious IP
+      ↓
+TCP/5432
+```
+
+This increases confidence that the indicator is relevant.
+
+### Malware Hash
+
+A hash is associated with a PostgreSQL credential-stealing malware family.
+
+Sandbox analysis shows:
+
+```text
+Credential access
+      ↓
+Database credentials
+      ↓
+External communication
+```
+
+If the organisation uses the affected software, the indicator receives higher priority.
+
+# Confidence Scoring
+
+| Confidence | Source Agreement | Local Evidence | Action |
+|---|---|---|---|
+| **High** | Multiple trusted sources | Local activity detected | Immediate action |
+| **Medium** | Single trusted source | No local evidence | Alert/monitor |
+| **Low** | OSINT only | No local context | Monitor |
+
+> Confidence should consider both the quality of the source and the indicator's relevance to the organisation.
+
+# Step 5: Dissemination
+
+Intelligence must reach the people or systems that can act on it.
+
+| Consumer | Format | Purpose |
+|---|---|---|
+| **Firewall Team** | Blocklist + ticket | Block malicious infrastructure |
+| **Endpoint Team** | Detection/YARA rules | Detect malicious files |
+| **CTI Platform** | Indicator objects | Preserve context and relationships |
+| **Management** | Executive summary | Communicate business risk |
+
+> Intelligence that is never consumed or acted upon provides little operational value.
+
+# Step 6: Feedback
+
+Feedback measures whether CTI actually improved security operations.
+
+Useful metrics include:
+
+- Detection time
+- Dwell time
+- False-positive rate
+- Number of blocked threats
+- Number of local indicator matches
+- Detection coverage
+- Response time
+
+Example:
+
+| KPI | Before CTI | After CTI |
+|---|---:|---:|
+| Median dwell time | 48 hours | 0 hours |
+| False-positive rate | — | 0% |
+
+Feedback should then improve the next intelligence cycle.
+
+# MITRE ATT&CK
+
+**MITRE ATT&CK** is a knowledge base describing adversary tactics and techniques.
+
+It provides a common language for describing attacker behaviour.
+
+Examples:
+
+```text
+T1059.001 → PowerShell
+T1048.003 → Exfiltration Over Unencrypted Non-C2 Protocol
+T1071.001 → Web Protocols
+```
+
+## Using ATT&CK During Triage
+
+An L1 analyst can:
+
+1. Identify the observed behaviour.
+2. Map it to an ATT&CK technique.
+3. Record the technique ID in the ticket.
+4. Provide the context to L2/IR.
+5. Use the technique to guide further investigation.
+
+Example:
+
+```text
+Observed:
+PowerShell communicating with an external server
+
+Mapping:
+T1059.001 → PowerShell
+```
+
+# MITRE D3FEND
+
+**MITRE D3FEND** focuses on defensive techniques.
+
+Where:
+
+```text
+ATT&CK → How attackers operate
+D3FEND → How defenders can respond
+```
+
+Example:
+
+```text
+Attack:
+DNS tunnelling
+
+Detection:
+Unusual DNS query patterns
+
+Defensive action:
+DNS traffic analysis
+```
+
+D3FEND can help analysts identify practical defensive controls after identifying an attack technique.
+
+# Cyber Kill Chain
+
+The **Cyber Kill Chain**, developed by Lockheed Martin, describes the stages of a cyberattack.
+
+| Phase | Purpose | Examples |
+|---|---|---|
+| **Reconnaissance** | Gather information about the target | OSINT, email harvesting, scanning |
+| **Weaponisation** | Create attack payload | Malware, malicious document |
+| **Delivery** | Deliver payload | Email, web link, USB |
+| **Exploitation** | Exploit vulnerability or weakness | EternalBlue, credential exploitation |
+| **Installation** | Establish malicious presence | Backdoor, malware installation |
+| **Command & Control** | Control compromised systems | Cobalt Strike, Empire |
+| **Actions on Objectives** | Achieve attacker goals | Data theft, ransomware, defacement |
+
+## Kill Chain vs ATT&CK
+
+```text
+Cyber Kill Chain
+    ↓
+High-level attack progression
+
+MITRE ATT&CK
+    ↓
+Detailed adversary tactics and techniques
+```
+
+ATT&CK provides significantly more granular behavioural information.
+
+# CVE, CVSS, and NVD
+
+## CVE
+
+**CVE (Common Vulnerabilities and Exposures)** provides standardized identifiers for publicly disclosed vulnerabilities.
+
+Example:
+
+```text
+CVE-2023-4863
+```
+
+## CVSS
+
+**CVSS (Common Vulnerability Scoring System)** provides a standardized vulnerability severity score.
+
+The basic score ranges from:
+
+```text
+0.0 → 10.0
+```
+
+Additional temporal and environmental factors can influence the final assessment.
+
+## NVD
+
+**NVD (National Vulnerability Database)** provides vulnerability information associated with CVEs, including:
+
+- CVSS information
+- Affected products
+- Vulnerability descriptions
+- References
+- CWE information
+- Configuration information
+
+# STIX and TAXII
+
+## STIX
+
+**STIX** provides a structured language for representing threat intelligence.
+
+```text
+Threat Intelligence
+        ↓
+STIX Objects
+        ↓
+JSON
+```
+
+## TAXII
+
+**TAXII (Trusted Automated eXchange of Indicator Information)** provides mechanisms for exchanging threat intelligence between systems.
+
+It enables automated sharing of intelligence for:
+
+- Detection
+- Prevention
+- Mitigation
+- Threat hunting
+
+### TAXII Sharing Models
+
+#### Collection
+
+A collection allows threat intelligence to be hosted and retrieved from a producer.
+
+```text
+Producer
+   ↓
+Collection
+   ↓
+Consumer
+```
+
+#### Channel
+
+A channel allows intelligence to be published to subscribers through a central mechanism.
+
+```text
+Producer
+   ↓
+Channel
+   ↓
+Multiple Consumers
+```
+
+# CTI Analyst Workflow
+
+```text
+Alert
+  ↓
+Identify Indicator
+  ↓
+Classify Indicator
+  ↓
+Enrich
+  ↓
+Check Internal Telemetry
+  ↓
+Check External Intelligence
+  ↓
+Correlate
+  ↓
+Determine Confidence
+  ↓
+Map IOC / IOA / TTP
+  ↓
+Assess Business Relevance
+  ↓
+Take Action
+  ↓
+Escalate / Block / Monitor
+  ↓
+Record Findings
+  ↓
+Feedback
+```
+
+# Key Takeaways
+
+## CTI Converts Context Into Action
+
+```text
+Raw Data
+   ↓
+Enrichment
+   ↓
+Information
+   ↓
+Correlation
+   ↓
+Analysis
+   ↓
+Intelligence
+   ↓
+Action
+```
+
+## Core CTI Concepts
+
+| Concept | Meaning |
+|---|---|
+| **IOC** | Artefact associated with compromise |
+| **IOA** | Evidence of malicious activity |
+| **TTP** | Adversary methodology |
+| **Feed** | Stream of threat indicators |
+| **Platform** | Repository for managing intelligence |
+| **OSINT** | Publicly available intelligence |
+| **STIX** | Structured threat-intelligence representation |
+| **TAXII** | Threat-intelligence exchange mechanism |
+| **TLP** | Information-sharing classification |
+| **ATT&CK** | Adversary behaviour framework |
+| **D3FEND** | Defensive technique framework |
+| **CVE** | Vulnerability identifier |
+| **CVSS** | Vulnerability severity scoring system |
+| **NVD** | Vulnerability information repository |
+
+## L1 Analyst Mindset
+
+```text
+Don't ask only:
+"What is this IOC?"
+
+Also ask:
+"Why does it matter to my organisation?"
+"Has it appeared internally?"
+"What is it associated with?"
+"What behaviour does it represent?"
+"What should we do now?"
+```
+
+> **Good CTI is not simply collecting indicators. It is turning relevant threat information into timely, defensible security decisions.**
