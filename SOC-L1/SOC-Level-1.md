@@ -14095,3 +14095,197 @@ Sysmon 22 → DNS
 
 ProcessId + ParentProcessId → Build process tree
 ```
+
+# Windows Threat Detection 3
+
+## Command and Control (C2)
+
+**C2** allows attackers to remotely control a compromised machine and send commands.
+
+- RDP can provide direct access without C2.
+- Malware can establish a C2 connection and wait for attacker commands.
+- C2 usually needs **persistence** to survive reboots.
+
+---
+
+## Persistence
+
+**Persistence** allows attackers to maintain access after reboot, logout, or password changes.
+
+Common Windows persistence methods:
+
+- Backdoor user
+- Windows Service
+- Scheduled Task
+- Startup Folder
+- Registry Run Keys
+
+---
+
+## Backdoor Users
+
+Attackers may create a new user and add it to a privileged group.
+
+### Create User
+
+```cmd
+net user "mr.backd00r" "p@ssw0rd!" /add
+```
+
+PowerShell:
+
+```powershell
+New-LocalUser "mr.backd00r" -Password [...]
+```
+
+### Add to Administrators
+
+```cmd
+net localgroup Administrators "mr.backd00r" /add
+```
+
+PowerShell:
+
+```powershell
+Add-LocalGroupMember "Administrators" -Member "mr.backd00r"
+```
+
+### Detection
+
+| Event ID | Meaning |
+|---|---|
+| **4720** | User created |
+| **4732** | User added to security group |
+| **4724** | User password reset |
+
+Focus on:
+
+- Who created the account?
+- Source IP and login time
+- Whether the account was added to **Administrators** or **Remote Desktop Users**
+
+---
+
+# Windows Services
+
+A malicious service can automatically run malware at system startup.
+
+### Create Service
+
+```cmd
+sc create "BadService" binpath= "C:\malware.exe" start= auto
+```
+
+### Detection
+
+| Event | Meaning |
+|---|---|
+| **Sysmon 1** | `sc.exe` process creation |
+| **Security 4697** | Service created |
+| **System 7045** | Service installed |
+
+Also investigate suspicious processes with:
+
+```text
+services.exe
+```
+
+as the parent process.
+
+---
+
+# Scheduled Tasks
+
+Attackers can use scheduled tasks to automatically execute malware.
+
+### Create Task
+
+```cmd
+schtasks /create /tn "BadTask" /tr "C:\malware.exe" /sc onstart /ru System
+```
+
+### Detection
+
+| Event | Meaning |
+|---|---|
+| **Sysmon 1** | `schtasks.exe` execution |
+| **Security 4698** | Scheduled task created |
+
+Also investigate suspicious processes associated with:
+
+```text
+svchost.exe ... -s Schedule
+```
+
+---
+
+# Startup Folder
+
+Programs placed in the Startup folder run when the user logs in.
+
+### User Startup Folder
+
+```text
+C:\Users\<USER>\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\
+```
+
+### All Users
+
+```text
+C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp
+```
+
+### Detection
+
+**Sysmon Event ID 11** → File creation.
+
+Look for unexpected `.exe`, `.bat`, `.ps1`, or shortcuts in these folders.
+
+---
+
+# Registry Run Keys
+
+Programs can be configured to run automatically when a user logs in.
+
+### User
+
+```text
+HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run
+```
+
+### All Users
+
+```text
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run
+```
+
+### Detection
+
+**Sysmon Event ID 13** → Registry value changed.
+
+Look for suspicious executable paths or unknown programs.
+
+---
+
+# Quick SOC Cheat Sheet
+
+| Technique | Important Event |
+|---|---|
+| User created | **4720** |
+| User added to group | **4732** |
+| Password reset | **4724** |
+| Service created | **4697 / 7045** |
+| Scheduled task created | **4698** |
+| Startup file created | **Sysmon 11** |
+| Run Key modified | **Sysmon 13** |
+| Process creation | **Sysmon 1** |
+
+### Persistence Summary
+
+```text
+Backdoor User    → 4720 / 4732
+Service          → 4697 / 7045
+Scheduled Task   → 4698
+Startup Folder   → Sysmon 11
+Run Keys         → Sysmon 13
+```
