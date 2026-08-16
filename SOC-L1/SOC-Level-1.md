@@ -14289,3 +14289,370 @@ Scheduled Task   → 4698
 Startup Folder   → Sysmon 11
 Run Keys         → Sysmon 13
 ```
+
+# Linux Logging for SOC
+
+## Linux Logs
+
+Linux logs are mainly stored as **plain-text files** in:
+
+```text
+/var/log/
+```
+
+Unlike Windows, Linux logs usually do not have fixed Event IDs.
+
+### Important Logs
+
+| Log | Purpose |
+|---|---|
+| `/var/log/auth.log` | Authentication, users, sudo, SSH |
+| `/var/log/secure` | Authentication logs on RHEL-based systems |
+| `/var/log/syslog` | General system events |
+| `/var/log/kern.log` | Kernel events |
+| `/var/log/dpkg.log` | Package activity (Debian/Ubuntu) |
+| `/var/log/apt/` | APT package activity |
+| `/var/log/audit/audit.log` | Auditd runtime events |
+
+---
+
+## Basic Log Commands
+
+View a log:
+
+```bash
+cat /var/log/syslog
+```
+
+View first lines:
+
+```bash
+head /var/log/syslog
+```
+
+Search logs:
+
+```bash
+grep "CRON" /var/log/syslog
+```
+
+Exclude matches:
+
+```bash
+grep -v "CRON" /var/log/syslog
+```
+
+Search all logs:
+
+```bash
+grep -R -E "auth|login|session" /var/log
+```
+
+List available logs:
+
+```bash
+ls -l /var/log
+```
+
+---
+
+# Authentication Logs
+
+Main file:
+
+```text
+/var/log/auth.log
+```
+
+RHEL/CentOS:
+
+```text
+/var/log/secure
+```
+
+## Login / Logout
+
+```bash
+grep -E 'session opened|session closed' /var/log/auth.log
+```
+
+## SSH Login
+
+```bash
+grep "sshd" /var/log/auth.log | grep -E 'Accepted|Failed'
+```
+
+Examples:
+
+```text
+Failed password for root from 1.2.3.4
+Accepted publickey for bob from 10.0.0.5
+```
+
+Look for:
+
+- Repeated failed logins
+- Unexpected source IPs
+- Unexpected users
+- Successful login after many failures
+
+---
+
+# User Management
+
+Search for account changes:
+
+```bash
+grep -E '(passwd|useradd|usermod|userdel)\[' /var/log/auth.log
+```
+
+Important events:
+
+```text
+useradd  → User created
+usermod  → User modified / added to group
+userdel  → User deleted
+passwd   → Password changed
+```
+
+Look for:
+
+- Unknown users
+- New privileged users
+- Unexpected password changes
+- Users added to `sudo`
+
+---
+
+# Sudo Commands
+
+Search commands executed with `sudo`:
+
+```bash
+grep 'COMMAND=' /var/log/auth.log
+```
+
+Useful for identifying suspicious privileged actions.
+
+---
+
+# Web Server Logs
+
+Example Nginx log:
+
+```text
+/var/log/nginx/access.log
+```
+
+Each line represents an HTTP request.
+
+Look at:
+
+```text
+Source IP
+Timestamp
+HTTP method
+Requested URL
+Status code
+```
+
+Example:
+
+```text
+10.0.1.12 "GET /login HTTP/1.1" 200
+```
+
+---
+
+# Bash History
+
+User command history:
+
+```text
+~/.bash_history
+```
+
+View it:
+
+```bash
+cat ~/.bash_history
+```
+
+Or:
+
+```bash
+history
+```
+
+### Limitations
+
+Bash history:
+
+- Does not record every command
+- Can be bypassed
+- Can be deleted
+- Does not reliably record non-interactive commands
+- Other shells may not use Bash history
+
+Therefore, **do not rely only on Bash history**.
+
+---
+
+# Runtime Monitoring
+
+Linux does not normally log every:
+
+- Process creation
+- File modification
+- Network connection
+
+For this, SOC teams use **auditd**, Sysmon for Linux, Falco, Osquery, or EDR.
+
+---
+
+# System Calls
+
+A **system call** is how a process requests a service from the Linux kernel.
+
+Important example:
+
+```text
+execve → Execute a program
+```
+
+Security monitoring tools use system calls to detect runtime activity.
+
+---
+
+# Auditd
+
+**auditd** is a Linux auditing system used to monitor runtime activity.
+
+Logs:
+
+```text
+/var/log/audit/audit.log
+```
+
+Rules:
+
+```text
+/etc/audit/rules.d/
+```
+
+## Search Audit Logs
+
+Use `ausearch`:
+
+```bash
+ausearch -i -k <key>
+```
+
+Example:
+
+```bash
+ausearch -i -k proc_wget
+```
+
+### Important Audit Fields
+
+| Field | Meaning |
+|---|---|
+| `pid` | Process ID |
+| `ppid` | Parent Process ID |
+| `auid` | Original login user |
+| `uid` | User who executed the action |
+| `tty` | Terminal/session |
+| `exe` | Executed program |
+| `key` | Audit rule identifier |
+
+### Example
+
+```text
+pid=3888
+ppid=3752
+auid=ubuntu
+uid=root
+exe=/usr/bin/wget
+key=proc_wget
+```
+
+**Important:** `auid` and `uid` can differ when a user uses `sudo` or `su`.
+
+---
+
+# Detecting File Changes
+
+Auditd can monitor important files such as:
+
+```text
+/etc/ssh/sshd_config
+/etc/cron*
+System configuration files
+```
+
+Search by rule key:
+
+```bash
+ausearch -i -k file_sshconf
+```
+
+Look at:
+
+```text
+PATH
+PROCTITLE
+SYSCALL
+exe
+uid
+auid
+```
+
+---
+
+# Auditd Alternatives
+
+Common Linux runtime monitoring tools:
+
+```text
+Sysmon for Linux
+Falco
+Osquery
+EDR
+```
+
+All can monitor runtime activity using system-level events/system calls.
+
+# Quick SOC Cheat Sheet
+
+```text
+/var/log/auth.log       → Authentication
+/var/log/secure         → Authentication (RHEL)
+/var/log/syslog         → General system logs
+/var/log/kern.log       → Kernel logs
+/var/log/audit/audit.log → Auditd
+
+grep                    → Search logs
+grep -R                 → Search recursively
+ausearch                → Search auditd logs
+
+SSH:
+Accepted                → Successful login
+Failed password         → Failed login
+
+User management:
+useradd                 → User created
+usermod                 → User modified
+userdel                 → User deleted
+passwd                  → Password changed
+
+Auditd:
+pid                     → Process ID
+ppid                    → Parent Process ID
+auid                    → Original login user
+uid                     → Current executing user
+exe                     → Executed program
+key                     → Audit rule identifier
+
+execve                  → Process execution system call
+```
