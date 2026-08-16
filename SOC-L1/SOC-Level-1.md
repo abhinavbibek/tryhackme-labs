@@ -18454,3 +18454,728 @@ Create Detection / Escalate
 | **Sandbox Evasion** | Techniques used to hide malicious behaviour during analysis |
 
 > **A filename provides a clue, a hash provides identity, threat intelligence provides context, and sandbox analysis provides behavioural evidence.**
+
+# IP and Domain Threat Intelligence
+
+# Domain Enrichment
+
+## Resolving DNS Domains
+
+**DNS (Domain Name System)** converts human-readable domain names into IP addresses.
+
+Example:
+
+```text
+tryhackme.com
+      ↓
+IPv4 / IPv6 address
+```
+
+Useful DNS lookup services include:
+
+- [nslookup.io](https://www.nslookup.io/)
+- [DNSChecker](https://dnschecker.org/)
+
+## A / AAAA Records
+
+### A Record
+
+Maps a domain to an **IPv4 address**.
+
+```text
+example.com → 192.0.2.10
+```
+
+### AAAA Record
+
+Maps a domain to an **IPv6 address**.
+
+```text
+example.com → 2001:db8::10
+```
+
+The resolved IP can then be investigated for:
+
+- Hosting provider
+- ASN
+- Cloud provider
+- CDN usage
+- Known malicious infrastructure
+- APT infrastructure
+- Attack campaigns
+
+> A domain resolving to a cloud or CDN IP does not automatically mean that the infrastructure is malicious.
+
+## TXT Records
+
+TXT records can provide information about:
+
+- SPF
+- DKIM
+- Email security
+- Third-party services
+- Domain verification
+- Cloud platforms
+
+Example legitimate TXT information may reveal services such as:
+
+```text
+Google Workspace
+Zapier
+Microsoft 365
+```
+
+Suspicious or unusual TXT records may provide additional clues during phishing or infrastructure investigations.
+
+# WHOIS / RDAP
+
+**WHOIS** and **RDAP** provide domain registration information.
+
+Useful information includes:
+
+- Registrar
+- Registration date
+- Expiration date
+- Domain age
+- Registration status
+- Nameservers
+- Registrant information when publicly available
+
+Useful lookup:
+
+- [WHOIS](https://whois.domaintools.com/)
+
+## Domain Age
+
+Domain age is an important enrichment signal.
+
+```text
+Old domain
+   ↓
+Generally more established
+
+Newly registered domain
+   ↓
+Potentially higher risk
+```
+
+> Domain age alone does not determine whether a domain is malicious. Legitimate businesses can use newly registered domains, while compromised legitimate domains can also be old.
+
+# DNS-Based Attack Techniques
+
+## CDN Abuse
+
+Attackers may route malicious traffic through legitimate CDN providers such as:
+
+```text
+Cloudflare
+Akamai
+Fastly
+```
+
+If a domain resolves to a CDN IP:
+
+```text
+Domain
+   ↓
+CDN IP
+   ↓
+Many legitimate + malicious customers
+```
+
+The IP itself may provide limited attribution.
+
+> CDN ownership should be considered before treating an IP reputation result as evidence against the actual domain.
+
+## Typosquatting
+
+Typosquatting uses domains that visually resemble legitimate domains.
+
+Examples:
+
+```text
+tryhakme[.]com
+micros0ft[.]net
+```
+
+Common techniques include:
+
+- Character substitution
+- Missing characters
+- Extra characters
+- Transposed characters
+- Similar-looking characters
+- Different TLDs
+
+> A legitimate organisation may register obvious typo domains defensively, so a typosquat should always be investigated in context.
+
+## IDN Attacks
+
+**Internationalised Domain Names (IDNs)** allow non-ASCII characters.
+
+Attackers can use visually similar characters from alphabets such as:
+
+```text
+Cyrillic
+Greek
+```
+
+Example:
+
+```text
+tryhаckme[.]com
+```
+
+The `а` may be a Cyrillic character rather than the Latin `a`.
+
+The domain can therefore look legitimate while resolving to completely different infrastructure.
+
+## Punycode
+
+Punycode represents non-ASCII domain names using the `xn--` format.
+
+Example:
+
+```text
+xn--example
+```
+
+Useful tool:
+
+- [Punycode Converter](https://www.punycoder.com/)
+
+> A domain beginning with `xn--` deserves closer inspection, although Punycode itself is not malicious.
+
+# SOC Practice: Domain Investigation
+
+Example suspicious domain:
+
+```text
+purematrixa[.]com
+```
+
+Useful enrichment sources:
+
+- DNS lookup
+- WHOIS / RDAP
+- VirusTotal
+- Passive DNS
+- URL reputation services
+- IP reputation services
+
+Basic workflow:
+
+```text
+Domain
+  ↓
+DNS Resolution
+  ↓
+A / AAAA Records
+  ↓
+Resolved IP
+  ↓
+IP Reputation
+  ↓
+ASN / Hosting
+  ↓
+Domain Registration
+  ↓
+Related Infrastructure
+```
+
+# IP Enrichment
+
+## IP Enrichment Within the SOC
+
+IP addresses commonly appear in:
+
+- SIEM alerts
+- EDR alerts
+- Firewall logs
+- Authentication logs
+- DNS logs
+- Proxy logs
+- Network telemetry
+
+An IP may belong to:
+
+```text
+Residential ISP
+VPN
+Proxy
+Tor exit node
+Cloud provider
+CDN
+Dedicated server
+Compromised host
+```
+
+Without enrichment, analysts may either:
+
+- Block legitimate infrastructure
+- Ignore malicious infrastructure
+
+## AbuseIPDB
+
+[**AbuseIPDB**](https://www.abuseipdb.com/) can provide information about reported malicious activity.
+
+Useful for identifying:
+
+- Port scanning
+- Brute-force attacks
+- Suspicious connections
+- Abuse reports
+- Reputation
+
+## VirusTotal IP Intelligence
+
+[**VirusTotal**](https://www.virustotal.com/) can provide:
+
+- IP reputation
+- Related domains
+- Related files
+- Detection information
+- Community comments
+- Historical relationships
+
+> IP reputation should be interpreted in context. CDN and shared-hosting IPs may contain many unrelated customers.
+
+# Autonomous Systems
+
+An **Autonomous System (AS)** is a collection of IP prefixes controlled by a single organisation or network operator.
+
+Each AS has a unique:
+
+```text
+ASN (Autonomous System Number)
+```
+
+Useful lookup:
+
+- [BGP.Tools](https://bgp.tools/)
+
+## ASN Categories
+
+### Residential ASN
+
+Residential networks can be associated with:
+
+- Home users
+- VPN usage
+- Compromised consumer devices
+- Residential proxies
+
+Example:
+
+```text
+AS124888
+```
+
+### Hosting ASN
+
+Hosting providers operate dedicated servers and data centres.
+
+These can be higher-risk sources of malicious infrastructure because attackers can rent servers for:
+
+- C2
+- Malware hosting
+- Phishing
+- Payload delivery
+- Proxy infrastructure
+
+Example:
+
+```text
+AS215439
+```
+
+### Cloud / CDN ASN
+
+Cloud and CDN providers host both legitimate and malicious services.
+
+Example:
+
+```text
+AS16509 → Amazon AWS
+```
+
+> Cloud or CDN ownership is not evidence of maliciousness by itself.
+
+# Geolocation (GeoIP)
+
+GeoIP provides an approximate geographic location for an IP.
+
+Useful services include:
+
+- [IPinfo](https://ipinfo.io/)
+- [IPLocation](https://iplocation.net/)
+
+GeoIP can help with:
+
+- Login investigations
+- Authentication anomalies
+- Network investigations
+- Impossible-travel analysis
+- Geographic threat assessment
+
+## Geolocation Example
+
+```text
+Expected:
+US-based employee → US login
+
+Observed:
+US-based employee → Netherlands login
+```
+
+This may indicate:
+
+- VPN usage
+- Travel
+- Proxy usage
+- Account compromise
+- Incorrect GeoIP data
+
+> City-level GeoIP accuracy is generally unreliable. Treat location as supporting evidence rather than definitive attribution.
+
+# SOC Practice: IP Investigation
+
+Example suspicious IP:
+
+```text
+2[.]58[.]56[.]50
+```
+
+Useful enrichment sources:
+
+```text
+VirusTotal
+AbuseIPDB
+BGP.Tools
+IPinfo
+Shodan
+Censys
+```
+
+> IP ownership and hosting information can change rapidly. Historical context may therefore differ from current lookup results.
+
+# Service Exposure
+
+## Exposed Services
+
+Understanding exposed services helps determine how an attacker may have gained access or how an infrastructure host may be used.
+
+For a victim IP:
+
+```text
+Internet
+   ↓
+Exposed SSH / RDP / HTTP
+   ↓
+Potential attack surface
+```
+
+For an attacker IP:
+
+```text
+Attacker IP
+   ↓
+Exposed services
+   ↓
+Possible compromised / repurposed server
+```
+
+Common services of interest include:
+
+```text
+SSH
+RDP
+HTTP
+HTTPS
+SMB
+FTP
+Rsync
+Database services
+```
+
+# Shodan Reconnaissance
+
+[**Shodan**](https://www.shodan.io/) indexes internet-connected devices and services.
+
+It can provide:
+
+- Open ports
+- Service banners
+- Service versions
+- Operating-system information
+- TLS information
+- Host metadata
+
+Example IP:
+
+```text
+69[.]197[.]185[.]26
+```
+
+## Open Ports
+
+Open ports indicate exposed network services.
+
+Example:
+
+```text
+22/tcp   → SSH
+80/tcp   → HTTP
+443/tcp  → HTTPS
+873/tcp  → Rsync
+```
+
+> An open port is not automatically vulnerable or malicious. It identifies an exposed service that requires further investigation.
+
+## Service Banners
+
+Service banners may reveal:
+
+```text
+Software
+Version
+Operating system
+Application
+Configuration
+```
+
+Older versions may indicate increased vulnerability risk.
+
+# Censys Search
+
+[**Censys**](https://search.censys.io/) provides internet-wide infrastructure and service discovery.
+
+It can identify:
+
+- Open ports
+- Services
+- Certificates
+- Hosts
+- Internet-facing infrastructure
+- Non-standard ports
+
+Example:
+
+```text
+56003/tcp → SSH
+```
+
+> Some Censys functionality may require an account.
+
+# TLS Certificates
+
+HTTPS infrastructure provides another source of threat intelligence through TLS certificates.
+
+Useful services include:
+
+- [crt.sh](https://crt.sh/)
+- [Censys](https://search.censys.io/)
+- [SSL Shopper](https://www.sslshopper.com/ssl-checker.html)
+
+## Certificate Fields
+
+### Issuer
+
+Identifies the certificate authority or issuer.
+
+A self-signed certificate may warrant additional investigation.
+
+### Validity
+
+Look at:
+
+```text
+Not Before
+Not After
+```
+
+Newly created certificates can be useful infrastructure indicators.
+
+### Subject
+
+The certificate subject can reveal:
+
+- Domain names
+- Hostnames
+- Internal names
+- Software-related names
+
+Example:
+
+```text
+CN=pfSense
+```
+
+> Certificate information is an enrichment signal, not proof of malicious activity.
+
+# SOC Practice: Deep IP Investigation
+
+Example:
+
+```text
+64[.]89[.]160[.]44
+```
+
+Useful sources:
+
+```text
+VirusTotal
+Shodan
+Censys
+crt.sh
+BGP.Tools
+AbuseIPDB
+```
+
+> Shodan and Censys information can change as services are added or removed. Historical reports or screenshots may therefore differ from current results.
+
+# VPN Detection
+
+Attackers can use:
+
+- VPNs
+- Proxies
+- Tor
+- Residential proxies
+- Cloud proxies
+
+This can make a malicious login appear geographically normal.
+
+Example:
+
+```text
+Attacker
+   ↓
+VPN
+   ↓
+Microsoft 365
+```
+
+The login may appear to originate from the expected country even though the real attacker is elsewhere.
+
+# IP2Proxy and Spur
+
+Useful services for identifying anonymisation infrastructure include:
+
+- [IP2Proxy](https://www.ip2proxy.com/)
+- [Spur](https://spur.us/)
+
+They can help classify IP addresses as:
+
+```text
+VPN
+Proxy
+Tor
+Residential proxy
+Datacenter
+```
+
+Example:
+
+```text
+185[.]98[.]171[.]238
+        ↓
+Known VPN node
+```
+
+> VPN detection helps analysts avoid treating GeoIP location as proof of the user's physical location.
+
+# IP and Domain SOC Analyst Workflow
+
+At minimum, an L1 workflow can follow these steps.
+
+## Domain Investigation
+
+Ask:
+
+- Does the domain look legitimate?
+- Does it resemble a known brand?
+- Could it be typosquatting?
+- Does it contain IDN/Punycode characters?
+- What is its reputation?
+- When was it registered?
+- Is the domain newly registered?
+- What are its A / AAAA records?
+- What infrastructure does it resolve to?
+
+## IP Investigation
+
+Ask:
+
+- Is the IP part of a CDN range?
+- What is its reputation?
+- Has it been reported for abuse?
+- What domains are associated with it?
+- What ASN owns it?
+- Is it residential, hosting, cloud, or CDN infrastructure?
+- Where is it approximately located?
+- Is it a VPN, proxy, or Tor node?
+- What services are exposed?
+- What software versions are running?
+- Does the infrastructure match the alert context?
+
+# IP and Domain Enrichment Workflow
+
+```text
+Alert
+  ↓
+Extract Domain / IP
+  ↓
+Domain Investigation
+  ├── WHOIS / RDAP
+  ├── DNS
+  ├── A / AAAA
+  ├── TXT
+  ├── Domain Age
+  └── Typosquatting / IDN Check
+  ↓
+IP Investigation
+  ├── VirusTotal
+  ├── AbuseIPDB
+  ├── ASN
+  ├── GeoIP
+  ├── VPN / Proxy / Tor
+  └── CDN Check
+  ↓
+Infrastructure Investigation
+  ├── Shodan
+  ├── Censys
+  ├── Open Ports
+  ├── Service Banners
+  └── TLS Certificates
+  ↓
+Correlate With Alert Context
+  ↓
+Determine Risk
+  ↓
+Block / Monitor / Escalate
+```
+
+# Key Takeaways
+
+| Concept | Purpose |
+|---|---|
+| **DNS** | Resolve domains to IP addresses and inspect domain infrastructure |
+| **A Record** | Maps a domain to an IPv4 address |
+| **AAAA Record** | Maps a domain to an IPv6 address |
+| **TXT Record** | Provides domain metadata and service/security information |
+| **WHOIS / RDAP** | Provides domain registration information |
+| **Domain Age** | Helps identify newly registered infrastructure |
+| **Typosquatting** | Uses look-alike domains to deceive users |
+| **IDN / Punycode** | Can hide visually similar non-ASCII characters |
+| **VirusTotal** | Provides reputation and infrastructure relationships |
+| **AbuseIPDB** | Provides reports of malicious IP activity |
+| **ASN** | Identifies the organisation/network controlling an IP range |
+| **GeoIP** | Provides approximate geographic information |
+| **Shodan** | Identifies exposed services and ports |
+| **Censys** | Provides internet-wide host and service intelligence |
+| **TLS Certificate** | Provides additional infrastructure and domain clues |
+| **IP2Proxy / Spur** | Helps identify VPN, proxy, and Tor infrastructure |
+| **CDN** | Can obscure the origin infrastructure behind shared edge IPs |
+
+> **A domain provides identity, DNS provides infrastructure, an IP provides network context, ASN provides ownership, GeoIP provides approximate location, and service/certificate analysis provides deeper infrastructure context.**
