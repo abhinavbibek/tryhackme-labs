@@ -21584,3 +21584,481 @@ Potential data collection / staging
 ```
 
 > The strongest evidence comes from correlating multiple independent data sources rather than relying on a single alert. Elastic allows the analyst to pivot between web logs, Windows Security logs, Sysmon, and PowerShell telemetry to reconstruct the complete intrusion.
+
+# Tempest — Investigation Methodology
+
+This section extends the previous **SIEM, CTI, log analysis, and alert-triage material** into a full **endpoint + network forensic investigation**.
+
+The key distinction is that **Tempest is no longer just alert triage**. You are reconstructing an entire attack chain from captured artefacts.
+
+## Core Investigation Model
+
+The investigation should follow this progression:
+
+```text
+Malicious Document
+       ↓
+WinWord.exe
+       ↓
+Stage-2 Execution
+       ↓
+Encoded Command
+       ↓
+Remote Payload Retrieval
+       ↓
+C2 Communication
+       ↓
+Internal Reconnaissance
+       ↓
+Reverse SOCKS / Stable Shell
+       ↓
+Privilege Escalation
+       ↓
+SYSTEM
+       ↓
+Persistence
+       ↓
+Fully Compromised Host
+```
+
+---
+
+# 1. Primary Data Sources
+
+| Data Source            | Main Purpose                                               |
+| ---------------------- | ---------------------------------------------------------- |
+| **Sysmon EVTX**        | Process creation, files, network/DNS, registry activity    |
+| **Windows Event Logs** | Authentication, privilege, services, account activity      |
+| **PCAP**               | C2 traffic, payload delivery, commands, attacker responses |
+| **Timeline Explorer**  | Filtering and correlating parsed EVTX events               |
+| **SysmonView**         | Visual process/event relationships                         |
+| **Brim**               | Fast network/HTTP/connection investigation                 |
+| **Wireshark**          | Packet-level investigation                                 |
+
+---
+
+# 2. Sysmon Events to Prioritise
+
+The most important events in this investigation are:
+
+|  Event ID | Meaning                    | Why It Matters                            |
+| --------: | -------------------------- | ----------------------------------------- |
+|     **1** | Process Creation           | Reconstruct execution chains              |
+|     **2** | File creation time changed | Possible timestomping                     |
+|     **3** | Network connection         | Correlate processes with network activity |
+|     **5** | Process terminated         | Understand process lifetime               |
+|     **8** | CreateRemoteThread         | Possible process injection                |
+|    **11** | File Created               | Identify dropped payloads                 |
+| **12/13** | Registry activity          | Persistence/configuration                 |
+|    **15** | File stream/hash           | Identify downloaded files                 |
+|    **22** | DNS Query                  | Identify attacker infrastructure          |
+
+The most important initial combination is:
+
+```text
+Event ID 1 + Event ID 22 + Event ID 11
+```
+
+because it can reveal:
+
+```text
+Process
+   ↓
+DNS resolution
+   ↓
+Remote infrastructure
+   ↓
+Downloaded/dropped file
+```
+
+---
+
+# Stage 1 — Malicious Document
+
+The initial access vector is a malicious `.doc` document.
+
+### Known Facts
+
+* User downloaded the document through `chrome.exe`.
+* The document was opened by `WinWord.exe`.
+* The document initiated a child-process chain.
+* The objective is to identify that chain.
+
+### Investigation Strategy
+
+Start with:
+
+```text
+WinWord.exe
+```
+
+Then follow its children.
+
+For Sysmon Event ID 1, correlate:
+
+```text
+ParentProcessID
+ProcessID
+Image
+CommandLine
+ParentImage
+```
+
+Conceptually:
+
+```text
+chrome.exe
+   ↓
+malicious.doc
+   ↓
+WinWord.exe
+   ↓
+suspicious child process
+   ↓
+stage-2 execution
+```
+
+A Word document spawning unusual executables such as scripting engines, command shells, or PowerShell is a major indicator of compromise.
+
+---
+
+# Stage 2 — Encoded Command
+
+The malicious document successfully executes a **Base64-encoded command**.
+
+The important workflow is:
+
+```text
+WinWord.exe
+   ↓
+Child process
+   ↓
+Encoded command
+   ↓
+Decode Base64
+   ↓
+Recover actual command chain
+```
+
+Do not treat the encoded string as the final IOC. **Decode it and analyse the resulting commands.**
+
+The investigation should then pivot to:
+
+* Process Creation — Event ID 1
+* File Creation — Event ID 11
+* Explorer-related execution
+* Parent/child process relationships
+
+The notes specifically indicate that the relevant autostart execution has:
+
+```text
+explorer.exe
+```
+
+as its parent.
+
+Therefore:
+
+```text
+explorer.exe
+   ↓
+suspicious child
+   ↓
+stage-2 activity
+```
+
+should be examined carefully.
+
+---
+
+# Stage 3 — Malicious Document Network Traffic
+
+The document retrieves a second-stage payload remotely.
+
+At this point, the investigation moves from endpoint telemetry to **network telemetry**.
+
+You should identify:
+
+```text
+Domain
+IP address
+Port
+Protocol
+URI
+Timestamp
+```
+
+Then determine whether the same infrastructure appears elsewhere.
+
+The important correlation becomes:
+
+```text
+Sysmon
+
+Process → DNS → IP
+```
+
+and:
+
+```text
+PCAP
+
+IP → HTTP request → Payload
+```
+
+This lets you establish that the endpoint process actually communicated with the infrastructure identified in the logs.
+
+---
+
+# Stage 4 — C2 and Internal Reconnaissance
+
+The malicious binary establishes recurring **C2 communication**.
+
+The PCAP contains:
+
+* Encoded commands
+* Attacker instructions
+* Command output
+* Repeated HTTP communication
+
+This is particularly valuable because it can reveal **what the attacker actually executed**, rather than merely what security tools suspected.
+
+## Brim Investigation
+
+A useful filter is:
+
+```text
+_path=="http" "<malicious domain>"
+```
+
+For more structured output:
+
+```text
+_path=="http" "<replace domain>" id.resp_p==<replace port> |
+cut ts, host, id.resp_p, uri |
+sort ts
+```
+
+The objective is to reconstruct:
+
+```text
+C2 request
+   ↓
+Encoded command
+   ↓
+Decoded command
+   ↓
+Endpoint execution
+   ↓
+Command output
+   ↓
+C2 response
+```
+
+## Internal Reconnaissance
+
+Look for enumeration commands that allow the attacker to understand the compromised environment.
+
+Typical categories include:
+
+* Current user
+* Hostname
+* Network configuration
+* Local users
+* Running processes
+* Network connections
+* Domain/workgroup information
+* Available privileges
+* Shares and resources
+
+The key is to correlate the commands in the PCAP with the corresponding endpoint process events.
+
+---
+
+# Stage 5 — Privilege Escalation
+
+The attacker eventually establishes a more stable shell using a **reverse SOCKS proxy**.
+
+At this point, the threat model changes:
+
+```text
+Initial low-privilege access
+          ↓
+Stable remote access
+          ↓
+Privilege escalation
+          ↓
+SYSTEM
+```
+
+Investigate events occurring **after the successful execution of the proxy/tool**.
+
+Look for:
+
+* Suspicious child processes
+* Service creation
+* Registry modifications
+* Token/privilege abuse
+* Process injection
+* SYSTEM-context execution
+* New persistence mechanisms
+
+The important correlation is:
+
+```text
+Network:
+Reverse SOCKS established
+
+        +
+
+Endpoint:
+Suspicious process execution
+
+        ↓
+
+Privilege escalation activity
+```
+
+---
+
+# Stage 6 — Fully Owned Machine
+
+The attacker has now obtained:
+
+```text
+NT AUTHORITY\SYSTEM
+```
+
+This is a critical transition in the timeline.
+
+You should no longer focus only on the original compromised user.
+
+Instead, identify malicious executions running under:
+
+```text
+NT Authority\System
+```
+
+and trace their parent/child relationships.
+
+## Persistence Investigation
+
+The final objective is to identify **every persistence mechanism** established after privilege escalation.
+
+Potential persistence locations include:
+
+* Scheduled Tasks
+* Windows Services
+* Registry Run/RunOnce keys
+* Startup folders
+* WMI event subscriptions
+* Modified binaries
+* DLL hijacking
+* Account creation
+* Other system-level mechanisms
+
+Correlate:
+
+```text
+Windows Event Logs
+        +
+Sysmon
+        +
+PCAP
+```
+
+rather than relying on a single source.
+
+---
+
+# Tempest Investigation Timeline
+
+The complete methodology can therefore be represented as:
+
+```text
+                    INITIAL ACCESS
+                         │
+                         ▼
+                Malicious .doc file
+                         │
+                         ▼
+                     WinWord.exe
+                         │
+                         ▼
+               Encoded Base64 command
+                         │
+                         ▼
+                 Stage-2 execution
+                         │
+                         ├──────────────► DNS Query
+                         │
+                         ▼
+                Remote payload fetch
+                         │
+                         ▼
+                  Malicious binary
+                         │
+                         ▼
+                    C2 traffic
+                         │
+                         ▼
+              Internal reconnaissance
+                         │
+                         ▼
+              Reverse SOCKS proxy
+                         │
+                         ▼
+                Privilege escalation
+                         │
+                         ▼
+              NT AUTHORITY\SYSTEM
+                         │
+                         ▼
+                    Persistence
+                         │
+                         ▼
+                 FULLY OWNED HOST
+```
+
+---
+
+# The Most Important Analytical Principle
+
+**Never investigate each artefact in isolation.**
+
+For example:
+
+```text
+Sysmon Event 1
+Suspicious process
+```
+
+is useful but incomplete.
+
+Combine it with:
+
+```text
+Sysmon Event 22
+DNS query
+
+        +
+
+PCAP
+HTTP request
+
+        +
+
+Sysmon Event 11
+Dropped file
+
+        +
+
+Windows Event Logs
+Privilege/persistence activity
+```
+
+and you can establish a much stronger chain of evidence.
+
+### In Tempest, your job is essentially:
+
+> **Identify the initial execution → follow the process tree → identify infrastructure → pivot into the PCAP → decode C2 traffic → reconstruct attacker commands → identify privilege escalation → find SYSTEM-level activity → enumerate persistence.**
