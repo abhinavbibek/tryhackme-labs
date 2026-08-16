@@ -20113,3 +20113,687 @@ Escalate / Contain / Close
 ```
 
 > **SIEM is most valuable when analysts correlate multiple sources rather than investigating an individual log event in isolation.**
+
+# Alert Triage With Splunk
+
+Alert triage is the process of quickly investigating a security alert, determining whether the activity is benign or malicious, and escalating confirmed threats for deeper investigation.
+
+A SOC L1 analyst should focus on:
+
+- Understanding the alert context
+- Validating the activity using SIEM logs
+- Correlating related events
+- Determining whether the activity is malicious
+- Establishing whether the attack was successful
+- Escalating confirmed incidents to L2 / Incident Response
+
+# Initial Access Alert
+
+## Alert Scenario
+
+A SOC analyst at an MSSP receives an alert about a possible brute-force attack against a Linux host.
+
+### Alert Details
+
+- **Alert Name:** Brute Force Activity Detection
+- **Time:** `17/09/2025 9:00:21 AM`
+- **Target Host:** `tryhackme-2404`
+- **Source IP:** `10.10.242.248`
+
+Splunk index:
+
+```spl
+index=linux-alert
+```
+
+## Investigating the Alert
+
+Start with the basic alert information:
+
+- Target host
+- Source IP
+- Timestamp
+- Alert type
+
+The source IP is:
+
+```text
+10.10.242.248
+```
+
+This is a private/local IP address.
+
+A private source IP may indicate:
+
+- The attacker is already inside the organisation
+- A compromised internal host is being used
+- The activity originated through a VPN
+- Another internal system is being used as a pivot
+
+The hostname alone may not provide enough context, so the SIEM should be used to determine what actually happened.
+
+## Searching Authentication Activity
+
+Search for successful logins, failed logins, and invalid users:
+
+```spl
+index="linux-alert" sourcetype="linux_secure" 10.10.242.248
+| search "Accepted password for" OR "Failed password for" OR "Invalid user"
+| sort + _time
+```
+
+This search can reveal:
+
+- Failed login attempts
+- Successful login attempts
+- Attempts against non-existent users
+- Account enumeration
+- Potential brute-force activity
+
+A large number of events from the same IP combined with attempts against non-existent accounts can indicate reconnaissance or account enumeration.
+
+## Counting Login Attempts by User
+
+To determine which accounts were targeted:
+
+```spl
+index="linux-alert" sourcetype="linux_secure" 10.10.242.248
+| rex field=_raw "^\d{4}-\d{2}-\d{2}T[^\s]+\s+(?<log_hostname>\S+)"
+| rex field=_raw "sshd\[\d+\]:\s*(?<action>Failed|Accepted)\s+\S+\s+for(?: invalid user)? (?<username>\S+) from (?<src_ip>\d{1,3}(?:\.\d{1,3}){3})"
+| eval process="sshd"
+| stats count values(src_ip) as src_ip values(log_hostname) as hostname values(process) as process by username
+```
+
+This helps identify:
+
+- Number of attempts per username
+- Targeted accounts
+- Source IP
+- Hostname
+- Authentication process
+
+Example finding:
+
+```text
+Targeted users:
+- User 1
+- User 2
+- User 3
+- john.smith
+
+john.smith:
+503 attempts
+```
+
+A very high number of attempts against one account is a strong indicator of brute-force activity.
+
+## Determining Whether the Attack Succeeded
+
+Once the targeted account has been identified, determine whether any login was successful.
+
+```spl
+index="linux-alert" sourcetype="linux_secure" 10.10.242.248
+| rex field=_raw "^\d{4}-\d{2}-\d{2}T[^\s]+\s+(?<log_hostname>\S+)"
+| rex field=_raw "sshd\[\d+\]:\s*(?<action>Failed|Accepted)\s+\S+\s+for(?: invalid user)? (?<username>\S+) from (?<src_ip>\d{1,3}(?:\.\d{1,3}){3})"
+| eval process="sshd"
+| stats count values(action) values(src_ip) as src_ip values(log_hostname) as hostname values(process) as process by username
+```
+
+Look for:
+
+```text
+Failed
+Accepted
+```
+
+If the targeted account shows an `Accepted` authentication after numerous failed attempts, the attack may have succeeded.
+
+### Investigation Result
+
+Example:
+
+```text
+Account:
+john.smith
+
+Failed attempts:
+503
+
+Successful login:
+Yes
+```
+
+This provides sufficient evidence to classify the alert as:
+
+```text
+TRUE POSITIVE
+```
+
+The activity should be escalated to the **SOC L2 analyst** and potentially the **Incident Response team**.
+
+# Next Investigation Steps
+
+Important questions for L2 / Incident Response include:
+
+- Why did the attacker have a local IP address?
+- Was another internal host compromised?
+- Was a VPN account compromised?
+- How did the attacker discover valid usernames?
+- How long had the attacker been inside the network?
+- What happened after the successful login?
+- What commands were executed?
+- Was persistence established?
+- Was data accessed or exfiltrated?
+
+## L1 Analyst Responsibility
+
+The SOC L1 analyst should:
+
+```text
+Alert
+  ↓
+Validate Activity
+  ↓
+Correlate Logs
+  ↓
+Determine Malicious / Benign
+  ↓
+Determine Success / Failure
+  ↓
+Escalate Confirmed Threat
+```
+
+# Persistence Alert
+
+The second scenario focuses on Windows scheduled-task persistence.
+
+## Alert Scenario
+
+A SOC L1 analyst receives an alert indicating that a suspicious scheduled task was created.
+
+### Alert Details
+
+- **Alert Name:** Potential Task Scheduler Persistence Identified
+- **Time:** `30/08/2025 10:06:07 AM`
+- **Host:** `WIN-H015`
+- **User:** `oliver.thompson`
+- **Task Name:** `AssessmentTaskOne`
+
+Splunk index:
+
+```spl
+index=win-alert
+```
+
+## Investigating the Alert
+
+Before searching the SIEM, establish context about:
+
+- Host
+- User
+- Time
+- Task name
+
+### Host Context
+
+`WIN-H015` appears to be a workstation based on the naming convention.
+
+Typical naming patterns might include:
+
+```text
+SRV  → Server
+WEB  → Web server
+MSQL → SQL server
+WIN  → Windows workstation
+HOST → Workstation/endpoint
+```
+
+### User Context
+
+The user is:
+
+```text
+oliver.thompson
+```
+
+Role:
+
+```text
+System Engineer
+```
+
+The user's role is important because scheduled-task creation may be normal for an administrator or system engineer but suspicious for an unrelated employee.
+
+Other contextual information includes:
+
+- User location
+- Working hours
+- Host role
+- Normal administrative activity
+
+## Searching Scheduled Task Creation
+
+Windows Event ID **4698** indicates that a scheduled task was created.
+
+```spl
+index="win-alert" EventCode=4698 AssessmentTaskOne
+| table _time EventCode user_name host Task_Name Message
+```
+
+The search shows a single event associated with the task.
+
+## Analysing the Task
+
+The `Message` field contains important information about the scheduled task.
+
+Investigate:
+
+- **Triggers**
+- **Actions / Exec**
+- **Principals**
+- **Run-as account**
+- **Command**
+- **Executable**
+- **Arguments**
+
+### Trigger Analysis
+
+The task runs:
+
+```text
+Every day
+At the same time
+On a user workstation
+```
+
+This may be suspicious depending on the user's role and whether the task is expected.
+
+### Execution Analysis
+
+The task uses:
+
+```text
+certutil
+```
+
+to download:
+
+```text
+rv.exe
+```
+
+from a suspicious domain.
+
+The downloaded file is saved as:
+
+```text
+C:\Windows\Temp\DataCollector.exe
+```
+
+The task then launches the executable using PowerShell:
+
+```text
+Start-Process
+```
+
+The activity executes under:
+
+```text
+oliver.thompson
+```
+
+This creates a suspicious execution chain:
+
+```text
+Scheduled Task
+      ↓
+certutil
+      ↓
+Download rv.exe
+      ↓
+Save as DataCollector.exe
+      ↓
+PowerShell Start-Process
+      ↓
+Execute Payload
+```
+
+The combination of:
+
+- Scheduled task
+- `certutil`
+- Remote download
+- Suspicious domain
+- Temp directory
+- PowerShell
+- Payload execution
+
+is strong evidence of malicious persistence.
+
+### Investigation Result
+
+The alert should be classified as:
+
+```text
+TRUE POSITIVE
+```
+
+The activity should be escalated to the **SOC L2 analyst**.
+
+Threat intelligence should also be used to investigate the suspicious domain and determine whether it is associated with known malicious infrastructure.
+
+# Next Investigation Steps
+
+L2 / Incident Response should investigate:
+
+- How the scheduled task was created
+- Which process created the task
+- How the attacker obtained access to `WIN-H015`
+- How the `oliver.thompson` account was compromised
+- Whether additional persistence mechanisms exist
+- Whether the downloaded executable was malicious
+- Whether other hosts contacted the same domain
+- Whether the attacker performed additional actions
+
+# Web Shell Alert
+
+The third scenario focuses on a potentially compromised web server and web-shell activity.
+
+## Alert Scenario
+
+A SOC L1 analyst receives an alert about a possible web-shell upload.
+
+### Alert Details
+
+- **Alert Name:** Potential Web Shell Upload Detected
+- **Time:** `14/09/2025 09:31:51 AM`
+- **Resource:** `http://web.trywinme.thm`
+- **Suspicious IP:** `171.251.232.40`
+
+Splunk index:
+
+```spl
+index=web-alert
+```
+
+## Investigating the Alert
+
+Start by examining:
+
+- Target web resource
+- Source IP
+- User-Agent
+- HTTP method
+- Requested URI
+- HTTP status
+- Request timeline
+
+The suspicious IP should also be enriched using threat-intelligence platforms.
+
+## IP Threat Intelligence
+
+Example resource:
+
+```text
+AbuseIPDB
+```
+
+The IP:
+
+```text
+171.251.232.40
+```
+
+has a large number of malicious reports.
+
+This increases the confidence that the source is hostile, but the SIEM evidence should still be correlated with the threat-intelligence result.
+
+## Investigating Web Requests
+
+Search all activity from the suspicious IP:
+
+```spl
+index=web-alert 171.251.232.40
+| table _time clientip useragent uri_path method status
+| sort + _time
+```
+
+The search reveals a large number of requests.
+
+A particularly suspicious indicator is the User-Agent:
+
+```text
+Hydra
+```
+
+Hydra is commonly used for brute-force attacks.
+
+The activity targets:
+
+```text
+/wp-login.php
+```
+
+This indicates a likely brute-force attack against the WordPress login page.
+
+## Investigating Activity Beyond Hydra
+
+Exclude the Hydra User-Agent to identify additional activity:
+
+```spl
+index=web-alert 171.251.232.40 useragent!="Mozilla/5.0 (Hydra)"
+| table _time clientip useragent uri_path referer referer_domain method status
+```
+
+A suspicious request is:
+
+```text
+Method:
+POST
+
+URI:
+admin-ajax.php
+
+Referer:
+theme-editor.php?file=b374k.php
+```
+
+The reference to:
+
+```text
+b374k.php
+```
+
+is suspicious because it indicates interaction with a PHP file through the WordPress theme editor.
+
+## Investigating b374k.php
+
+Search directly for the suspicious filename:
+
+```spl
+index=web-alert 171.251.232.40 b374k.php
+| table _time clientip useragent uri_path referer referer_domain method status
+| sort + _time
+```
+
+The results show successful POST requests involving:
+
+```text
+b374k.php
+```
+
+Multiple successful POST requests indicate that the attacker was actively interacting with the file.
+
+## Web Shell Identification
+
+`b374k.php` is a known PHP web shell.
+
+The investigation therefore provides multiple layers of evidence:
+
+```text
+Malicious IP
+      ↓
+Hydra brute-force activity
+      ↓
+/wp-login.php
+      ↓
+WordPress activity
+      ↓
+theme-editor.php
+      ↓
+b374k.php
+      ↓
+Successful POST requests
+      ↓
+Web shell interaction
+```
+
+### Investigation Result
+
+The activity should be classified as:
+
+```text
+TRUE POSITIVE
+```
+
+The incident should be escalated to the **SOC L2 analyst** and likely involve the **Incident Response team**.
+
+# Next Investigation Steps
+
+L2 / Incident Response should determine:
+
+- Was the Hydra brute-force attack successful?
+- How was `b374k.php` uploaded?
+- Which vulnerability or compromised account enabled the upload?
+- What commands were executed through the web shell?
+- What files were created or modified?
+- Was persistence established?
+- Was data accessed?
+- Was data exfiltrated?
+- Were other systems compromised?
+
+# Alert Triage Workflow
+
+A SOC L1 analyst can apply the following workflow to most alerts:
+
+```text
+                    Alert
+                      ↓
+              Read Alert Details
+                      ↓
+          Identify Host / User / IP
+                      ↓
+             Establish Context
+                      ↓
+             Search SIEM Logs
+                      ↓
+             Correlate Events
+                      ↓
+            Build Event Timeline
+                      ↓
+       ┌──────────────┴──────────────┐
+       ↓                             ↓
+    Benign?                       Suspicious?
+       ↓                             ↓
+ Close / Document             Investigate Further
+                                     ↓
+                             Determine Success
+                                     ↓
+                             Determine Scope
+                                     ↓
+                           Threat Intelligence
+                                     ↓
+                              TRUE POSITIVE
+                                     ↓
+                            Escalate to L2 / IR
+```
+
+# Key Indicators for Alert Triage
+
+| Alert Type | Important Evidence | Possible Conclusion |
+|---|---|---|
+| **Brute Force** | Repeated failed logins, many attempts against one account, successful login | Credential attack / compromise |
+| **Scheduled Task** | Event ID 4698, suspicious command, remote download, unusual task name | Persistence |
+| **Web Shell** | Suspicious PHP file, POST requests, unusual referer, command execution | Web compromise |
+| **PowerShell** | Encoded commands, downloads, suspicious parent process | Malicious execution |
+| **Network Connection** | Unusual destination, uncommon port, suspicious process | C2 / malware activity |
+| **Account Activity** | Unexpected account creation or privilege change | Persistence / privilege escalation |
+
+# Important Windows Event ID
+
+| Event ID | Meaning |
+|---|---|
+| **4698** | Scheduled task created |
+| **4720** | User account created |
+| **4722** | User account enabled |
+| **7045** | Service installed |
+| **7036** | Service state changed |
+
+# SOC L1 Escalation Criteria
+
+Escalate an alert when there is sufficient evidence of:
+
+- Successful authentication after brute-force attempts
+- Malicious persistence
+- Malware execution
+- Suspicious payload download
+- Web-shell interaction
+- Confirmed exploitation
+- Credential compromise
+- Command execution by an attacker
+- Confirmed communication with malicious infrastructure
+
+A confirmed **True Positive** should contain enough evidence for L2 to continue the investigation without repeating the entire L1 triage process.
+
+# Case Documentation
+
+A good L1 investigation should record:
+
+```text
+Alert:
+Alert Name:
+Timestamp:
+Host:
+User:
+Source IP:
+Destination IP:
+Relevant Events:
+Observed Commands:
+Observed Processes:
+Authentication Result:
+Threat Intelligence:
+Timeline:
+Classification:
+Severity:
+Evidence:
+Recommended Action:
+Escalation:
+```
+
+# Core Principle
+
+```text
+Alert ≠ Incident
+```
+
+An alert is only an indication that something potentially suspicious occurred.
+
+The analyst must:
+
+```text
+Alert
+  ↓
+Validate
+  ↓
+Investigate
+  ↓
+Correlate
+  ↓
+Determine Context
+  ↓
+Classify
+  ↓
+Escalate if Malicious
+```
+
+> The primary goal of SOC L1 triage is to quickly distinguish genuine malicious activity from false positives and provide L2/Incident Response with enough evidence and context to continue the investigation.
