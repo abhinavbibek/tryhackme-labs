@@ -17771,3 +17771,686 @@ Also ask:
 ```
 
 > **Good CTI is not simply collecting indicators. It is turning relevant threat information into timely, defensible security decisions.**
+
+# File and Hash Threat Intelligence
+
+# Filenames and Paths
+
+Suspicious filenames and file paths can provide early clues about attacker behaviour.
+
+Filepaths alone do not prove that a file is malicious, but unusual locations and naming patterns can reveal malware staging, persistence, and masquerading techniques.
+
+## Filepath Analysis
+
+Common suspicious or interesting Windows locations include:
+
+```text
+C:\
+C:\Users\Public\
+C:\Users\Public\Public Downloads\
+C:\Windows\Temp\
+C:\ProgramData\
+```
+
+### Common Filepath Indicators
+
+- `C:\` → System drive and common location for system files and persistence mechanisms.
+- `C:\Users\Public\` → Writable location accessible by multiple users.
+- `C:\Users\Public\Public Downloads\` → High-traffic directory that may receive downloaded files.
+- `C:\Windows\Temp\` → Temporary directory commonly used for malware staging.
+- `C:\ProgramData\` → Writable system location that can be abused for payload storage or persistence.
+
+> A suspicious path becomes more meaningful when correlated with the process, user, parent process, creation time, and network activity.
+
+# Filename Heuristic Indicators
+
+Attackers may manipulate filenames to evade detection or trick users.
+
+## Double Extensions
+
+Example:
+
+```text
+invoice.pdf.exe
+```
+
+The attacker may rely on Windows settings that hide known file extensions.
+
+## System Binary Impersonation
+
+Example:
+
+```text
+scvhost.exe
+```
+
+This resembles the legitimate:
+
+```text
+svchost.exe
+```
+
+> Do not rely on filenames alone. Verify the full path and digital signature of system binaries.
+
+## High-Entropy Filenames
+
+Example:
+
+```text
+jh8F21.exe
+```
+
+Random-looking filenames may indicate:
+
+- Automated malware generation
+- Packing
+- Polymorphism
+- Temporary payloads
+- High-volume phishing campaigns
+
+## Masquerading
+
+Attackers may use names that appear legitimate.
+
+Examples:
+
+```text
+backup-2300.exe
+WindowsUpdate.exe
+SecurityUpdate.exe
+```
+
+Single-character substitutions can also make malicious filenames look legitimate.
+
+Example:
+
+```text
+svchost.exe
+scvhost.exe
+```
+
+# File Hash Lookup
+
+Filenames can easily be changed, so filenames alone are unreliable identifiers.
+
+A **cryptographic hash** can be used to identify a specific file.
+
+Common hashes include:
+
+```text
+MD5
+SHA-1
+SHA-256
+```
+
+**SHA-256** is generally preferred for modern threat intelligence.
+
+> Always analyse potentially malicious binaries in an isolated environment.
+
+## Windows Hash Commands
+
+### Command Prompt
+
+```cmd
+certutil -hashfile bl0gger.exe SHA256
+```
+
+### PowerShell
+
+```powershell
+Get-FileHash -Algorithm SHA256 bl0gger.exe
+```
+
+## Linux Hash Command
+
+```bash
+sha256sum bl0gger.exe
+```
+
+## Hash Analysis Tips
+
+- Store hashes consistently, preferably in lowercase.
+- Hash both an archive and its extracted malware when both are relevant.
+- Record where and when the hash was observed.
+- Record the filename and path associated with the hash.
+- A one-bit change to a file produces a completely different cryptographic hash.
+
+Example investigation record:
+
+```text
+Filename: suspicious.exe
+Path: C:\Users\Public\suspicious.exe
+SHA256: <hash>
+Host: WORKSTATION-01
+First Seen: 2026-08-16
+Source: EDR
+```
+
+# VirusTotal
+
+[**VirusTotal**](https://www.virustotal.com/) is a threat-intelligence service that aggregates malware-analysis and detection information from many security vendors.
+
+Searching for a hash can provide useful context without uploading the original file.
+
+## VirusTotal Information
+
+Important information to examine includes:
+
+- Detection score
+- Threat labels
+- Malware family names
+- Detection rules
+- File properties
+- Digital signatures
+- Domains
+- IP addresses
+- Embedded files
+- Dropped files
+- Behaviour
+- Network activity
+- Historical submissions
+- Community comments
+
+## Detection Score
+
+The detection score indicates how many security vendors classify the sample as malicious.
+
+Example:
+
+```text
+60 / 70
+```
+
+A high detection ratio generally provides stronger evidence that a file is malicious.
+
+However:
+
+- New malware may have low detection rates.
+- Vendors may use different classifications.
+- Some detections may be generic.
+- Low detection does not mean the file is safe.
+
+> Re-check recently discovered samples because vendor detections can increase over time.
+
+## Threat Labels
+
+Vendor classifications can reveal:
+
+```text
+Trojan
+Ransomware
+Stealer
+Downloader
+Backdoor
+Loader
+PUA
+Cryptominer
+```
+
+Look for consistent malware-family or capability names across vendors.
+
+## Detection Rules
+
+Detection engines may use:
+
+- YARA rules
+- Signatures
+- Heuristics
+- Behavioural detections
+- Machine-learning classifications
+
+These can provide useful clues for detection engineering and threat hunting.
+
+## File Properties
+
+Important properties include:
+
+- File type
+- File size
+- Compilation timestamp
+- PE information
+- Entropy
+- Digital signature
+- Section information
+
+Suspicious properties may include:
+
+```text
+Unusual compilation time
+Very high entropy
+Unexpected file type
+Invalid signature
+Unsigned executable
+```
+
+> Compilation timestamps can be manipulated, so they should not be treated as definitive evidence.
+
+## Relations
+
+VirusTotal relationships can reveal infrastructure associated with a sample.
+
+Examples:
+
+```text
+Malware
+   ↓
+C2 Domain
+   ↓
+IP Address
+```
+
+Investigate:
+
+- Known malicious IPs
+- Suspicious domains
+- Related URLs
+- Other samples
+- Dropped files
+- Embedded files
+
+DGA-like domains may also be suspicious:
+
+```text
+xk8f92.xyz
+```
+
+> Legitimate CDNs and shared hosting can also host malicious content, so infrastructure must be investigated in context.
+
+## Behaviour
+
+Behavioural information may show:
+
+- Process creation
+- Registry modifications
+- File creation
+- File deletion
+- Process injection
+- Network connections
+- Persistence
+- Credential access
+
+> Correlate sandbox behaviour with endpoint telemetry before making a final determination.
+
+# VirusTotal Analysis Checklist
+
+| Section | Key Question | Red Flags | Analyst Considerations |
+|---|---|---|---|
+| **Detection Score** | How many vendors detect the file? | High detection ratio | New malware may initially have few detections |
+| **Threat Labels** | What do vendors call it? | Consistent malware-family labels | Classifications vary between vendors |
+| **Upload Time** | When was the sample first seen? | Recent sample with rapidly increasing detections | Detection coverage can improve over time |
+| **Signatures** | Is the file digitally signed? | Missing or invalid certificate | Legitimate certificates can also be abused |
+| **Properties** | Does the file have unusual properties? | High entropy, unusual metadata | Compare with known-good files |
+| **Relations** | What infrastructure is associated with it? | Known-bad IPs/domains | Shared hosting and CDNs require context |
+| **Behaviour** | What happens when executed? | Injection, persistence, suspicious registry changes | Correlate with endpoint telemetry |
+
+# MalwareBazaar
+
+[**MalwareBazaar**](https://bazaar.abuse.ch/) is a malware sample and threat-intelligence repository.
+
+It can provide:
+
+- Malware samples
+- Malware-family classifications
+- YARA rules
+- Threat-actor tags
+- Campaign information
+- Related samples
+- Hash-based searches
+
+## Malware Family Tagging
+
+A sample may have a malware-family tag even when VirusTotal has relatively few detections.
+
+Example:
+
+```text
+VirusTotal:
+5 / 70 detections
+
+MalwareBazaar:
+#IcedID
+```
+
+The MalwareBazaar classification should be considered during the investigation.
+
+## YARA Rules
+
+MalwareBazaar submissions may contain YARA rules that can be used to detect related samples.
+
+These rules can support:
+
+- EDR detection
+- SIEM hunting
+- Malware research
+- Retroactive threat hunting
+
+## Campaign Attribution
+
+Tags can connect malware to known threat actors or campaigns.
+
+Example:
+
+```text
+#TA551
+```
+
+This can help analysts identify related activity across incidents.
+
+## Sample Availability
+
+Malware samples may be available for further analysis.
+
+> Download and analyse malware only in an isolated malware-analysis environment.
+
+## MalwareBazaar Hash Search
+
+A typical hash search uses:
+
+```text
+sha256:<file_hash>
+```
+
+# Sandbox Analysis
+
+## Dynamic Analysis for SOC
+
+Static analysis provides information about a file's identity and structure.
+
+Dynamic analysis shows what the malware actually does when executed.
+
+A sandbox provides an isolated environment that can monitor:
+
+- Processes
+- Files
+- Registry changes
+- Network traffic
+- DNS requests
+- Memory
+- Mutexes
+- Dropped payloads
+
+## Goals of Sandbox Analysis
+
+Security analysts use sandbox analysis to:
+
+### Confirm Execution
+
+Determine whether the sample actually executes and performs suspicious activity.
+
+```text
+Sample
+  ↓
+Execution
+  ↓
+Observed Behaviour
+```
+
+### Extract Runtime IOCs
+
+Possible runtime indicators include:
+
+```text
+C2 domains
+IP addresses
+URLs
+Mutexes
+Dropped files
+Registry keys
+File paths
+Command lines
+```
+
+### Map Behaviour to MITRE ATT&CK
+
+Sandbox results can automatically map observed behaviour to ATT&CK techniques.
+
+Example:
+
+```text
+Process Injection
+        ↓
+MITRE ATT&CK technique
+```
+
+> L1 analysts commonly use sandbox lookup capabilities to quickly enrich a known hash, while deeper dynamic analysis may be performed by senior analysts or malware researchers.
+
+# Sandboxing Tools
+
+## Hybrid Analysis
+
+[**Hybrid Analysis**](https://hybrid-analysis.com/) provides automated malware analysis with a strong focus on:
+
+- Behaviour trees
+- Network activity
+- Process activity
+- MITRE ATT&CK mappings
+- Threat scores
+- Indicators
+
+It is useful for quickly understanding overall malware behaviour.
+
+## Joe Sandbox
+
+[**Joe Sandbox**](https://www.joesandbox.com/) provides deeper analysis capabilities.
+
+It can provide information about:
+
+- System calls
+- Strings
+- Memory
+- Processes
+- Network activity
+- File activity
+- Behaviour
+
+It can be particularly useful for reverse engineers and detection engineers.
+
+# Hybrid Analysis Report
+
+A sandbox report can provide:
+
+- Threat score
+- Malware classification
+- Risk behaviour
+- MITRE ATT&CK techniques
+- File metadata
+- Imports
+- Processes
+- Network connections
+- Dropped files
+- Extracted files
+- Runtime indicators
+
+Example workflow:
+
+```text
+File Hash
+   ↓
+Hybrid Analysis
+   ↓
+Threat Score
+   ↓
+Behaviour
+   ↓
+ATT&CK Techniques
+   ↓
+Network IOCs
+   ↓
+Process Activity
+   ↓
+Detection Opportunities
+```
+
+## Threat Intelligence Report Data
+
+Useful information to extract includes:
+
+```text
+File composition
+Imports
+Processes
+Command lines
+Network connections
+Domains
+IP addresses
+Dropped files
+Registry modifications
+MITRE ATT&CK techniques
+```
+
+# Sandboxing Limitations
+
+Sandbox results should not be treated as absolute truth.
+
+A sample can appear benign inside a sandbox while behaving maliciously on a real target.
+
+## Sandbox Evasion
+
+Malware may detect that it is running inside a sandbox.
+
+### Environment Awareness
+
+Malware can check for:
+
+- Virtualisation artefacts
+- Sandbox-specific files
+- Virtual hardware
+- Known analysis software
+- Specific processes
+- Hardware identifiers
+
+### Anti-Debugging and Anti-Sandboxing
+
+Malware may:
+
+- Detect debuggers
+- Detect analysis tools
+- Check hardware identifiers
+- Check VM artefacts
+- Terminate when analysis is detected
+- Change its execution path
+
+# Limited Execution Time and Coverage
+
+Most automated sandboxes execute samples for a limited period.
+
+For example:
+
+```text
+Sandbox execution
+       ↓
+2–5 minutes
+       ↓
+Analysis terminated
+```
+
+This can miss:
+
+- Delayed execution
+- Multi-stage payloads
+- Long-running persistence
+- Time-based C2
+- Scheduled activity
+
+> Cross-reference sandbox results with other threat-intelligence sources and endpoint telemetry.
+
+# Encrypted and Obfuscated Traffic
+
+Encrypted network traffic can reduce visibility.
+
+Examples:
+
+```text
+HTTPS C2
+TLS-encrypted traffic
+DNS tunnelling
+Encrypted payloads
+```
+
+A sandbox may detect:
+
+```text
+Connection → attacker infrastructure
+```
+
+but may not see:
+
+```text
+Encrypted C2 payload
+```
+
+DNS tunnelling can also hide information inside DNS queries.
+
+# Fileless and Living-Off-the-Land Malware
+
+Some malware avoids writing traditional payloads to disk.
+
+Examples include abuse of:
+
+```text
+PowerShell
+WMI
+MSHTA
+Rundll32
+Other legitimate system utilities
+```
+
+This can make traditional file-based sandbox detection less effective.
+
+# File and Hash Threat Intelligence Workflow
+
+```text
+Suspicious File
+      ↓
+Examine Filename
+      ↓
+Examine Full Path
+      ↓
+Check Filename Heuristics
+      ↓
+Calculate SHA-256
+      ↓
+Search VirusTotal
+      ↓
+Review Detections
+      ↓
+Review Properties
+      ↓
+Review Relations
+      ↓
+Review Behaviour
+      ↓
+Cross-reference MalwareBazaar
+      ↓
+Search Existing Sandbox Reports
+      ↓
+Perform Dynamic Analysis if Required
+      ↓
+Extract Runtime IOCs
+      ↓
+Map Behaviour to MITRE ATT&CK
+      ↓
+Correlate with Internal Telemetry
+      ↓
+Determine Confidence
+      ↓
+Create Detection / Escalate
+```
+
+# Key Takeaways
+
+| Concept | Purpose |
+|---|---|
+| **Filename analysis** | Identify suspicious naming and masquerading patterns |
+| **Path analysis** | Identify suspicious storage and staging locations |
+| **SHA-256** | Identify a specific file independently of its filename |
+| **VirusTotal** | Enrich hashes with vendor detections and relationships |
+| **MalwareBazaar** | Identify malware families, samples, campaigns, and YARA rules |
+| **Sandbox** | Observe malware behaviour in a controlled environment |
+| **Hybrid Analysis** | Fast behavioural and ATT&CK-oriented analysis |
+| **Joe Sandbox** | Deep automated malware analysis |
+| **Runtime IOC** | Indicator discovered during execution |
+| **ATT&CK Mapping** | Describe observed adversary behaviour |
+| **Sandbox Evasion** | Techniques used to hide malicious behaviour during analysis |
+
+> **A filename provides a clue, a hash provides identity, threat intelligence provides context, and sandbox analysis provides behavioural evidence.**
