@@ -15864,3 +15864,421 @@ This combination is a strong indicator of malicious activity.
 - **Script malware** commonly uses PowerShell, JavaScript, VBS, or Batch.
 - **Hashes, process behaviour, network connections, parent processes, and file locations** are useful when investigating binaries.
 - **Downloads, encoded commands, security-tool changes, and unusual child processes** are important indicators when investigating scripts.
+
+# Intro to Malware Analysis
+
+## Malware Analysis
+
+Malware = **Malicious Software**.
+
+Malware analysis determines:
+- What malware is
+- What it does
+- How it works
+- What systems/files it affects
+- How to detect and respond to it
+
+### Who Uses Malware Analysis?
+
+| Team | Purpose |
+|---|---|
+| SOC | Create detections |
+| Incident Response | Determine impact and remediate |
+| Threat Hunting | Identify IOCs and hunt for malware |
+| Malware Research | Analyse malware and improve detections |
+| Threat Research | Discover exploited vulnerabilities and improve security |
+
+## Malware Analysis Techniques
+
+### Static Analysis
+
+Analysing malware **without executing it**.
+
+Common techniques:
+- File type identification
+- String extraction
+- Hash calculation
+- PE header analysis
+- Import/export analysis
+- Disassembly
+
+### Dynamic Analysis
+
+Executing malware in an **isolated environment** and observing its behaviour.
+
+Monitor:
+- Processes
+- Files
+- Registry
+- Network connections
+- Memory
+- Persistence
+
+### Advanced Analysis
+
+Used when basic static/dynamic analysis is insufficient.
+
+- **Disassembler** → Converts binary code to assembly
+- **Debugger** → Executes code step-by-step and inspects memory, CPU and instructions
+
+## Static Analysis
+
+### File Type
+
+Never rely only on the file extension.
+
+```bash
+file <filename>
+```
+
+## File Identification
+
+Identify the type of a suspicious file:
+
+```bash
+file wannacry
+```
+
+Output:
+
+```text
+wannacry: PE32 executable (GUI) Intel 80386, for MS Windows
+```
+
+* **PE32** → 32-bit Windows executable
+* **GUI** → Graphical application
+* **80386** → x86/32-bit architecture
+
+---
+
+## Strings
+
+Extract readable strings from a file:
+
+```bash
+strings <filename>
+```
+
+Useful strings may reveal:
+
+* URLs/IPs
+* File paths
+* Registry keys
+* API names
+* Error messages
+* Embedded configuration
+
+Save output:
+
+```bash
+strings wannacry > str
+```
+
+Paginate output:
+
+```bash
+strings wannacry | less
+```
+
+---
+
+## File Hashes
+
+Hashes can identify a specific malware sample.
+
+```bash
+md5sum <filename>
+sha1sum <filename>
+sha256sum <filename>
+```
+
+Example:
+
+```bash
+md5sum wannacry
+```
+
+Commonly used for:
+
+* Malware identification
+* Threat-intelligence searches
+* IOC sharing
+* VirusTotal searches
+
+> **Note:** Prefer searching a sample's hash on online services instead of uploading sensitive samples.
+
+---
+
+## VirusTotal
+
+A hash search can provide:
+
+* AV detections
+* Malware classification
+* Sample history
+* Metadata
+* Behaviour
+* Network indicators
+* Related samples
+* Community comments
+
+---
+
+# PE Files
+
+**PE (Portable Executable)** is the Windows executable format used by `.exe` and `.dll` files.
+
+## PE Imports
+
+Imports are external functions used by the PE.
+
+Examples:
+
+```text
+InternetOpen
+URLDownloadToFile
+CreateProcessA
+RegQueryValueEx
+```
+
+Imports can provide clues about possible malware behaviour.
+
+## PE Exports
+
+Exports are functions exposed for other programs to use.
+
+They are especially common in DLLs.
+
+## Common PE Sections
+
+| Section  | Purpose                            |
+| -------- | ---------------------------------- |
+| `.text`  | Executable code                    |
+| `.rdata` | Read-only data                     |
+| `.data`  | Writable/global data               |
+| `.rsrc`  | Resources such as icons and images |
+
+---
+
+# PECheck
+
+REMnux provides `pecheck` for PE analysis:
+
+```bash
+pecheck <filename>
+```
+
+It can provide:
+
+* MD5/SHA hashes
+* Section information
+* Section entropy
+* PE headers
+* Imports
+* Parsing warnings
+
+## Entropy
+
+Entropy measures how random data appears.
+
+```text
+Low entropy  → More predictable data
+High entropy → More random data
+```
+
+High entropy can indicate:
+
+* Encryption
+* Compression
+* Packing
+* Obfuscation
+
+> **Note:** High entropy alone does not prove that a file is packed or malicious.
+
+---
+
+# Packed Malware
+
+Packing compresses, encrypts, or obfuscates malware to make static analysis harder.
+
+Common indicators:
+
+* High entropy
+* Few meaningful strings
+* Few useful imports
+* Unusual sections
+* Writable + executable sections
+* Missing/unusual `.text` section
+
+Example:
+
+```text
+IMAGE_SCN_MEM_WRITE
++
+IMAGE_SCN_MEM_EXECUTE
+```
+
+may indicate a packed executable.
+
+---
+
+# Dynamic Analysis
+
+Dynamic analysis executes malware in a controlled environment to observe its behaviour.
+
+## Sandbox
+
+A malware-analysis sandbox should provide:
+
+* Isolated VM
+* Clean snapshots
+* Process monitoring
+* File/registry monitoring
+* Network monitoring
+* Controlled DNS/web services
+* Ability to revert to a clean state
+
+Typical monitoring tools:
+
+```text
+Procmon
+Process Explorer
+Regshot
+Wireshark
+tcpdump
+```
+
+---
+
+# Open-Source Sandboxes
+
+## Cuckoo Sandbox
+
+Open-source malware sandbox with extensive community support.
+
+> **Note:** The original Cuckoo project is outdated and has significant limitations with modern environments.
+
+## CAPE Sandbox
+
+An actively developed Cuckoo-derived sandbox with additional capabilities such as:
+
+* Debugging
+* Memory dumping
+* Malware unpacking support
+
+---
+
+# Online Sandboxes
+
+Examples:
+
+* ANY.RUN
+* Hybrid Analysis
+* Intezer
+* Online Cuckoo
+
+Can provide:
+
+* Process trees
+* Network connections
+* DNS activity
+* File changes
+* Registry changes
+* MITRE ATT&CK mappings
+* Extracted files
+
+> **Note:** Search for an existing hash before uploading a potentially sensitive sample.
+
+---
+
+# Anti-Analysis Techniques
+
+## Packing and Obfuscation
+
+Used to make static analysis difficult.
+
+Typical indicators:
+
+```text
+High entropy
++
+Few useful strings
++
+Few imports
++
+Unusual PE sections
+=
+Possible packing
+```
+
+Packed malware generally needs to be **unpacked** before deeper static analysis.
+
+---
+
+## Sandbox Evasion
+
+### Long Sleep
+
+Malware delays execution so that the sandbox times out before malicious behaviour occurs.
+
+### User Activity Detection
+
+Malware checks for:
+
+* Mouse movement
+* Keyboard input
+* Other human interaction
+
+### User Activity Footprinting
+
+Malware checks for evidence of normal system usage:
+
+* Browser history
+* Office history
+* Recent files
+* User-created files
+
+A clean VM may therefore be identified as a sandbox.
+
+### VM Detection
+
+Malware may detect:
+
+* VMware artefacts
+* VirtualBox artefacts
+* Virtual drivers
+* Virtual hardware characteristics
+
+If a VM is detected, malware may terminate or change its behaviour.
+
+---
+
+# Malware Analysis Workflow
+
+```text
+Suspicious Sample
+       ↓
+Isolate Sample
+       ↓
+file
+       ↓
+strings
+       ↓
+Hash
+       ↓
+VirusTotal / Threat Intelligence
+       ↓
+PE Analysis
+       ↓
+Imports + Sections + Entropy
+       ↓
+Check for Packing/Obfuscation
+       ↓
+Dynamic Analysis
+       ↓
+Process + File + Registry + Network Activity
+       ↓
+IOCs + Behaviour
+       ↓
+Detection / Response
+```
