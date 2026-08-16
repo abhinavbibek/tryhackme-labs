@@ -19179,3 +19179,937 @@ Block / Monitor / Escalate
 | **CDN** | Can obscure the origin infrastructure behind shared edge IPs |
 
 > **A domain provides identity, DNS provides infrastructure, an IP provides network context, ASN provides ownership, GeoIP provides approximate location, and service/certificate analysis provides deeper infrastructure context.**
+
+# Log Analysis with SIEM
+
+## Benefits of SIEM for Analysts
+
+SIEM (Security Information and Event Management) helps SOC analysts collect, search, correlate, and investigate security events from multiple sources.
+
+### Centralisation
+
+SIEM centralises logs from:
+
+- Network devices
+- Endpoints
+- Servers
+- Cloud services
+- Identity providers
+- Applications
+- Security tools
+
+Instead of investigating each system separately, analysts can search data from multiple sources in one platform.
+
+**Benefits:**
+
+- Faster investigations
+- Centralised visibility
+- Easier correlation
+- Reduced time spent collecting logs manually
+- Better incident context
+
+### Correlation
+
+Correlation connects events from different log sources to build a complete attack story.
+
+Example:
+
+```text
+IDS Alert
+   ↓
+Suspicious Source IP
+   ↓
+Windows Event Logs
+   ↓
+Sysmon
+   ↓
+User + Process + Command Line
+```
+
+Correlation can help determine:
+
+- Which host performed the activity
+- Which user initiated it
+- Which process was responsible
+- Which tool was used
+- Whether multiple events belong to the same attack
+
+### Historical Events
+
+SIEM allows analysts to search historical events.
+
+Historical analysis can help identify:
+
+- Previous logins from an IP
+- Repeated attacks
+- Earlier suspicious activity
+- Persistent attacker behaviour
+- Long-running compromises
+- Changes in normal user behaviour
+
+Example:
+
+```text
+Current suspicious login
+        ↓
+Search historical logins
+        ↓
+Same IP seen previously?
+        ↓
+Determine legitimate vs suspicious activity
+```
+
+Other SIEM capabilities include:
+
+- Visualisation
+- Detection rules
+- Alerting
+- Automation
+- Investigation workflows
+
+# Log Sources Overview
+
+SIEM platforms collect logs from many types of organisational resources.
+
+```text
+Organisation
+│
+├── Hosts
+│   ├── Workstations
+│   └── Servers
+│
+├── Network
+│   ├── Firewalls
+│   ├── Routers
+│   ├── IDS
+│   └── IPS
+│
+├── Web
+│   ├── Apache
+│   └── Nginx
+│
+├── Identity
+│   └── Identity Providers
+│
+├── Cloud
+│   ├── AWS
+│   └── Azure
+│
+└── Applications
+```
+
+## Host-Based Log Sources
+
+Host-based logs originate from individual systems such as:
+
+- Workstations
+- Web servers
+- SQL servers
+- DNS servers
+- Application servers
+- File servers
+
+They can provide visibility into:
+
+- Process execution
+- User activity
+- File activity
+- Registry changes
+- Authentication
+- Network connections
+- System changes
+
+## Network-Based Log Sources
+
+Network-based logs originate from devices such as:
+
+- Firewalls
+- Routers
+- IDS
+- IPS
+- Network monitoring systems
+
+They provide visibility into:
+
+- Network connections
+- Source and destination IPs
+- Ports
+- Protocols
+- Allowed traffic
+- Blocked traffic
+- Scanning
+- Suspicious communication
+
+## Web-Based Log Sources
+
+Web logs originate from:
+
+- Apache
+- Nginx
+- IIS
+- Web applications
+- Reverse proxies
+
+They can reveal:
+
+- Web scanning
+- Brute-force attacks
+- Exploitation attempts
+- DDoS activity
+- Web shells
+- Suspicious requests
+- Malicious user agents
+
+# SIEM Time Pitfalls
+
+Logs may use different time zones.
+
+For example:
+
+```text
+Analyst timezone: UTC-2
+SIEM timezone:    UTC+2
+
+Local time: 17:00
+SIEM time:   21:00
+```
+
+The four-hour difference does not necessarily mean that logs were delayed.
+
+Always determine:
+
+- Log source timezone
+- SIEM timezone
+- Timestamp format
+- Whether timestamps are normalised
+- Whether daylight-saving changes apply
+
+> Incorrect timezone interpretation can result in an incorrect incident timeline.
+
+# Log Normalisation
+
+Different log sources use different formats and field names.
+
+Examples:
+
+```text
+JSON
+XML
+Plain text
+CSV
+Vendor-specific formats
+```
+
+Normalisation converts different formats into a consistent structure.
+
+Example:
+
+```text
+Windows log       ─┐
+Linux log         ─┤
+Firewall log      ─┼──→ Normalisation ──→ Common fields
+Web server log    ─┤
+Cloud log         ─┘
+```
+
+Benefits include:
+
+- Consistent searches
+- Easier filtering
+- Easier correlation
+- Standardised fields
+- Simpler detection rules
+
+# Windows Logs
+
+Two important Windows log sources are:
+
+- **WinEventLogs**
+- **Sysmon**
+
+Sysmon must be separately installed and configured.
+
+## Sysmon
+
+Sysmon provides detailed visibility into Windows activity.
+
+It can help detect:
+
+- Process execution
+- Network connections
+- Process injection
+- Registry changes
+- File creation
+- Suspicious command lines
+- Parent-child process relationships
+
+### Important Sysmon Event IDs
+
+| Event ID | Activity |
+|---|---|
+| **1** | Process creation |
+| **3** | Network connection |
+| **7** | Image/DLL loaded |
+
+## Malicious Process Execution
+
+Example Splunk query:
+
+```spl
+index=winenv EventCode=1 *powershell* AND *EncodedCommand*
+| table _time ComputerName ParentUser ParentImage ParentCommandLine Image CommandLine
+```
+
+Useful fields include:
+
+```text
+_time
+ComputerName
+ParentUser
+ParentImage
+ParentCommandLine
+Image
+CommandLine
+```
+
+Example attack chain:
+
+```text
+update_config.js
+       ↓
+cmd.exe
+       ↓
+PowerShell
+       ↓
+EncodedCommand
+```
+
+A suspicious script executed from:
+
+```text
+C:\Users\Public
+```
+
+can provide additional context when investigating process execution.
+
+## Suspicious Network Connection
+
+Sysmon Event ID **3** records network connections.
+
+Example:
+
+```spl
+index=winenv EventCode=3 ComputerName=WINHOST05
+| table _time ComputerName Image SourceIp SourcePort DestinationIp DestinationPort Protocol
+```
+
+Important fields include:
+
+- Source IP
+- Source port
+- Destination IP
+- Destination port
+- Protocol
+- Process image
+- Host
+
+Example suspicious activity:
+
+```text
+Process:
+PPn423.exe
+
+Location:
+Temp
+
+Destination:
+83.222.191.2:9999
+```
+
+> Investigate suspicious destination IPs using threat-intelligence sources.
+
+# WinEventLogs
+
+Windows contains many event-log channels.
+
+Common logs include:
+
+- Security
+- System
+- Application
+
+There are also many additional Windows event channels.
+
+## Windows Security Logs
+
+Security logs can provide visibility into:
+
+- Authentication attempts
+- Account creation
+- Account modification
+- File access
+- Registry access
+- Process execution
+- System restarts
+- Log clearing
+- Audit policy changes
+- Security policy changes
+
+### User Account Creation
+
+Important event IDs:
+
+```text
+4720 → User account created
+4722 → User account enabled
+```
+
+Example:
+
+```spl
+index=winenv EventCode=4720 OR EventCode=4722
+| table _time EventCode ComputerName Subject_Account_Name Target_Account_Name New_Account_Account_Name Keywords
+```
+
+A newly created and enabled account can indicate persistence.
+
+Example:
+
+```text
+Attacker access
+      ↓
+Create backup account
+      ↓
+Enable account
+      ↓
+Use account for persistence
+```
+
+## Windows System Logs
+
+System logs record events generated by the operating system and its services.
+
+They are useful for detecting:
+
+- Service creation
+- Service start/stop
+- System-level activity
+- Service persistence
+- Potential privilege escalation
+
+### Important Service Event IDs
+
+```text
+7045 → Service installed
+7036 → Service entered/stopped a running state
+```
+
+Example:
+
+```spl
+index=winenv EventCode=7045 OR EventCode=7036 ComputerName=WINHOST05
+| table _time EventCode ComputerName Service_Name Service_Account Service_File_Name Message
+```
+
+Example suspicious behaviour:
+
+```text
+Service:
+User Updates
+
+Executable:
+RNSfnsjdf.exe
+
+Location:
+Temp
+
+Account:
+SYSTEM
+```
+
+A malicious executable launched through a newly created SYSTEM service can indicate:
+
+- Persistence
+- Privilege escalation
+- Execution with elevated privileges
+
+# Windows SIEM Investigation Workflow
+
+```text
+Alert
+  ↓
+Identify Host
+  ↓
+Search Sysmon
+  ├── Event ID 1 → Process Creation
+  └── Event ID 3 → Network Connections
+  ↓
+Search Windows Security Logs
+  ├── Authentication
+  ├── Account Creation
+  └── Security Changes
+  ↓
+Search Windows System Logs
+  ├── Service Creation
+  └── Service Start/Stop
+  ↓
+Build Process + Event Timeline
+  ↓
+Correlate With Threat Intelligence
+  ↓
+Determine Malicious / Benign
+  ↓
+Escalate or Close
+```
+
+# Windows Practice Scenario
+
+Suspicious network connection:
+
+```text
+Host: WIN-105
+Port: 5678
+```
+
+Splunk index:
+
+```spl
+index=task4
+```
+
+Investigation should focus on:
+
+- Source IP
+- Destination IP
+- Process responsible
+- Destination port
+- Parent process
+- User
+- Network timeline
+- Related process execution
+
+# Linux Logs
+
+Two important Linux log sources are:
+
+- `auth.log`
+- `syslog`
+
+## Authentication Logs
+
+`auth.log` records authentication-related events.
+
+It can help identify:
+
+- Successful logins
+- Failed logins
+- SSH activity
+- Sudo usage
+- Privilege changes
+- Brute-force attacks
+- Account access
+
+## Unusual Login Activities
+
+Example Splunk query:
+
+```spl
+index=linux source="auth.log" *ubuntu* process=sshd
+| search "Accepted password" OR "Failed password"
+```
+
+This can reveal:
+
+```text
+Failed password
+       ↓
+Repeated attempts
+       ↓
+Successful login
+       ↓
+Possible brute-force compromise
+```
+
+A successful brute-force attack should generally be escalated for further investigation.
+
+## Privilege Escalation Behaviour
+
+Search for `su` activity:
+
+```spl
+index=linux source="auth.log" *su*
+| sort + _time
+```
+
+This can help identify transitions such as:
+
+```text
+ubuntu
+  ↓
+su
+  ↓
+root
+```
+
+> `auth.log` may show that privilege escalation occurred without explaining exactly how it happened. Additional logs are required to identify the mechanism.
+
+# Linux System Logs
+
+`syslog` contains general system-level events.
+
+It can provide visibility into:
+
+- Services
+- Cron jobs
+- Background processes
+- System activity
+- Persistence
+- Suspicious scripts
+
+## Persistence Mechanisms
+
+Example query:
+
+```spl
+index=linux sourcetype=syslog ("CRON" OR "cron")
+| search ("python" OR "perl" OR "ruby" OR ".sh" OR "bash" OR "nc")
+```
+
+Suspicious indicators can include:
+
+```text
+/tmp/pnr5433sw.sh
+       ↓
+Executed by cron
+       ↓
+Every 5 minutes
+```
+
+Another suspicious event may involve:
+
+```text
+Perl
+  ↓
+Reverse shell
+  ↓
+10.10.101.12:9999
+```
+
+These combinations are strong indicators for investigation.
+
+# Additional Linux Log Sources
+
+Real-world environments may also use:
+
+- `auditd`
+- `osquery`
+
+These can provide additional visibility into:
+
+- Process execution
+- File activity
+- System changes
+- Persistence
+- User activity
+
+# Linux Practice Scenario
+
+Scenario:
+
+```text
+Possible persistence
+       ↓
+New remote-SSH user
+       ↓
+Ubuntu server
+```
+
+Splunk index:
+
+```spl
+index=task5
+```
+
+Investigation should identify:
+
+- User creation
+- SSH authentication
+- Source IP
+- Commands executed
+- Privilege changes
+- Persistence mechanisms
+- Related processes
+
+# Web Application Logs
+
+Web applications are important SIEM log sources because attackers commonly exploit public-facing applications.
+
+Common web servers include:
+
+- Apache
+- Nginx
+- IIS
+
+## Web Log Sources
+
+### Access Logs
+
+Access logs record HTTP requests.
+
+Useful fields include:
+
+- Client IP
+- HTTP method
+- URI
+- Status code
+- User-Agent
+- Referer
+- Timestamp
+
+They can help detect:
+
+- Scanning
+- Brute-force attacks
+- Web exploitation
+- Web shells
+- DDoS
+- Suspicious requests
+
+### Error Logs
+
+Error logs provide information about:
+
+- Application failures
+- Server errors
+- Invalid requests
+- Exploitation attempts
+- Backend failures
+
+# Brute Force Activity
+
+A common example is brute-force activity against a WordPress login page.
+
+Target:
+
+```text
+/wp-login.php
+```
+
+Look for:
+
+```text
+POST requests
+Repeated attempts
+Same client IP
+Short time window
+High request count
+```
+
+Example Splunk query:
+
+```spl
+index=* method=POST uri_path="/wp-login.php"
+| bin _time span=5m
+| stats values(referer_domain) as referer_domain values(status) as status values(useragent) as UserAgent values(uri_path) as uri_path count by clientip _time
+| where count > 25
+| table referer_domain clientip UserAgent uri_path count status
+```
+
+Example:
+
+```text
+Source IP:
+167.172.41.141
+
+Requests:
+160
+
+Target:
+/wp-login.php
+
+User-Agent:
+Hydra
+```
+
+A high request volume combined with a brute-force tool user-agent is highly suspicious.
+
+# Possible Web Shell
+
+Web shells can allow attackers to execute commands through a compromised web application.
+
+Potentially suspicious file types include:
+
+```text
+.php
+.phtml
+.asp
+.aspx
+.jsp
+.exe
+```
+
+Investigate:
+
+- POST requests
+- GET requests
+- HTTP 200 responses
+- Repeated requests
+- Suspicious filenames
+- Unusual client IPs
+- Suspicious user-agents
+
+Example suspicious filename:
+
+```text
+505.php
+```
+
+Example Splunk query:
+
+```spl
+index=*
+| search status=200 AND uri_path IN (*.php, *.phtm, *.asp, *.aspx, *.jsp, *.exe) AND (method=POST AND method=GET)
+| stats values(status) as status values(useragent) as UserAgent values(method) as method values(uri) as uri values(clientip) as clientip count by referer_domain
+| where count > 2
+| table referer_domain count method status clientip UserAgent uri
+```
+
+> A suspicious PHP or other server-side script should not automatically be classified as a web shell. Correlate the request with file creation, application logs, process execution, and endpoint telemetry.
+
+# DDoS Activity
+
+DDoS attacks can generate extremely large request volumes.
+
+A possible indicator is a large number of:
+
+```text
+HTTP 503
+```
+
+responses.
+
+A `503 Service Unavailable` response can indicate that the server is overloaded.
+
+Investigate:
+
+- Request volume
+- Time window
+- Source IPs
+- Target domain
+- URI
+- User-Agent
+- HTTP status
+
+Example query:
+
+```spl
+index=* status=503
+| bin _time span=10m
+| stats values(referer_domain) as referer_domain values(status) as status values(useragent) as UserAgent values(uri_path) as uri_path count by clientip _time
+| where count > 100000
+| table _time referer_domain clientip UserAgent uri_path count status
+```
+
+Example:
+
+```text
+Time window:
+10 minutes
+
+Requests:
+> 1,500,000
+
+Status:
+503
+```
+
+This pattern can indicate a possible DDoS attack.
+
+# Web Investigation Workflow
+
+```text
+Web Alert
+   ↓
+Identify Target
+   ↓
+Review Access Logs
+   ├── Client IP
+   ├── URI
+   ├── Method
+   ├── Status
+   └── User-Agent
+   ↓
+Check Request Frequency
+   ↓
+Look for Attack Patterns
+   ├── Brute Force
+   ├── Scanning
+   ├── Web Shell
+   └── DDoS
+   ↓
+Correlate With Host Logs
+   ↓
+Check Process / File Activity
+   ↓
+Threat Intelligence
+   ↓
+Determine Severity
+   ↓
+Escalate / Contain / Close
+```
+
+# SIEM Investigation Cheat Sheet
+
+| Log Source | Useful For | Important Indicators |
+|---|---|---|
+| **Sysmon** | Windows endpoint activity | Process execution, network connections |
+| **Windows Security** | Authentication and accounts | Logins, account creation, privilege activity |
+| **Windows System** | Services and OS activity | Service creation/start/stop |
+| **Linux auth.log** | Authentication | SSH, failed logins, sudo, `su` |
+| **Linux syslog** | System activity | Cron, services, scripts |
+| **Web access logs** | HTTP activity | Brute force, scanning, web shells, DDoS |
+| **Web error logs** | Application/server errors | Exploitation and abnormal requests |
+| **Firewall logs** | Network traffic | Connections, blocks, suspicious destinations |
+| **IDS/IPS logs** | Network threats | Scanning, exploitation, malicious traffic |
+
+# Key Splunk Event IDs
+
+| Event ID | Source | Meaning |
+|---|---|---|
+| **1** | Sysmon | Process creation |
+| **3** | Sysmon | Network connection |
+| **7** | Sysmon | Image/DLL loaded |
+| **4720** | Windows Security | User account created |
+| **4722** | Windows Security | User account enabled |
+| **7036** | Windows System | Service state changed |
+| **7045** | Windows System | Service installed |
+
+# Core SIEM Investigation Method
+
+```text
+Alert
+  ↓
+Identify Host / User / IP
+  ↓
+Determine Exact Time
+  ↓
+Check Timezone
+  ↓
+Search Related Logs
+  ↓
+Correlate Events
+  ↓
+Build Timeline
+  ↓
+Identify Process / Account / Network Activity
+  ↓
+Enrich With Threat Intelligence
+  ↓
+Determine Scope and Impact
+  ↓
+Classify Activity
+  ↓
+Escalate / Contain / Close
+```
+
+> **SIEM is most valuable when analysts correlate multiple sources rather than investigating an individual log event in isolation.**
