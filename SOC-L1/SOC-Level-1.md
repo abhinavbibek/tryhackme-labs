@@ -20797,3 +20797,790 @@ Escalate if Malicious
 ```
 
 > The primary goal of SOC L1 triage is to quickly distinguish genuine malicious activity from false positives and provide L2/Incident Response with enough evidence and context to continue the investigation.
+
+# Alert Triage With Elastic
+
+## Scenario Briefing
+
+A SOC analyst is responsible for investigating suspicious activity affecting **SomeCorp's** servers, applications, and network infrastructure.
+
+The investigation involves:
+
+- Web server activity
+- Windows authentication
+- Sysmon process creation
+- Account management
+- Command execution
+- PowerShell activity
+- Potential abuse of legitimate software
+
+The objective is to determine whether the alerts represent malicious activity and reconstruct the attack sequence.
+
+## Kibana Setup
+
+Before beginning the investigation:
+
+1. Start the lab VM.
+2. Open the Kibana dashboard.
+3. Select the **Alert Triage With Elastic** data view.
+4. Set the time range to **Entire data range**.
+
+The data view contains multiple indices.
+
+To focus on IIS web server logs:
+
+```text
+_index:weblogs
+```
+
+Useful fields can be added to the results table by selecting the `+` icon next to each field.
+
+# Investigating Web Attacks
+
+## Initial Web Attack
+
+The first alert shows that the IP:
+
+```text
+203.0.113.55
+```
+
+made `POST` requests to:
+
+```text
+proxyLogon.ecp
+```
+
+The initial goal is to identify all relevant web requests from the source IP.
+
+### Query
+
+```text
+_index:weblogs and client.ip:203.0.113.55 and http.request.method:POST
+```
+
+### Useful Fields
+
+Add the following fields to the results table:
+
+```text
+client.ip
+user.agent
+http.request.method
+url.path
+http.response.status_code
+```
+
+### Investigation
+
+The User-Agent and requested page indicate automated activity associated with the **ProxyLogon** vulnerability.
+
+This is a significant indicator because:
+
+- The source IP is associated with suspicious activity.
+- Requests are automated.
+- The target endpoint is associated with ProxyLogon exploitation.
+- The activity is followed by additional suspicious requests.
+
+The alert should therefore be investigated further rather than treated as normal web traffic.
+
+## Web Shell Investigation
+
+A second high-severity alert originates from the same IP approximately seven minutes later.
+
+The alert contains:
+
+```text
+cmd=
+```
+
+The `cmd=` parameter is commonly associated with web shells because commands can be supplied directly through URL parameters.
+
+Example:
+
+```text
+cmd=id
+```
+
+### Query
+
+Search for `GET` requests involving:
+
+```text
+errorEE.aspx
+```
+
+```text
+_index:weblogs and client.ip:203.0.113.55 and http.request.method:GET and errorEE.aspx
+```
+
+### Investigation
+
+Sort the results:
+
+```text
+Old-New
+```
+
+Review the:
+
+```text
+url.path
+```
+
+field.
+
+The URL paths contain commands executed through the web shell.
+
+This provides evidence that:
+
+```text
+Web Exploitation
+      ↓
+Web Shell
+      ↓
+Command Execution
+```
+
+occurred on the server.
+
+### Classification
+
+The web exploitation and web-shell alerts should be classified as:
+
+```text
+TRUE POSITIVE
+```
+
+and escalated to the appropriate senior analyst / Incident Response team.
+
+# Uncovering Account Activity
+
+The web investigation provides evidence of compromise, but host-based logs are required to determine what happened after the web attack.
+
+The next alert indicates that the:
+
+```text
+Administrator
+```
+
+account accessed the server outside normal business hours.
+
+The first objective is to confirm the logon.
+
+## Windows Security Event ID 4624
+
+Windows Security Event ID:
+
+```text
+4624
+```
+
+indicates a successful logon.
+
+### Query
+
+```text
+@timestamp >= "2025-07-20T05:11:22" and winlog.event_id:4624 and host.name:winserv2019.some.corp and winlog.event_data.TargetUserName:Administrator
+```
+
+### Useful Fields
+
+Add:
+
+```text
+winlog.event_id
+host.name
+winlog.event_data.TargetUserName
+winlog.logon.type
+winlog.event_data.IpAddress
+```
+
+These fields show:
+
+- Event ID
+- Target host
+- Account used
+- Logon type
+- Source IP address
+
+### Investigation Result
+
+The logs confirm that:
+
+```text
+User:
+Administrator
+
+Host:
+winserv2019.some.corp
+
+Source IP:
+203.0.113.55
+```
+
+The source IP matches the IP involved in the previous web attacks.
+
+This correlation significantly increases the likelihood that the activity is part of the same intrusion.
+
+## Correlating Sysmon Process Creation
+
+Sysmon Event ID:
+
+```text
+1
+```
+
+represents **Process Creation**.
+
+Use the timestamp from the successful `4624` logon and investigate processes launched by the Administrator account.
+
+### Query
+
+```text
+@timestamp >= "2025-07-20T05:11:22" and winlog.event_id:1 and user.name:Administrator
+```
+
+### Useful Fields
+
+```text
+user.name
+process.parent.name
+process.command_line
+```
+
+These fields help reconstruct the process chain.
+
+For example:
+
+```text
+Administrator Logon
+        ↓
+Windows Session Initialization
+        ↓
+Process Creation
+```
+
+The initial process chain may appear consistent with normal Windows session initialization.
+
+At this stage, the evidence confirms the logon but does not by itself prove malicious activity.
+
+# Investigating Account Management
+
+The next alert occurs shortly after the Administrator logon.
+
+The investigation focuses on Windows Security logs and the **User Account Management** task.
+
+### Query
+
+```text
+@timestamp >= "2025-07-20T05:13:10.000" and winlog.channel:Security and winlog.task:User Account Management
+```
+
+### Useful Fields
+
+Add:
+
+```text
+winlog.event_id
+winlog.task
+message
+```
+
+Sort the results:
+
+```text
+Old-New
+```
+
+This allows the account-management events to be reconstructed chronologically.
+
+The investigation reveals that the Administrator account was involved in creating and modifying another account.
+
+This is suspicious because attackers commonly create additional accounts to maintain access after compromising a privileged account.
+
+# Exposing Command Execution
+
+The next alert identifies suspicious command-line activity from the same Administrator account.
+
+A SOC L1 analyst should:
+
+1. **Scope the alert**
+   - Identify child processes launched by `cmd.exe`.
+
+2. **Confirm the origin**
+   - Determine which process launched `cmd.exe`.
+
+3. **Check privilege changes**
+   - Look for commands such as `net` that create accounts or modify group membership.
+
+4. **Correlate log sources**
+   - Compare Sysmon and Windows Security events.
+
+## Investigating CMD Activity
+
+### Query
+
+```text
+@timestamp >= "2025-07-20T05:13:15" and process.parent.name:cmd.exe and user.name:Administrator
+```
+
+### Useful Fields
+
+```text
+process.command_line
+process.name
+process.parent.name
+```
+
+These fields reveal:
+
+- Which commands were executed
+- Which process executed them
+- Which parent process launched them
+
+The investigation shows commands being executed through:
+
+```text
+cmd.exe
+```
+
+The commands create a new user and modify security-group membership.
+
+This represents a significant escalation in attacker activity.
+
+## Correlating Security Event ID 4732
+
+Windows Security Event ID:
+
+```text
+4732
+```
+
+indicates that a member was added to a security-enabled local group.
+
+Use the following query to correlate the group modification with command execution:
+
+```text
+@timestamp >= "2025-07-20T05:13:15" and (winlog.event_id:4732 or process.parent.name:cmd.exe)
+```
+
+### Investigation
+
+The logs show that the newly created account was added to multiple groups.
+
+This creates the following attack chain:
+
+```text
+Compromised Administrator
+        ↓
+CMD Execution
+        ↓
+New Account Created
+        ↓
+Account Added to Security Groups
+        ↓
+Additional Privileges
+```
+
+The combination of account creation, group membership changes, and suspicious command execution is strong evidence of malicious activity.
+
+# PowerShell Usage
+
+The investigation now needs to determine what happened after the backdoor account was created.
+
+PowerShell logs can reveal commands executed by the attacker.
+
+## PowerShell Script Block Logging
+
+PowerShell Event ID:
+
+```text
+4104
+```
+
+contains **Script Block Logging** information.
+
+### Query
+
+```text
+@timestamp >= "2025-07-20T05:13:15" and event.module:powershell and event.code:4104
+```
+
+### Useful Field
+
+Add:
+
+```text
+powershell.file.script_block_text
+```
+
+Sort:
+
+```text
+Old-New
+```
+
+This exposes PowerShell commands in plaintext where Script Block Logging captured them.
+
+## Discovery Commands
+
+The investigation reveals commands such as:
+
+```text
+whoami
+```
+
+and:
+
+```text
+whoami /priv
+```
+
+These are common discovery commands.
+
+### `whoami`
+
+Determines the current account context.
+
+### `whoami /priv`
+
+Displays the privileges available to the current account.
+
+Attackers commonly use these commands to determine:
+
+- Which account they control
+- Whether they have administrative privileges
+- Which privileges may be exploitable
+- Whether privilege escalation is necessary
+
+# Attack Timeline
+
+The investigation now provides a coherent attack sequence:
+
+```text
+External Source IP
+203.0.113.55
+        ↓
+ProxyLogon Exploitation
+        ↓
+Web Shell
+errorEE.aspx
+        ↓
+Command Execution
+        ↓
+Administrator RDP Logon
+        ↓
+Windows Process Creation
+        ↓
+Backdoor Account Creation
+        ↓
+Security Group Modification
+        ↓
+PowerShell Execution
+        ↓
+whoami / whoami /priv
+        ↓
+Further Attacker Activity
+```
+
+The important point is that no single event necessarily proves the entire compromise.
+
+Correlation across multiple log sources provides the complete picture.
+
+# No Alert Created
+
+Not every malicious action generates a dedicated SOC alert.
+
+During the investigation, the newly created account uses:
+
+```text
+Rar.exe
+```
+
+`Rar.exe` is legitimate compression software and therefore did not generate an alert by itself.
+
+However, legitimate software can be abused by attackers.
+
+## Investigating Rar.exe
+
+Search Sysmon logs for:
+
+```text
+process.name: "Rar.exe"
+```
+
+The objective is to determine:
+
+- Which account executed `Rar.exe`
+- When it was executed
+- Which parent process launched it
+- What command line was used
+- What files were compressed
+- Whether the execution occurred after the account compromise
+
+### Context Matters
+
+A legitimate executable does not automatically mean legitimate activity.
+
+The same binary can have very different meanings depending on context:
+
+```text
+Normal user
+    +
+Rar.exe
+    +
+Normal working hours
+    +
+Normal parent process
+    =
+Potentially benign
+```
+
+versus:
+
+```text
+Newly created attacker account
+    +
+Rar.exe
+    +
+Shortly after compromise
+    +
+Suspicious parent process
+    +
+Sensitive files
+    =
+Potentially malicious
+```
+
+This is an example of **Living Off the Land / legitimate tool abuse**.
+
+# Elastic Investigation Methodology
+
+A useful workflow for Elastic-based alert triage is:
+
+```text
+Alert
+  ↓
+Identify Indicator
+  ↓
+Build Initial Query
+  ↓
+Add Relevant Fields
+  ↓
+Sort Chronologically
+  ↓
+Investigate Individual Events
+  ↓
+Pivot to Related Log Sources
+  ↓
+Correlate Events
+  ↓
+Build Attack Timeline
+  ↓
+Determine Malicious / Benign
+  ↓
+Escalate Confirmed Threat
+```
+
+# Important Elastic Queries
+
+## Web Logs
+
+### IIS Logs
+
+```text
+_index:weblogs
+```
+
+### ProxyLogon POST Requests
+
+```text
+_index:weblogs and client.ip:203.0.113.55 and http.request.method:POST
+```
+
+### Web Shell Requests
+
+```text
+_index:weblogs and client.ip:203.0.113.55 and http.request.method:GET and errorEE.aspx
+```
+
+## Windows Authentication
+
+### Administrator Logon
+
+```text
+@timestamp >= "2025-07-20T05:11:22" and winlog.event_id:4624 and host.name:winserv2019.some.corp and winlog.event_data.TargetUserName:Administrator
+```
+
+### Administrator Process Creation
+
+```text
+@timestamp >= "2025-07-20T05:11:22" and winlog.event_id:1 and user.name:Administrator
+```
+
+## Account Management
+
+```text
+@timestamp >= "2025-07-20T05:13:10.000" and winlog.channel:Security and winlog.task:User Account Management
+```
+
+## CMD Activity
+
+```text
+@timestamp >= "2025-07-20T05:13:15" and process.parent.name:cmd.exe and user.name:Administrator
+```
+
+## Group Modification
+
+```text
+@timestamp >= "2025-07-20T05:13:15" and (winlog.event_id:4732 or process.parent.name:cmd.exe)
+```
+
+## PowerShell Script Blocks
+
+```text
+@timestamp >= "2025-07-20T05:13:15" and event.module:powershell and event.code:4104
+```
+
+## RAR Execution
+
+```text
+process.name: "Rar.exe"
+```
+
+# Important Windows Events
+
+| Event ID | Meaning |
+|---|---|
+| **4624** | Successful logon |
+| **4732** | Member added to a security-enabled local group |
+| **4104** | PowerShell Script Block Logging |
+| **1** | Sysmon Process Creation |
+
+# Key Investigation Fields
+
+| Field | Purpose |
+|---|---|
+| `client.ip` | Source IP of web request |
+| `user.agent` | Client/application making the request |
+| `http.request.method` | HTTP method such as GET/POST |
+| `url.path` | Requested web resource or command-containing URL |
+| `http.response.status_code` | HTTP response status |
+| `winlog.event_id` | Windows event identifier |
+| `host.name` | Host where the event occurred |
+| `winlog.event_data.TargetUserName` | Account involved in logon |
+| `winlog.logon.type` | Type of Windows logon |
+| `winlog.event_data.IpAddress` | Source IP for Windows logon |
+| `user.name` | Account associated with process execution |
+| `process.name` | Executed process |
+| `process.parent.name` | Parent process |
+| `process.command_line` | Full command used to launch a process |
+| `powershell.file.script_block_text` | PowerShell commands captured by Script Block Logging |
+
+# Key Lessons
+
+## Correlation Is Critical
+
+A single event may be ambiguous:
+
+```text
+Administrator Logon
+```
+
+does not automatically mean compromise.
+
+But multiple correlated events can establish an attack:
+
+```text
+ProxyLogon Exploitation
+        +
+Web Shell
+        +
+Administrator Logon
+        +
+New Account
+        +
+Group Modification
+        +
+PowerShell Discovery
+        =
+Strong Evidence of Compromise
+```
+
+## Legitimate Tools Can Be Malicious
+
+Tools such as:
+
+```text
+cmd.exe
+PowerShell
+Rar.exe
+```
+
+are legitimate Windows software.
+
+Their presence alone does not prove malicious activity.
+
+Always evaluate:
+
+- User
+- Parent process
+- Command line
+- Timestamp
+- Host
+- Source IP
+- Previous events
+- Subsequent events
+- Files accessed or created
+
+## Alert Coverage Is Not Complete
+
+```text
+No Alert
+   ≠
+No Attack
+```
+
+Attackers can perform malicious actions using legitimate tools or behaviours that do not trigger existing detection rules.
+
+SOC analysts should therefore:
+
+- Hunt through raw logs
+- Pivot between data sources
+- Search for suspicious processes
+- Correlate authentication and process events
+- Investigate legitimate tools in suspicious contexts
+- Build a complete attack timeline
+
+# Final Attack Reconstruction
+
+```text
+203.0.113.55
+      ↓
+ProxyLogon exploitation
+      ↓
+Web shell deployed
+      ↓
+Commands executed through errorEE.aspx
+      ↓
+Administrator authentication
+      ↓
+RDP / Windows session
+      ↓
+CMD execution
+      ↓
+Backdoor account created
+      ↓
+Account added to security groups
+      ↓
+PowerShell execution
+      ↓
+Privilege discovery
+      ↓
+Rar.exe execution
+      ↓
+Potential data collection / staging
+```
+
+> The strongest evidence comes from correlating multiple independent data sources rather than relying on a single alert. Elastic allows the analyst to pivot between web logs, Windows Security logs, Sysmon, and PowerShell telemetry to reconstruct the complete intrusion.
